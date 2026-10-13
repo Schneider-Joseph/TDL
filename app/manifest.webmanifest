@@ -1,0 +1,19 @@
+{
+  "id": "./index.html",
+  "name": "TDL — Task Dashboard",
+  "short_name": "TDL",
+  "description": "A private, offline-first task dashboard.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#11151d",
+  "theme_color": "#11151d",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
