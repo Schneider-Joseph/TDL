@@ -13,6 +13,7 @@ TDL tracks homework, chores, events, and personal tasks without accounts, cloud 
 - Search, sorting, and summary counts
 - Browser-local task storage
 - JSON backup export and import
+- Live local clock and an adjustable focus timer with start, pause, resume, and reset
 - Responsive desktop and mobile layout
 - Installable web-app metadata and an offline app-shell cache when hosted on HTTPS
 
@@ -35,6 +36,7 @@ TDL tracks homework, chores, events, and personal tasks without accounts, cloud 
 - [x] Establish the offline-first, single-user direction
 - [x] Add PWA metadata and an offline app-shell service worker
 - [ ] Test installation and offline launch on desktop and phone browsers
+- [x] Add a live clock and local focus timer
 - [ ] Improve task entry and recurring tasks
 - [ ] Add local reminders where supported by the browser/device
 - [ ] Improve safe backup/restore and cross-device manual transfer
