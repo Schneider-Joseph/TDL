@@ -12,7 +12,7 @@
 </style>
 </head>
 <body><div class="wrap">
-<header><div class="brand"><div class="logo">T.</div><div><h1>TDL</h1><p>Make room for what matters.</p></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="export">Export</button><button class="btn" id="importBtn">Import</button><button class="btn primary" id="add">＋ Add task</button></div></header>
+<header><div class="brand"><div class="logo">T.</div><div><h1>TDL</h1><p id="tagline" aria-live="polite">Make room for what matters.</p></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="export">Export</button><button class="btn" id="importBtn">Import</button><button class="btn primary" id="add">＋ Add task</button></div></header>
 <section class="intro"><div><div class="eyebrow">Your workspace</div><h2 id="greeting">Let's get things done.</h2><p>A clear head starts with a clear list.</p></div><div class="date" id="todayLabel"></div></section>
 <section class="time-tools" aria-label="Clock and timer">
   <article class="time-card clock-card">
@@ -64,6 +64,29 @@ $("#taskList").addEventListener("click",function(e){var b=e.target.closest("[dat
 $("#taskList").addEventListener("change",function(e){if(!e.target.matches('[data-action="toggle"]'))return;var id=e.target.closest("[data-id]").dataset.id;tasks=tasks.map(function(t){return t.id===id?Object.assign({},t,{completed:e.target.checked,updatedAt:Date.now()}):t});save();render()});
 $("#export").addEventListener("click",function(){var blob=new Blob([JSON.stringify({app:"TDL",version:1,exportedAt:new Date().toISOString(),tasks:tasks},null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="tdl-backup-"+today()+".json";a.click();URL.revokeObjectURL(url);notify("Backup exported")});
 $("#importBtn").addEventListener("click",function(){$("#file").click()});$("#file").addEventListener("change",function(e){var f=e.target.files[0];if(!f)return;var reader=new FileReader();reader.onload=function(){try{var data=JSON.parse(reader.result),incoming=Array.isArray(data)?data:data.tasks;if(!Array.isArray(incoming)||!incoming.every(function(t){return t&&typeof t.title==="string"}))throw Error();if(!confirm("Import "+incoming.length+" tasks? This replaces the tasks currently saved in this browser."))return;tasks=incoming.map(function(t){return Object.assign({},t,{id:typeof t.id==="string"?t.id:String(Date.now())+Math.random()})});save();render();notify("Backup imported")}catch(e){notify("That file is not a valid TDL backup")}$("#file").value=""};reader.readAsText(f)});
+// Rotate the tiny motivational crisis in the header. Entirely local and offline.
+var taglines=[
+  "Man... DO DAT SHET.",
+  "This needs to get done like today btw.",
+  "Future you is NOT picking up this slack.",
+  "Lock in. The side quests can wait.",
+  "Respectfully, get your life together.",
+  "One task at a time. We are not the Avengers.",
+  "You opened TDL for a reason. 👀",
+  "Do it tired. Do it annoyed. Just do it.",
+  "The deadline is not a suggestion, gang.",
+  "Less lore. More action.",
+  "Your to-do list is looking at you funny.",
+  "Make progress, then talk your talk."
+];
+var taglineIndex=0;
+window.setInterval(function(){
+  var el=$("#tagline");
+  if(!el)return;
+  taglineIndex=(taglineIndex+1)%taglines.length;
+  el.textContent=taglines[taglineIndex];
+},4500);
+
 // Live local clock. Uses the device's configured time zone and updates once per second.
 function updateClock(){var now=new Date();$("#liveClock").textContent=now.toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit",second:"2-digit"});$("#clockDate").textContent=now.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});}
 updateClock();window.setInterval(updateClock,1000);
