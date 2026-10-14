@@ -23,8 +23,7 @@
     <div class="time-card-label"><span class="time-dot"></span> LOCAL TIME</div>
     <div id="liveClock" class="live-clock" aria-label="Current local time">--:--:--</div>
     <div id="clockDate" class="clock-date">Loading date…</div>
-    <button id="enableNotifications" class="btn notification-btn" type="button">Enable notifications</button>
-    <div id="notificationStatus" class="notification-status" role="status">Deadline reminders are off.</div>
+
     <div class="deadline-countdowns" id="deadlineCountdowns" aria-label="Upcoming task deadlines"></div>
   </article>
   <article class="time-card timer-card">
@@ -53,6 +52,7 @@
    <label for="settingTimerMinutes">Default timer duration (minutes)</label>
    <input type="number" id="settingTimerMinutes" min="1" max="180" value="25">
   </div>
+  <div class="settings-group"><strong>Notifications</strong><p id="notificationStatus" class="settings-note" role="status">Checking browser permission…</p><button class="btn" type="button" id="enableNotifications">Enable notifications</button><small>Deadline reminders are checked while TDL is open. You can change site permissions in your browser settings.</small></div>
   <div class="settings-group"><strong>Data & privacy</strong>
    <p>Tasks, settings, and focus history are stored in this browser. No account or cloud sync.</p>
    <button class="btn" type="button" id="settingsExport">Export task backup</button>
@@ -61,6 +61,7 @@
   <div class="focus-dialog-actions"><span id="settingsSaved" role="status">Changes save automatically.</span><button class="btn primary" type="button" id="settingsClose">Done</button></div>
  </div>
 </div>
+<div id="notificationModal" class="focus-modal hidden" role="dialog" aria-modal="true" aria-labelledby="notificationPromptTitle"><div class="focus-dialog"><div class="time-card-label">DEADLINE REMINDERS</div><h3 id="notificationPromptTitle">Enable notifications?</h3><p>TDL can remind you about today's tasks and approaching deadlines while the app is open. Allow browser notifications?</p><div class="focus-dialog-actions"><button class="btn" id="notificationNo" type="button">No thanks</button><button class="btn primary" id="notificationYes" type="button">Enable notifications</button></div></div></div>
 <div id="focusModal" class="focus-modal hidden" role="dialog" aria-modal="true" aria-labelledby="focusQuestionTitle">
   <div class="focus-dialog">
     <div class="time-card-label">FOCUS CHECK</div>
@@ -150,9 +151,16 @@ function notificationStatus(message){var el=$("#notificationStatus");if(el)el.te
 function notificationSupported(){return "Notification" in window && window.isSecureContext}
 function sendTaskNotification(title,body,tag){if(!notificationSupported()||Notification.permission!=="granted")return;try{new Notification(title,{body:body,tag:tag,icon:"./icon.svg"})}catch(e){notificationStatus("Notifications are unavailable in this browser session.")}}
 function checkDeadlineNotifications(){if(!notificationSupported()||Notification.permission!=="granted")return;var now=Date.now(),todayKey=today(),history=notificationHistory(),dueTodayTasks=[],soonTasks=[];tasks.forEach(function(t){if(t.completed||!t.dueDate)return;var due=dueAt(t);if(!due)return;if(t.dueDate===todayKey){var k="today:"+todayKey+":"+t.id;if(!history[k]){dueTodayTasks.push(t);history[k]=true}}else if(due.getTime()>now&&due.getTime()-now<=86400000){var k2="soon:"+t.id+":"+due.getTime();if(!history[k2]){soonTasks.push({task:t,due:due});history[k2]=true}}});setNotificationHistory(history);if(dueTodayTasks.length){var names=dueTodayTasks.slice(0,5).map(function(t){return t.title});var body=names.join(", ")+(dueTodayTasks.length>5?" and "+(dueTodayTasks.length-5)+" more":"");sendTaskNotification(dueTodayTasks.length===1?"Task due today":"Tasks due today",body,"tdl-due-today-"+todayKey)}soonTasks.forEach(function(item){var mins=Math.max(1,Math.ceil((item.due.getTime()-now)/60000));var when=mins>=60?Math.ceil(mins/60)+" hour"+(Math.ceil(mins/60)===1?"":"s"):mins+" minute"+(mins===1?"":"s");sendTaskNotification("Deadline coming up",item.task.title+" is due in about "+when+".","tdl-deadline-"+item.task.id+"-"+item.due.getTime())})}
-function updateNotificationControl(){var button=$("#enableNotifications");if(!button)return;if(!notificationSupported()){button.disabled=true;button.textContent="Notifications unavailable";notificationStatus("Open TDL from its HTTPS website to use notifications.");return}if(Notification.permission==="granted"){button.textContent="Notifications enabled";notificationStatus("Reminders are checked while TDL is open.");checkDeadlineNotifications()}else if(Notification.permission==="denied"){button.textContent="Notifications blocked";notificationStatus("Allow notifications for this site in Chrome site settings.");}else{button.textContent="Enable notifications";notificationStatus("Get a reminder for tasks due today and deadlines within 24 hours.")}}
-$("#enableNotifications").addEventListener("click",function(){if(!notificationSupported()){updateNotificationControl();return}if(Notification.permission==="granted"){checkDeadlineNotifications();notificationStatus("Notifications are enabled. Checks run while TDL is open.");return}Notification.requestPermission().then(function(permission){updateNotificationControl();if(permission==="granted"){checkDeadlineNotifications();notificationStatus("Notifications enabled. Keep TDL open for reminders.")}else notificationStatus("Permission was not granted. You can change this in Chrome site settings.")})});
-updateNotificationControl();window.setInterval(checkDeadlineNotifications,60000);
+function updateNotificationControl(){var button=$("#enableNotifications");if(!notificationSupported()){button.disabled=true;button.textContent="Notifications unavailable";notificationStatus("Notifications are not supported in this browser or context.");return}if(Notification.permission==="granted"){button.disabled=true;button.textContent="Notifications enabled";notificationStatus("Enabled. TDL checks deadlines while the app is open.");checkDeadlineNotifications()}else if(Notification.permission==="denied"){button.disabled=true;button.textContent="Notifications blocked";notificationStatus("Blocked by the browser. Change TDL's notification permission in site settings to enable reminders.")}else{button.disabled=false;button.textContent="Enable notifications";notificationStatus("Not enabled. You can request permission here.")}}
+var NOTIFICATION_PROMPT_KEY="tdl.notificationPrompt.v1";
+function hideNotificationPrompt(){ $("#notificationModal").classList.add("hidden") }
+function requestTDLNotifications(){if(!notificationSupported()||Notification.permission!=="default"){hideNotificationPrompt();updateNotificationControl();return}Notification.requestPermission().then(function(permission){hideNotificationPrompt();try{localStorage.setItem(NOTIFICATION_PROMPT_KEY,"answered")}catch(e){}updateNotificationControl();if(permission==="granted")checkDeadlineNotifications()}).catch(function(){hideNotificationPrompt();updateNotificationControl()})}
+$("#enableNotifications").addEventListener("click",requestTDLNotifications);
+$("#notificationYes").addEventListener("click",requestTDLNotifications);
+$("#notificationNo").addEventListener("click",function(){try{localStorage.setItem(NOTIFICATION_PROMPT_KEY,"answered")}catch(e){}hideNotificationPrompt()});
+updateNotificationControl();
+if(notificationSupported()&&Notification.permission==="default"){var answered=false;try{answered=localStorage.getItem(NOTIFICATION_PROMPT_KEY)==="answered"}catch(e){}if(!answered)$("#notificationModal").classList.remove("hidden")}
+window.setInterval(checkDeadlineNotifications,60000);
 // Persistent local preferences; the focus checks are on by default.
 var SETTINGS_KEY="tdl.settings.v1";
 function readSettings(){try{var data=JSON.parse(localStorage.getItem(SETTINGS_KEY)||"{}");return {focusChecks:data.focusChecks!==false,timerMinutes:Number.isInteger(data.timerMinutes)&&data.timerMinutes>=1&&data.timerMinutes<=180?data.timerMinutes:25}}catch(e){return {focusChecks:true,timerMinutes:25}}}
