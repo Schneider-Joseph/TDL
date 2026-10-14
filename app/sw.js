@@ -1,4 +1,4 @@
-const CACHE_NAME = "tdl-shell-v7";
+const CACHE_NAME = "tdl-shell-v8";
 const APP_SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
 
 self.addEventListener("install", (event) => {
@@ -26,20 +26,22 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // Serve the cached app shell first so the dashboard opens offline.
+  // Prefer the latest app files while online; use the offline cache on failure.
   event.respondWith(
-    caches.match(request).then((cached) => {
+    fetch(request).then((response) => {
+      if (response && response.ok && response.type === "basic") {
+        const copy = response.clone();
+        event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.put(request, copy)));
+      }
+      return response;
+    }).catch(async () => {
+      const cached = await caches.match(request);
       if (cached) return cached;
-      return fetch(request).then((response) => {
-        if (response && response.ok && response.type === "basic") {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
-        }
-        return response;
-      }).catch(() => {
-        if (request.mode === "navigate") return caches.match("./index.html");
-        return Response.error();
-      });
+      if (request.mode === "navigate") {
+        const shell = await caches.match("./index.html");
+        if (shell) return shell;
+      }
+      return Response.error();
     })
   );
 });
