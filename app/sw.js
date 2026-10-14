@@ -1,4 +1,4 @@
-const CACHE_NAME = "tdl-shell-v6";
+const CACHE_NAME = "tdl-shell-v7";
 const APP_SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
 
 self.addEventListener("install", (event) => {
