@@ -15,11 +15,10 @@
 .stat-link{color:var(--text);text-align:left;cursor:pointer;font:inherit;transition:border-color .15s,background .15s}.stat-link:hover,.stat-link:focus-visible,.stat-link.active{border-color:var(--green);background:#223024;outline-offset:3px}.timer-edit{display:block;width:100%;height:auto;border:1px solid transparent;background:transparent;color:var(--text);font-family:inherit;text-align:left;padding:0;border-radius:7px;outline-offset:3px}.timer-edit:not(:disabled):hover,.timer-edit:not(:disabled):focus{border-color:var(--green);background:#11151d}.timer-edit:disabled{opacity:1;cursor:default;-webkit-text-fill-color:var(--text)}
 .subtask-entry,.subtask-edit-row{display:flex;gap:8px;align-items:center}.subtask-entry input,.subtask-edit-row input[type=text]{flex:1;min-width:0}.subtask-editor,.subtasks{display:grid;gap:7px;margin-top:9px}.subtask-progress{font-size:12px;color:var(--muted);margin-top:7px}.subtask-row{display:flex;gap:8px;align-items:center;font-size:13px;cursor:pointer}.subtask-row input{accent-color:var(--green)}.subtask-row.is-done span{text-decoration:line-through;color:var(--muted)}
 .activity-section{margin-top:18px;border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:18px}.activity-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.activity-head h3{margin:0;font-size:19px}.activity-status{font-size:11px;border-radius:99px;padding:4px 9px;background:#263d30;color:var(--green);font-weight:800}.activity-status.locked{background:#48292f;color:var(--red)}.activity-muted{color:var(--muted);font-size:13px;margin:8px 0}.activity-entry{display:flex;gap:8px;margin:14px 0}.activity-entry input{flex:1;min-width:0}.activity-items{display:grid;gap:8px;margin:12px 0}.activity-item{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:9px 12px;background:#111620;border:1px solid var(--line);border-radius:9px}.activity-pick{padding:12px;background:#243a29;border-radius:9px;font-weight:700;color:var(--green)}.overdue-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.bb-dialog{width:min(100%,720px);max-height:90vh;overflow:auto}.bb-dialog input[type=file]{width:100%}.bb-dialog p{font-size:13px;color:var(--muted)}.bb-preview{display:grid;gap:8px;max-height:42vh;overflow:auto}.bb-item{display:flex;gap:10px;align-items:flex-start;padding:10px;border:1px solid var(--line);border-radius:8px;background:#111620;overflow-wrap:anywhere}.bb-item input{accent-color:var(--green);margin-top:5px}.bb-item strong{font-size:13px}.bb-item small{display:block;color:var(--muted);font-size:11px}.bb-item.existing{opacity:.6}
 </style>
 </head>
 <body><div class="wrap">
-<header><div class="brand"><div class="logo">T.</div><div><h1>TDL</h1><p id="tagline" aria-live="polite">Man... DO DAT SHET.</p></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="settingsOpen" type="button">⚙ Settings</button><button class="btn" id="export">Export</button><button class="btn" id="importBtn">Import</button><button class="btn" id="quickAdd" type="button">Paste assignment</button><button class="btn" id="bbOpen" type="button">Blackboard .ics</button><button class="btn primary" id="add">＋ Add task</button></div></header>
+<header><div class="brand"><div class="logo">T.</div><div><h1>TDL</h1><p id="tagline" aria-live="polite">Man... DO DAT SHET.</p></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="settingsOpen" type="button">⚙ Settings</button><button class="btn" id="export">Export</button><button class="btn" id="importBtn">Import</button><button class="btn" id="quickAdd" type="button">Paste assignment</button><button class="btn primary" id="add">＋ Add task</button></div></header>
 <section class="intro"><div><div class="eyebrow">Your workspace</div><h2 id="greeting">Let's get things done.</h2><p>A clear head starts with a clear list.</p></div><div class="date" id="todayLabel"></div></section>
 <section class="time-tools" aria-label="Clock and timer">
   <article class="time-card clock-card">
@@ -80,7 +79,7 @@
 <main class="main"><div class="toolbar"><div><h3 id="listTitle">All tasks</h3><p id="subtitle">Everything you need to keep track of.</p></div><div class="tools"><input id="search" class="search" type="search" placeholder="Search tasks…" aria-label="Search tasks"><select id="sort" aria-label="Sort tasks"><option value="due">Sort: due date</option><option value="priority">Sort: priority</option><option value="newest">Sort: newest</option></select></div></div><div id="taskList" class="tasklist"></div></main></div>
 <section class="activity-section" aria-labelledby="activitiesTitle"><div class="activity-head"><h3 id="activitiesTitle">Bored? Do This.</h3><span class="activity-status locked" id="activityStatus">Locked</span></div><p class="activity-muted" id="activityMessage">Finish today's and overdue tasks to unlock your activity bank.</p><div id="activitiesUnlocked" class="hidden"><form id="activityForm" class="activity-entry"><input id="activityInput" maxlength="140" placeholder="Something you'd like to do…" aria-label="Add optional activity" required><button class="btn primary" type="submit">Add</button></form><div id="activityItems" class="activity-items"></div><button class="btn" type="button" id="activityRandom">🎲 Pick for me</button><div id="activityPicked" class="activity-pick hidden" role="status"></div></div></section><div class="footer"><span>TDL v0.1 · Built for your day, not to distract you.</span><span>Local-first · No account required</span></div></div>
 <div id="backdrop" class="backdrop hidden"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modalhead"><h3 id="modalTitle">Add a task</h3><button class="btn" id="close" aria-label="Close">×</button></div><form id="form"><div class="fields"><div class="field full"><label for="title">Task name *</label><input id="title" maxlength="160" required placeholder="Finish Network Security lab"></div><div class="field"><label for="category">Category</label><input id="category" type="text" list="categorySuggestions" maxlength="50" placeholder="Type or choose a category" autocomplete="off"><datalist id="categorySuggestions"><option value="Homework"><option value="Chore"><option value="Event"><option value="Personal"></datalist></div><div class="field"><label for="priority">Priority</label><select id="priority"><option value="medium">Medium</option><option value="high">High</option><option value="low">Low</option></select></div><div class="field"><label for="due">Due date (optional)</label><input id="due" type="date"></div><div class="field"><label for="time">Time (optional)</label><input id="time" type="time"></div><div class="field"><label for="repeat">Repeat</label><select id="repeat"><option value="none">Does not repeat</option><option value="daily">Every day</option><option value="weekdays">Weekdays (Mon–Fri)</option><option value="weekly">Every week</option><option value="monthly">Every month</option><option value="yearly">Every year</option></select></div><div class="field"><label for="repeatEnd">Repeat until (optional)</label><input id="repeatEnd" type="date"></div><div class="field full"><label for="assignmentUrl">Assignment URL</label><input id="assignmentUrl" type="url" maxlength="2000" placeholder="https://..."></div><div class="field full"><label for="subtaskEntry">Subtasks</label><div class="subtask-entry"><input id="subtaskEntry" maxlength="160" placeholder="Add a step…"><button type="button" class="btn" id="subtaskAdd">Add step</button></div><div id="subtaskEditor" class="subtask-editor"></div><small>Break larger tasks into checkable steps.</small></div><div class="field full"><label for="notes">Notes (optional)</label><textarea id="notes" maxlength="2000" placeholder="Details or anything you need to remember…"></textarea></div></div><div class="formactions"><button type="button" class="btn" id="cancel">Cancel</button><button class="btn primary" type="submit">Save task</button></div></form></section></div>
-<div id="quickModal" class="focus-modal hidden" role="dialog" aria-modal="true" aria-labelledby="quickTitle"><div class="focus-dialog"><h3 id="quickTitle">Paste homework details</h3><p>Paste an assignment link or copied text. Review before saving.</p><textarea id="quickText" rows="7" placeholder="Chapter 8 Quiz&#10;Due: 2026-10-19 11:59 PM&#10;https://example.edu/assignment"></textarea><p id="quickStatus" role="status"></p><div class="focus-dialog-actions"><button class="btn" id="quickCancel" type="button">Cancel</button><button class="btn primary" id="quickParse" type="button">Review task</button></div></div></div><div id="bbModal" class="focus-modal hidden" role="dialog" aria-modal="true" aria-labelledby="bbTitle"><div class="focus-dialog bb-dialog"><div class="time-card-label">BLACKBOARD IMPORT</div><h3 id="bbTitle">Import Blackboard calendar</h3><p>Choose your downloaded .ics file. Review items before adding them. Nothing is uploaded.</p><input id="bbFile" type="file" accept=".ics,text/calendar,text/plain" aria-label="Blackboard ICS calendar file"><p id="bbStatus" role="status">Choose a file to preview.</p><div id="bbPreview" class="bb-preview"></div><div class="focus-dialog-actions"><button type="button" class="btn" id="bbCancel">Cancel</button><button type="button" class="btn primary" id="bbImport" disabled>Import selected (0)</button></div></div></div><input type="file" id="file" accept=".json,application/json" class="hidden"><div id="toast" class="toast hidden" role="status"></div>
+<div id="quickModal" class="focus-modal hidden" role="dialog" aria-modal="true" aria-labelledby="quickTitle"><div class="focus-dialog"><h3 id="quickTitle">Paste homework details</h3><p>Paste an assignment link or copied text. Review before saving.</p><textarea id="quickText" rows="7" placeholder="Chapter 8 Quiz&#10;Due: 2026-10-19 11:59 PM&#10;https://example.edu/assignment"></textarea><p id="quickStatus" role="status"></p><div class="focus-dialog-actions"><button class="btn" id="quickCancel" type="button">Cancel</button><button class="btn primary" id="quickParse" type="button">Review task</button></div></div></div><input type="file" id="file" accept=".json,application/json" class="hidden"><div id="toast" class="toast hidden" role="status"></div>
 <script>
 (function(){
 "use strict";
@@ -134,85 +133,6 @@ $("#taskList").addEventListener("click",function(e){var b=e.target.closest("[dat
 $("#taskList").addEventListener("change",function(e){if(e.target.matches('[data-action="subtask-toggle"]')){var article=e.target.closest("[data-id]"),task=tasks.find(function(t){return t.id===article.dataset.id});if(!task||task.completed)return;var subId=e.target.dataset.subId;task.subtasks=taskSubtasks(task).map(function(st){return st.id===subId?Object.assign({},st,{completed:e.target.checked}):st});task.updatedAt=Date.now();save();render();return}if(!e.target.matches('[data-action="toggle"]'))return;var id=e.target.closest("[data-id]").dataset.id;var target=tasks.find(function(t){return t.id===id});if(!target)return;var checked=e.target.checked;tasks=tasks.map(function(t){return t.id===id?Object.assign({},t,{completed:checked,updatedAt:Date.now()}):t});if(checked&&!target.completed)spawnNextOccurrence(target);save();render()});
 $("#export").addEventListener("click",function(){var blob=new Blob([JSON.stringify({app:"TDL",version:1,exportedAt:new Date().toISOString(),tasks:tasks,activities:activities},null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="tdl-backup-"+today()+".json";a.click();URL.revokeObjectURL(url);notify("Backup exported")});
 $("#importBtn").addEventListener("click",function(){$("#file").click()});$("#file").addEventListener("change",function(e){var f=e.target.files[0];if(!f)return;var reader=new FileReader();reader.onload=function(){try{var data=JSON.parse(reader.result),incoming=Array.isArray(data)?data:data.tasks;if(!Array.isArray(incoming)||!incoming.every(function(t){return t&&typeof t.title==="string"}))throw Error();if(!confirm("Import "+incoming.length+" tasks? This replaces the tasks currently saved in this browser."))return;tasks=incoming.map(function(t){return Object.assign({},t,{id:typeof t.id==="string"?t.id:String(Date.now())+Math.random()})});if(data&&Array.isArray(data.activities)){activities=data.activities.filter(function(a){return a&&typeof a.id==="string"&&typeof a.title==="string"}).slice(0,200);saveActivities()}save();render();notify("Backup imported")}catch(e){notify("That file is not a valid TDL backup")}$("#file").value=""};reader.readAsText(f)});
-
-// Blackboard .ics importer. Entries are previewed and saved only after confirmation.
-var bbItems=[];
-function bbUnescape(x){return String(x||"").replace(/\\[nN]/g,"\n").replace(/\\,/g,",").replace(/\\;/g,";").replace(/\\\\/g,"\\")}
-function bbDate(value,params){
- var m=String(value||"").match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})?(Z)?)?$/);
- if(!m)return null;
- var y=+m[1],mo=+m[2],day=+m[3],allDay=!m[4],h=+(m[4]||0),min=+(m[5]||0),sec=+(m[6]||0);
- if(h>23||min>59||sec>59)return null;
- var date;
- if(allDay)date=new Date(y,mo-1,day);
- else if(m[7])date=new Date(Date.UTC(y,mo-1,day,h,min,sec));
- else if(/TZID=/i.test(params||"")){
-  var zone=(String(params).match(/TZID="?([^";]+)/i)||[])[1];if(!zone)return null;
-  try{
-   var goal=Date.UTC(y,mo-1,day,h,min,sec),guess=goal;
-   for(var n=0;n<3;n++){
-    var parts=new Intl.DateTimeFormat("en-US",{timeZone:zone,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hourCycle:"h23"}).formatToParts(new Date(guess));
-    var p={};parts.forEach(function(v){p[v.type]=+v.value});
-    guess+=goal-Date.UTC(p.year,p.month-1,p.day,p.hour,p.minute,p.second);
-   }
-   date=new Date(guess);
-  }catch(e){return null}
- }else date=new Date(y,mo-1,day,h,min,sec);
- if(!Number.isFinite(date.getTime()))return null;
- if(allDay&&(date.getFullYear()!==y||date.getMonth()!==mo-1||date.getDate()!==day))return null;
- return {date:isoLocal(date),time:allDay?"":String(date.getHours()).padStart(2,"0")+":"+String(date.getMinutes()).padStart(2,"0"),allDay:allDay};
-}
-function parseBlackboardCalendar(input){
- var text=String(input||"").replace(/\r\n?/g,"\n").replace(/\n[ \t]/g,""),lines=text.split("\n"),events=[],current=null;
- if(!lines.some(function(x){return x.trim().toUpperCase()==="BEGIN:VCALENDAR"}))throw Error("Not an iCalendar file");
- lines.forEach(function(line){
-  var upper=line.trim().toUpperCase();
-  if(upper==="BEGIN:VEVENT"){current={};return}
-  if(upper==="END:VEVENT"){if(current)events.push(current);current=null;return}
-  if(!current)return;
-  var i=line.indexOf(":");if(i<0)return;
-  var head=line.slice(0,i).split(";"),key=head[0].toUpperCase();
-  if(["UID","SUMMARY","DESCRIPTION","DTSTART","DTEND","URL","RECURRENCE-ID"].includes(key))current[key]={value:line.slice(i+1),params:head.slice(1).join(";")};
- });
- var seen=new Set();
- return events.map(function(e){
-  var uid=String(e.UID&&e.UID.value||"").trim(),suffix=String(e["RECURRENCE-ID"]&&e["RECURRENCE-ID"].value||"");
-  var key=uid+(suffix?"::"+suffix:""),title=bbUnescape(e.SUMMARY&&e.SUMMARY.value).trim().slice(0,160);
-  var start=e.DTSTART&&bbDate(e.DTSTART.value,e.DTSTART.params),end=e.DTEND&&bbDate(e.DTEND.value,e.DTEND.params),due=end||start;
-  // All-day DTEND is exclusive; use the preceding day for multi-day events.
-  if(start&&end&&start.allDay&&end.allDay){var last=parseDate(end.date);last.setDate(last.getDate()-1);due=last>=parseDate(start.date)?{date:isoLocal(last),time:""}:start}
-  if(!uid||!title||!due||seen.has(key))return null;
-  seen.add(key);
-  return {key:key,title:title,dueDate:due.date,dueTime:due.time,notes:bbUnescape(e.DESCRIPTION&&e.DESCRIPTION.value).slice(0,2000),assignmentUrl:safeAssignmentUrl(bbUnescape(e.URL&&e.URL.value))};
- }).filter(Boolean);
-}
-function closeBB(){$("#bbModal").classList.add("hidden");$("#bbFile").value="";bbItems=[]}
-function bbCount(){var n=all("[data-bb-index]:checked").length;$("#bbImport").disabled=!n;$("#bbImport").textContent="Import selected ("+n+")"}
-function bbPreview(items){
- bbItems=items;var found=new Set(tasks.map(function(t){return t.blackboardUid}).filter(Boolean)),newCount=items.filter(function(x){return !found.has(x.key)}).length;
- $("#bbStatus").textContent=items.length+" dated calendar event(s) found. "+newCount+" new; "+(items.length-newCount)+" already imported. Times shown in your Mac's time zone.";
- $("#bbPreview").innerHTML=items.length?items.map(function(x,i){var exists=found.has(x.key);return '<label class="bb-item '+(exists?"existing":"")+'"><input type="checkbox" data-bb-index="'+i+'" '+(exists?"disabled":"checked")+'><span><strong>'+esc(x.title)+'</strong><small>'+esc(x.dueDate)+(x.dueTime?" at "+esc(x.dueTime):" (all day)")+(exists?" · Already imported":"")+'</small></span></label>'}).join(""):"<p>No usable events found. Each entry needs a name, unique ID, and start or end date.</p>";
- bbCount();
-}
-$("#bbOpen").addEventListener("click",function(){$("#bbModal").classList.remove("hidden")});
-$("#bbCancel").addEventListener("click",closeBB);
-$("#bbModal").addEventListener("click",function(e){if(e.target===this)closeBB()});
-$("#bbPreview").addEventListener("change",bbCount);
-$("#bbFile").addEventListener("change",function(){
- var file=this.files&&this.files[0];if(!file)return;
- if(file.size>5*1024*1024){bbPreview([]);$("#bbStatus").textContent="Maximum file size is 5 MB.";return}
- file.text().then(function(content){bbPreview(parseBlackboardCalendar(content))}).catch(function(e){bbPreview([]);$("#bbStatus").textContent="Could not read calendar: "+e.message});
-});
-$("#bbImport").addEventListener("click",function(){
- var found=new Set(tasks.map(function(t){return t.blackboardUid}).filter(Boolean)),added=0;
- all("[data-bb-index]:checked").forEach(function(el){
-  var x=bbItems[Number(el.dataset.bbIndex)];if(!x||found.has(x.key))return;
-  found.add(x.key);tasks.push({id:window.crypto&&crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random(),blackboardUid:x.key,title:x.title,category:"Homework",priority:"medium",dueDate:x.dueDate,dueTime:x.dueTime,notes:x.notes,assignmentUrl:x.assignmentUrl,repeat:"none",subtasks:[],completed:false,createdAt:Date.now(),updatedAt:Date.now()});added++;
- });
- if(added){save();view="all";category="";$("#search").value="";render()}
- closeBB();notify(added+" Blackboard calendar item(s) added");
-});
-
 // Optional activities: a separate local collection gated by today's outstanding work.
 var ACTIVITY_KEY="tdl.activities.v1",activities=readActivities(),activityChoice="";
 function readActivities(){try{var data=JSON.parse(localStorage.getItem(ACTIVITY_KEY)||"[]");return Array.isArray(data)?data.filter(function(x){return x&&typeof x.id==="string"&&typeof x.title==="string"}).slice(0,200):[]}catch(e){return []}}
