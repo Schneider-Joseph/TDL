@@ -1,4 +1,4 @@
-const CACHE_NAME = "tdl-shell-v20";
+const CACHE_NAME = "tdl-shell-v21";
 const APP_SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
 
 self.addEventListener("install", (event) => {
@@ -42,6 +42,19 @@ self.addEventListener("fetch", (event) => {
         if (shell) return shell;
       }
       return Response.error();
+    })
+  );
+});
+
+
+// Clicking a displayed reminder returns to the existing TDL window, or opens it.
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  event.waitUntil(
+    self.clients.matchAll({type: "window", includeUncontrolled: true}).then((windows) => {
+      const existing = windows.find((client) => client.url.startsWith(self.registration.scope) && typeof client.focus === "function");
+      if (existing) return existing.focus();
+      return self.clients.openWindow(new URL("./index.html", self.registration.scope).href);
     })
   );
 });
