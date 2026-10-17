@@ -13,3 +13,9 @@ Thumbs.db
 node_modules/
 dist/
 coverage/
+
+# Personal TDL exports and school calendar files: never commit private user data
+tdl-backup-*.json
+tdl-full-backup-*.json
+*.ics
+*.ical
