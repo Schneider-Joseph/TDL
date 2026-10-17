@@ -85,7 +85,9 @@ If your browser permits them and you grant permission, TDL can show local browse
 
 **Limit:** The browser's notification permission does not give this frontend-only app a server, persistent scheduler, or guaranteed notifications when the application is closed. Background throttling also affects timing.
 
-If notifications are unavailable or blocked, inspect the **Settings → Notifications** section and your browser's site permissions.
+In **Settings → Notifications**, click **Send test notification** (available after browser permission is granted) to check whether the browser accepts an alert. If TDL says it was accepted but nothing appears, check macOS **System Settings → Notifications** for TDL / Chrome, as well as Focus mode. Browser acceptance is not proof the operating system visibly displayed the alert.
+
+TDL now tries the service-worker notification method first when available and falls back to the standard browser method. Successful API acceptance is recorded to avoid duplicate alerts; a failed attempt remains eligible for retry.
 
 ## 7. Overdue check-ins (90 minutes)
 
