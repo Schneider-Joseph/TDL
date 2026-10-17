@@ -61,7 +61,7 @@ Never commit:
 - Browser cookies, session tokens, or copies of browser profiles.
 - Backup files with credentials, private API responses, or sensitive personal information.
 
-The existing `.gitignore` excludes common `.env` secret files from routine Git tracking, but **.gitignore is not a security guarantee**. You can still accidentally commit a secret by pasting it into tracked code or documentation.
+The `.gitignore` excludes common `.env` secret files, TDL JSON backup filenames, and calendar exports from routine Git tracking, but **.gitignore is not a security guarantee**. You can still accidentally commit a secret by pasting it into tracked code or documentation.
 
 If a credential is accidentally pushed: **revoke/rotate it immediately** at the provider. Deleting a file from the latest commit may not remove copies from history, forks, or caches.
 
