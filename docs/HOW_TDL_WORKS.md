@@ -250,10 +250,10 @@ The timer uses clock time to calculate when it ends. The session's active-time c
 
 ## 10. Browser notifications vs. true background push
 
-TDL currently calls the browser's `Notification` API and checks deadlines from page JavaScript, on a repeating interval. Therefore:
+TDL currently checks deadlines from page JavaScript on a repeating interval. To display alerts, it prefers a registered service worker's `showNotification()` method when supported, and otherwise tries the browser's `Notification` constructor. The **Send test notification** button in Settings helps check permission and API acceptance. Therefore:
 
 - Granting browser permission is necessary but not sufficient.
-- The browser can block notifications.
+- The browser or operating system can block or suppress notifications even when the API call succeeds.
 - Closing the app stops its page timers.
 - TDL has no push server to schedule reminders when all of its tabs/windows are closed.
 
