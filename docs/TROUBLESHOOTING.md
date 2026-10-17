@@ -101,7 +101,19 @@ Do not paste secrets or private tasks into public bug reports just because the C
 
 See [Data and Backups](DATA_AND_BACKUPS.md) and [Firebase Sync Design](FIREBASE_SYNC_DESIGN.md) (future only).
 
-## 7. Due dates or overdue reminders look wrong
+## 7. Notification permission granted, but I still see no alerts
+
+1. **Keep TDL open** during the test. The current app does not send closed-app push notifications.
+2. Open **TDL → Settings → Notifications** and check its permission status.
+3. If needed, click **Enable notifications** and grant Chrome permission.
+4. Click **Send test notification**. Read the result shown in Settings.
+5. If TDL says the browser accepted the notification but nothing appeared, open **macOS System Settings → Notifications** and look for **TDL** and/or **Google Chrome**. Confirm alerts are allowed, and check Focus / Do Not Disturb.
+6. In Chrome, click the site-controls icon beside the website address, then check the site's **Notifications** permission. Chrome settings can block a specific website.
+7. If TDL reports it could not create a notification, capture the first related Console error and your browser/OS details.
+
+**What the test proves:** The browser or service-worker API accepted a notification. It **cannot guarantee macOS displayed a banner**. The app cannot schedule notifications while fully closed without a separate push delivery system.
+
+## 8. Due dates or overdue reminders look wrong
 
 Check:
 
@@ -115,13 +127,13 @@ No due time means the app assumes approximately 11:59 PM local time on the due d
 
 The **90-minute overdue check-in** runs while the app is open, with stored cooldown state. It's not a macOS background task or remote server notification.
 
-## 8. The focus timer stops or the history seems short
+## 9. The focus timer stops or the history seems short
 
 JavaScript timers can slow down or stop when the browser suspends a page or the app is closed. The display countdown uses wall clock time while running; the recorded active focus time depends on ticks and can undercount while suspended.
 
 Check whether Chrome was backgrounded or the computer slept. Avoid assuming the focus history precisely measures every real-world minute.
 
-## 9. How to roll back a broken code change
+## 10. How to roll back a broken code change
 
 **If you created a branch and haven't merged it:** Stop; your live branch remains untouched.
 
@@ -149,7 +161,7 @@ git push -u origin restore-good-version
 
 Replace `THE_BAD_COMMIT_SHA` with the actual ID. If Git reports a conflict, stop and review the changes rather than forcing a resolution.
 
-## 10. The four things to collect for a useful bug report
+## 11. The four things to collect for a useful bug report
 
 Share these, but **not** private assignments or account tokens:
 
@@ -164,7 +176,7 @@ Example:
 
 That immediately points to a code initialization problem rather than the network or task data.
 
-## 11. Escalation: if you're truly stuck
+## 12. Escalation: if you're truly stuck
 
 - Save every accessible backup first.
 - Keep the exact failing browser profile and origin intact.
