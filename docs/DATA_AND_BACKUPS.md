@@ -26,7 +26,7 @@ TDL currently uses these local storage keys:
 | `tdl.focusSessions.v1` | Recorded focus sessions and checks | **No** |
 | `tdl.settings.v1` | Focus checks on/off and default timer duration | **No** |
 | `tdl.overdueCheckins.v1` | Per-task 90-minute check-in timestamps | **No** |
-| `tdl.notificationHistory.v1` | Deadline notification history | **No** |
+| `tdl.notificationHistory.v2` | Deadline notification history | **No** |
 | `tdl.notificationPrompt.v1` | Whether notification prompt was answered | **No** |
 
 A key ending in `v1` is an informal storage format version. **Do not rename it just for cosmetic reasons.** Changing the key without a migration makes the app look for data under a different name.
