@@ -54,7 +54,7 @@
    <label for="settingTimerMinutes">Default timer duration (minutes)</label>
    <input type="number" id="settingTimerMinutes" min="1" max="180" value="25">
   </div>
-  <div class="settings-group"><strong>Notifications</strong><p id="notificationStatus" class="settings-note" role="status">Checking browser permission…</p><button class="btn" type="button" id="enableNotifications">Enable notifications</button><small>Deadline reminders are checked while TDL is open. You can change site permissions in your browser settings.</small></div>
+  <div class="settings-group"><strong>Notifications</strong><p id="notificationStatus" class="settings-note" role="status">Checking browser permission…</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="enableNotifications">Enable notifications</button><button class="btn" type="button" id="testNotifications" disabled>Send test notification</button></div><p id="notificationTestResult" class="settings-note" role="status"></p><small>TDL checks reminders only while the app is running. Closed-app alerts are not currently supported. If a test is accepted but nothing appears on your Mac, check macOS System Settings → Notifications for TDL or Google Chrome, and check Focus/Do Not Disturb.</small></div>
   <div class="settings-group"><strong>Data & privacy</strong>
    <p>Tasks, settings, and focus history are stored in this browser. No account or cloud sync.</p>
    <button class="btn" type="button" id="settingsExport">Export task backup</button>
@@ -175,18 +175,78 @@ function updateClock(){var now=new Date();$("#liveClock").textContent=now.toLoca
 updateClock();window.setInterval(updateClock,1000);
 
 // Local browser notifications: due-today summary plus deadlines entering the next 24 hours.
-var NOTIFY_KEY="tdl.notificationHistory.v1";
-function notificationHistory(){try{return JSON.parse(localStorage.getItem(NOTIFY_KEY)||"{}")}catch(e){return {}}}
+var NOTIFY_KEY="tdl.notificationHistory.v2";
+function notificationHistory(){try{var value=JSON.parse(localStorage.getItem(NOTIFY_KEY)||"{}");return value&&typeof value==="object"&&!Array.isArray(value)?value:{}}catch(e){return {}}}
 function setNotificationHistory(h){try{localStorage.setItem(NOTIFY_KEY,JSON.stringify(h))}catch(e){}}
 function notificationStatus(message){var el=$("#notificationStatus");if(el)el.textContent=message}
 function notificationSupported(){return "Notification" in window && window.isSecureContext}
-function sendTaskNotification(title,body,tag){if(!notificationSupported()||Notification.permission!=="granted")return;try{new Notification(title,{body:body,tag:tag,icon:"./icon.svg"})}catch(e){notificationStatus("Notifications are unavailable in this browser session.")}}
-function checkDeadlineNotifications(){if(!notificationSupported()||Notification.permission!=="granted")return;var now=Date.now(),todayKey=today(),history=notificationHistory(),dueTodayTasks=[],soonTasks=[];tasks.forEach(function(t){if(t.completed||!t.dueDate)return;var due=dueAt(t);if(!due)return;if(t.dueDate===todayKey){var k="today:"+todayKey+":"+t.id;if(!history[k]){dueTodayTasks.push(t);history[k]=true}}else if(due.getTime()>now&&due.getTime()-now<=86400000){var k2="soon:"+t.id+":"+due.getTime();if(!history[k2]){soonTasks.push({task:t,due:due});history[k2]=true}}});setNotificationHistory(history);if(dueTodayTasks.length){var names=dueTodayTasks.slice(0,5).map(function(t){return t.title});var body=names.join(", ")+(dueTodayTasks.length>5?" and "+(dueTodayTasks.length-5)+" more":"");sendTaskNotification(dueTodayTasks.length===1?"Task due today":"Tasks due today",body,"tdl-due-today-"+todayKey)}soonTasks.forEach(function(item){var mins=Math.max(1,Math.ceil((item.due.getTime()-now)/60000));var when=mins>=60?Math.ceil(mins/60)+" hour"+(Math.ceil(mins/60)===1?"":"s"):mins+" minute"+(mins===1?"":"s");sendTaskNotification("Deadline coming up",item.task.title+" is due in about "+when+".","tdl-deadline-"+item.task.id+"-"+item.due.getTime())})}
-function updateNotificationControl(){var button=$("#enableNotifications");if(!notificationSupported()){button.disabled=true;button.textContent="Notifications unavailable";notificationStatus("Notifications are not supported in this browser or context.");return}if(Notification.permission==="granted"){button.disabled=true;button.textContent="Notifications enabled";notificationStatus("Enabled. TDL checks deadlines while the app is open.");checkDeadlineNotifications()}else if(Notification.permission==="denied"){button.disabled=true;button.textContent="Notifications blocked";notificationStatus("Blocked by the browser. Change TDL's notification permission in site settings to enable reminders.")}else{button.disabled=false;button.textContent="Enable notifications";notificationStatus("Not enabled. You can request permission here.")}}
+// Prefer service-worker notifications, supported on more mobile browsers.
+// This function reports whether the browser API accepted the notification,
+// not whether the OS actually displayed it (e.g. macOS Focus can suppress it).
+function sendTaskNotification(title,body,tag){
+ if(!notificationSupported()||Notification.permission!=="granted")return Promise.resolve(false);
+ var options={body:body,tag:tag,icon:"./icon.svg"};
+ function pageFallback(){
+  try{new Notification(title,options);return true}
+  catch(e){return false}
+ }
+ if("serviceWorker" in navigator&&navigator.serviceWorker&&typeof navigator.serviceWorker.getRegistration==="function"){
+  return navigator.serviceWorker.getRegistration("./").then(function(reg){
+   if(reg&&typeof reg.showNotification==="function"){
+    return reg.showNotification(title,options).then(function(){return true}).catch(function(){return pageFallback()});
+   }
+   return pageFallback();
+  }).catch(function(){return pageFallback()});
+ }
+ return Promise.resolve(pageFallback());
+}
+function checkDeadlineNotifications(){
+ if(!notificationSupported()||Notification.permission!=="granted")return;
+ var now=Date.now(),todayKey=today(),history=notificationHistory(),dueTodayTasks=[],soonTasks=[];
+ tasks.forEach(function(t){
+  if(t.completed||!t.dueDate)return;
+  var due=dueAt(t);if(!due)return;
+  if(t.dueDate===todayKey){
+   var k="today:"+todayKey+":"+t.id;
+   if(!history[k])dueTodayTasks.push(t);
+  }else if(due.getTime()>now&&due.getTime()-now<=86400000){
+   var k2="soon:"+t.id+":"+due.getTime();
+   if(!history[k2])soonTasks.push({task:t,due:due,key:k2});
+  }
+ });
+ if(dueTodayTasks.length){
+  var names=dueTodayTasks.slice(0,5).map(function(t){return t.title});
+  var body=names.join(", ")+(dueTodayTasks.length>5?" and "+(dueTodayTasks.length-5)+" more":"");
+  sendTaskNotification(dueTodayTasks.length===1?"Task due today":"Tasks due today",body,"tdl-due-today-"+todayKey).then(function(accepted){
+   if(!accepted)return;
+   var current=notificationHistory();
+   dueTodayTasks.forEach(function(t){current["today:"+todayKey+":"+t.id]=true});
+   setNotificationHistory(current);
+  });
+ }
+ soonTasks.forEach(function(item){
+  var mins=Math.max(1,Math.ceil((item.due.getTime()-now)/60000));
+  var hours=Math.ceil(mins/60);
+  var when=mins>=60?hours+" hour"+(hours===1?"":"s"):mins+" minute"+(mins===1?"":"s");
+  sendTaskNotification("Deadline coming up",item.task.title+" is due in about "+when+".","tdl-deadline-"+item.task.id+"-"+item.due.getTime()).then(function(accepted){
+   if(!accepted)return;
+   var current=notificationHistory();current[item.key]=true;setNotificationHistory(current);
+  });
+ });
+}
+function updateNotificationControl(){var button=$("#enableNotifications"),test=$("#testNotifications");test.disabled=!notificationSupported()||Notification.permission!=="granted";if(!notificationSupported()){button.disabled=true;button.textContent="Notifications unavailable";notificationStatus("Notifications are not supported in this browser or context.");return}if(Notification.permission==="granted"){button.disabled=true;button.textContent="Notifications enabled";notificationStatus("Enabled. TDL checks deadlines while the app is open.");checkDeadlineNotifications()}else if(Notification.permission==="denied"){button.disabled=true;button.textContent="Notifications blocked";notificationStatus("Blocked by the browser. Change TDL's notification permission in site settings to enable reminders.")}else{button.disabled=false;button.textContent="Enable notifications";notificationStatus("Not enabled. You can request permission here.")}}
 var NOTIFICATION_PROMPT_KEY="tdl.notificationPrompt.v1";
 function hideNotificationPrompt(){ $("#notificationModal").classList.add("hidden") }
 function requestTDLNotifications(){if(!notificationSupported()||Notification.permission!=="default"){hideNotificationPrompt();updateNotificationControl();return}Notification.requestPermission().then(function(permission){hideNotificationPrompt();try{localStorage.setItem(NOTIFICATION_PROMPT_KEY,"answered")}catch(e){}updateNotificationControl();if(permission==="granted")checkDeadlineNotifications()}).catch(function(){hideNotificationPrompt();updateNotificationControl()})}
 $("#enableNotifications").addEventListener("click",requestTDLNotifications);
+$("#testNotifications").addEventListener("click",function(){
+ var status=$("#notificationTestResult");
+ if(!notificationSupported()||Notification.permission!=="granted"){status.textContent="Enable notifications in TDL and Chrome first.";return}
+ status.textContent="Sending a test notification…";
+ sendTaskNotification("TDL notification test","If you see this, Chrome accepted the test alert.","tdl-notification-test-"+Date.now()).then(function(accepted){
+  status.textContent=accepted?"The browser accepted the test. If you didn't see an alert, check your Mac's Notifications settings and Focus mode.":"TDL couldn't create a notification. Check your browser/OS permissions, then try again.";
+ });
+});
 $("#notificationYes").addEventListener("click",requestTDLNotifications);
 $("#notificationNo").addEventListener("click",function(){try{localStorage.setItem(NOTIFICATION_PROMPT_KEY,"answered")}catch(e){}hideNotificationPrompt()});
 updateNotificationControl();
