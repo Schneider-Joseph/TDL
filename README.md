@@ -15,6 +15,7 @@ You do not need to read everything at once.
 | I want to... | Read this |
 | --- | --- |
 | Understand what TDL is and use it safely | [Start Here](docs/START_HERE.md) |
+| Find exactly which file or function to edit | [Quick Reference — Where Do I Change That?](docs/QUICK_REFERENCE.md) |
 | Learn every existing feature and its behavior | [Feature Guide](docs/FEATURES.md) |
 | Understand how the actual code works | [How TDL Works](docs/HOW_TDL_WORKS.md) |
 | Change the colors, text, features, and behavior *myself* | [Editing TDL — Step by Step](docs/EDITING_TDL.md) |
@@ -23,6 +24,7 @@ You do not need to read everything at once.
 | Fix a blank page, caching issue, or broken change | [Troubleshooting and Recovery](docs/TROUBLESHOOTING.md) |
 | Understand copyright, public repositories, and secrets | [Ownership and Security](docs/OWNERSHIP_AND_SECURITY.md) |
 | Understand unfamiliar development terminology | [Plain-English Glossary](docs/GLOSSARY.md) |
+| Review future ideas and known bugs | [Roadmap, Decisions, and Known Limitations](docs/ROADMAP_AND_DECISIONS.md) |
 
 ## What TDL actually does today
 
@@ -53,6 +55,7 @@ TDL/
 │   └── icon.svg               ← App icon
 └── docs/
     ├── START_HERE.md
+    ├── QUICK_REFERENCE.md
     ├── FEATURES.md
     ├── HOW_TDL_WORKS.md
     ├── EDITING_TDL.md
@@ -60,7 +63,8 @@ TDL/
     ├── FIREBASE_SYNC_DESIGN.md
     ├── TROUBLESHOOTING.md
     ├── OWNERSHIP_AND_SECURITY.md
-    └── GLOSSARY.md
+    ├── GLOSSARY.md
+    └── ROADMAP_AND_DECISIONS.md
 ~~~
 
 Most day-to-day changes happen in **`app/index.html`**. It is currently a single-file HTML/CSS/JavaScript application; **no build tool, Node installation, or database is needed for the existing app**.
@@ -92,4 +96,4 @@ The repository is currently **public**, and adding an all-rights-reserved notice
 
 Keep TDL understandable and reliable first. **Firebase cross-device synchronization is deliberately on hold while we document and design a safe migration**. The complete proposed architecture is in [Firebase Sync Design](docs/FIREBASE_SYNC_DESIGN.md); it is **not production code**.
 
-**Start with [START_HERE.md](docs/START_HERE.md).**
+**Start with [START_HERE.md](docs/START_HERE.md)**, or jump directly to the [Quick Reference](docs/QUICK_REFERENCE.md) whenever you want to make a specific manual change.
