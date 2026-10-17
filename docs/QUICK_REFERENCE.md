@@ -22,6 +22,7 @@ Use this when you have an idea but don't remember which part of the code control
 | Activity bank unlock condition | `app/index.html` | `function activityBlockers()` | Future-due tasks currently don't block |
 | Overdue check-in timing | `app/index.html` | `CHECKIN_MS=90*60000` | Not a closed-app alarm |
 | Browser deadline reminders | `app/index.html` | `function checkDeadlineNotifications()` | Permission and app-open limitations |
+| Test a browser notification | `app/index.html` | `id="testNotifications"` / `function sendTaskNotification()` | Chrome and macOS both have permission settings |
 | Default focus duration | `app/index.html` | `function readSettings()` | Stored preference overrides default |
 | Focus questions | `app/index.html` | `var focusQuestions=[` | Check answers and punctuation |
 | Backup JSON format | `app/index.html` | `$("#export").addEventListener` | Import currently replaces task data |
