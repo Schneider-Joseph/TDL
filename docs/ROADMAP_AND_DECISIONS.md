@@ -2,6 +2,8 @@
 
 **Purpose:** Keep a clear record of what TDL does, which ideas have been discussed, and which decisions were deliberate. This prevents a future change from accidentally reversing something you wanted.
 
+**November 1, 2026:** Inbox, Week and Planner became dedicated, hash-routed workspace pages; Week gained a 24-hour timeline and agenda, Planner gained a large canvas, and random focus questions were removed. No task or board schema was migrated. See [Workspace Pages](WORKSPACE_PAGES.md).
+
 **October 31, 2026:** Firebase sync and Blackboard integration remain absent. TDL now includes the **local Notification Center, Task History/Undo, Weekly Calendar, and Visual Planner** in separate JS files. The source passes code-level checks; full browser acceptance testing remains outstanding. See [New Features User Guide](NEW_FEATURES_USER_GUIDE.md).
 
 ## 1. Principles guiding TDL
@@ -17,7 +19,7 @@
 
 - Task CRUD, flexible categories, priorities, notes, due dates/times, URLs and subtasks.
 - Today/upcoming/overdue/completed/category views; statistics; search and sorting.
-- Recurrences, focus timer/history, randomized focus checks.
+- Recurrences and quiet focus timer/session history. **Random focus questions removed November 1, 2026** because they could interrupt other full-screen work or go unseen.
 - Local deadline notifications and 90-minute overdue check-ins while running.
 - Locked/unlocked optional activity bank.
 - JSON task/activity export and import.
