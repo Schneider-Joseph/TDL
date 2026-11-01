@@ -88,7 +88,8 @@ function activityChanges(){
   const old=oldMap.get(t.id);
   if(!old){state.lastAddedAt=Date.now();changed=true}
   const previousComplete=!!(old&&old.completed),complete=!!t.completed;
-  if(!previousComplete&&complete){
+  // Imported/already-finished records have no verifiable completion time; never invent one.
+  if(old&&!previousComplete&&complete){
    if(state.focus.taskId===t.id)endFocus();
    log.push({id:X.uid(),taskId:t.id,title:t.title,category:t.category||"Personal",at:Date.now()});
    changed=true;
