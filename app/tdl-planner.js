@@ -8,7 +8,7 @@ const $=(q,r=document)=>r.querySelector(q);
 const clamp=(x,min,max)=>Math.min(max,Math.max(min,x));
 const width=172,height=82;
 let boards=read(),selectedBoard=boards[0]?.id||"",selectedNode="",newNode=false,connectFrom="",zoom=1,panX=12,panY=12,drag=null,ignoreClickUntil=0;
-function read(){const b=X.store(key,[]);return Array.isArray(b)?b.filter(x=>x&&typeof x.id==="string"&&typeof x.title==="string"&&Array.isArray(x.nodes)&&Array.isArray(x.edges)):[]}
+function read(){const b=X.store(key,[]);return Array.isArray(b)?b.filter(x=>x&&typeof x.id==="string"&&typeof x.title==="string"&&Array.isArray(x.nodes)&&Array.isArray(x.edges)).map(x=>({...x,nodes:x.nodes.filter(n=>n&&typeof n.id==="string"&&typeof n.title==="string"&&Number.isFinite(n.x)&&Number.isFinite(n.y)),edges:x.edges.filter(e=>e&&typeof e.id==="string"&&typeof e.from==="string"&&typeof e.to==="string")})):[]}
 function save(next){
  if(next.length>30||next.some(b=>b.nodes.length>120||b.edges.length>300)){alert("Board limit reached (30 boards, 120 nodes and 300 connections per board). Export a full backup first.");return false}
  if(!X.put(key,next))return false;
