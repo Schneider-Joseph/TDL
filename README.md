@@ -44,7 +44,7 @@ The Studio UI refresh gives TDL a graphite-and-mint design, refined task cards, 
 - Type **any category name** in Add Task; custom categories appear in the sidebar.
 - Filter tasks by Today, Upcoming, Overdue, Completed, category, or search term.
 - Create recurring tasks (daily, weekdays, weekly, monthly, or yearly). A next occurrence is created when the current occurrence is completed.
-- Run a focus timer with optional randomized check-in questions and local session history.
+- Run a quiet focus timer with editable duration, optional task linking, and local session history (no random questions).
 - Display due-date counts, countdowns, and local browser notifications where supported.
 - Ask about overdue tasks approximately every **90 minutes while the app is running**.
 - Lock the **“Bored? Do This.”** activity bank until today's and overdue tasks have been completed.
