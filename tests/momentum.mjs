@@ -118,6 +118,15 @@ test("Completed 2-minute focus is recorded without modifying original task",()=>
  assert.equal(M.getState().sessions[0].minutes,2);
  assert.equal(tasks.find(t=>t.id==="old").title,"Write an entire report");
 });
+test("Unmet Connections prerequisites block daily commitment and 2-minute focus",()=>{
+ windowMock.TDLConnections={blockers:id=>id==="a"?[{id:"missing-req",title:"Prepare lab",missing:true}]:[]};
+ assert.equal(M.recommit("a"),false,"Cannot commit dependent before prerequisite");
+ assert.ok(messages.some(x=>x.includes("before starting")),"Dependency message should identify blocker");
+ const count=M.getState().committed.length;
+ click("doNow","a");
+ assert.equal(M.getState().committed.length,count,"Blocked task cannot bypass cap via Do 2 minutes");
+ delete windowMock.TDLConnections;
+});
 test("Daily commitment max 3 is enforced even with a larger backlog",()=>{
  assert.equal(M.recommit("a"),true);
  assert.equal(M.recommit("b"),true);
