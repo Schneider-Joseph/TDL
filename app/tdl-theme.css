@@ -124,6 +124,8 @@ header {
   border:1px solid var(--ui-edge-strong);border-radius:14px;
   background:#1a2635;box-shadow:0 18px 45px rgba(0,0,0,.46);
 }
+.header-utilities:not([open]) > .utility-popover,
+.tdlx-tools:not([open]) > .tdlx-tools-menu {display:none!important}
 .utility-popover .btn,.tdlx-tools-menu .btn {
   width:100%;justify-content:flex-start;text-align:left;
   border:0;background:transparent;box-shadow:none;
