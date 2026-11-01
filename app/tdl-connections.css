@@ -70,6 +70,7 @@
  background:linear-gradient(130deg,#255443,#224438);border:1px solid #82c5a1;border-radius:11px;
  box-shadow:0 7px 25px #0005;color:#e8f8ed;cursor:pointer;
 }
+.tdlc-graph-node.is-center{z-index:2;background:linear-gradient(135deg,#327b5b,#235143);border-color:#b7efcc;border-width:2px;box-shadow:0 6px 28px #0c2a2160}
 .tdlc-graph-node:hover{z-index:3;filter:brightness(1.15)}
 .tdlc-graph-node:focus-visible{outline:3px solid #c8fae0;outline-offset:2px}
 .tdlc-graph-node span{display:block;width:100%;font-weight:700;font-size:12px;line-height:1.25;max-height:45px;overflow:hidden;overflow-wrap:anywhere}
@@ -136,7 +137,7 @@
  .tdlc-task-choice{min-height:70px}
  .tdlc-sidebar-head{padding:14px 15px}
  .tdlc-sidebar-head h3{margin:6px 0 9px}
- .tdlc-network-board{height:350px}
+ .tdlc-network-board{height:380px}
  .tdlc-network-metadata{grid-template-columns:1fr}
  .tdlc-network-metadata>div{border-right:0;border-bottom:1px solid rgba(173,201,210,.13)}
  .tdlc-network-metadata>div:last-child{border-bottom:0}
@@ -151,7 +152,7 @@
  .tdlc-detail-card{padding:15px 12px}
  .tdlc-link-form{grid-template-columns:1fr}
  .tdlc-link-form .btn{grid-column:1}
- .tdlc-network-board{height:300px}
+ .tdlc-network-board{height:380px}
  .tdlc-network-head{font-size:9px}
  .tdlc-edge-row{gap:7px}
  .tdlc-edge-type{min-width:75px;padding:5px 8px}
