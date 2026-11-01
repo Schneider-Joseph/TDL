@@ -1,6 +1,6 @@
 # R2 — Undo + Task History: Complete Feature Specification
 
-> **PLANNED, NOT IMPLEMENTED.** At present, task deletes and edits save straight into the local `tasks` array and `tdl.tasks.v1`. TDL does **not** have a persistent undo system or task change history. The design below must be implemented and tested before production use.
+> **IMPLEMENTED INITIAL VERSION (OCTOBER 31, 2026).** TDL now records changes in `tdl.taskHistory.v1` using `app/tdl-extras-core.js`, provides Undo/Redo, an immediate Undo prompt, a 50-action history window and deleted-task restoration. Some concepts below describe a stronger future transactional architecture; the actual implementation is still based on separate localStorage keys. See the [user guide](../NEW_FEATURES_USER_GUIDE.md) and [developer guide](../NEW_FEATURES_DEVELOPER_GUIDE.md).
 
 [Master plan](../NEXT_FOUR_FEATURES.md) · [Safety checklist](00_SAFETY_AND_RELEASE_CHECKLIST.md)
 
