@@ -8,6 +8,13 @@ Use this when you have an idea but don't remember which part of the code control
 
 | I want to change... | File | Search for | Be careful about |
 | --- | --- | --- | --- |
+| New tools navigation bar | `app/tdl-extras-core.js` | `tdlx-header` | Header items are separate from old TDL header |
+| Notification Center / snooze | `app/tdl-inbox.js` | `X.register("inbox"` | Works while app is opened/reopened, not closed-app push |
+| Undo / Task History | `app/tdl-extras-core.js` | `function undo()` / `function recoverDeleted` | Record conflict checks; keep backup |
+| Weekly calendar / blocks | `app/tdl-calendar.js` | `X.register("calendar"` | Work block times are separate from task deadlines |
+| Visual planner / arrows | `app/tdl-planner.js` | `X.register("planner"` | Node IDs and edge endpoints must remain valid |
+| All new styles | `app/tdl-extras.css` | `.tdlx-` | Scoped to new panels |
+| Full data backup/restore | `app/tdl-extras-core.js` | `function fullSnapshot()` | Restoring replaces listed keys |
 | Main background/brand colors | `app/index.html` | `:root{color-scheme:dark;` | Text contrast and mobile |
 | Top-left rotating quotes | `app/index.html` | `var taglines=` | Preserve valid JavaScript quotes/commas |
 | Quote speed | `app/index.html` | `},15000);` beside `taglines` | Milliseconds, not seconds |
