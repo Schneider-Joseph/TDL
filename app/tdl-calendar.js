@@ -66,8 +66,10 @@ function defaults(){
  let start;
  if(draftStart)start=at(draftStart);
  if(!start){
-  start=new Date(now);start.setSeconds(0,0);start.setMinutes(0);
-  start.setHours(Math.min(23,start.getHours()+1));
+  const weekEnd=addDays(monday,7),inViewedWeek=now>=monday&&now<weekEnd;
+  start=inViewedWeek?new Date(now):new Date(monday);
+  start.setSeconds(0,0);start.setMinutes(0);
+  start.setHours(inViewedWeek?Math.min(23,start.getHours()+1):9);
  }
  return {title:"",taskId:"",start:localTime(start),end:localTime(new Date(start.getTime()+3600000)),notes:""}
 }
