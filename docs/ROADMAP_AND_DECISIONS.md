@@ -2,6 +2,8 @@
 
 **Purpose:** Keep a clear record of what TDL does, which ideas have been discussed, and which decisions were deliberate. This prevents a future change from accidentally reversing something you wanted.
 
+**November 1, 2026 (Connections):** Added reversible task ID-based relations (Blocks, Related, Parent), graph visualization, connected task cards, Planner linked-node references and Momentum dependency checks. A missing prerequisite must never silently unblock dependent work; sidecar links remain after deletion so recovery reattaches them. All new links save to `tdl.connections.v1`. See [Connections Guide](CONNECTIONS.md).
+
 **November 1, 2026 (Momentum):** Added an optional daily execution workspace with 3–5 task caps, 30-day forced decisions, explicit unfinished-commitment rollover, one-task timer, weekly completion analytics and a 72-hour inactivity check. It saves only to new sidecar keys and never automatically deletes tasks. See [Momentum Guide](MOMENTUM.md).
 
 **November 1, 2026:** Inbox, Week and Planner became dedicated, hash-routed workspace pages; Week gained a 24-hour timeline and agenda, Planner gained a large canvas, and random focus questions were removed. No task or board schema was migrated. See [Workspace Pages](WORKSPACE_PAGES.md).
