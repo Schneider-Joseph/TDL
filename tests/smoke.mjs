@@ -61,6 +61,7 @@ class FakeElement {
   appendChild(child){return child}
   insertAdjacentElement(_position,child){return child}
   setAttribute(_name,_value){}
+  removeAttribute(_name){}
   getAttribute(_name){return null}
   reset(){}
   focus(){}
