@@ -136,3 +136,7 @@ To add a new full workspace page later:
 ## 8. Recovery
 
 If a UI update causes a problem, revert the relevant Git commit or pull request and redeploy. **Never delete your live browser data just to force a page refresh.** Your tasks still use `tdl.tasks.v1`, while board and work-block records remain in their original separate versioned keys.
+
+## 9. Momentum workspace
+
+The new **Momentum** tab opens a dedicated full-page accountability workspace at `#momentum`. See [Momentum Guide](MOMENTUM.md) for daily task caps, decay and the 30-day decision, midnight carryover, focus and weekly analytics.

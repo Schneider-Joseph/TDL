@@ -19,6 +19,7 @@ const bar=document.createElement("nav");
 bar.className="tdlx-header";
 bar.setAttribute("aria-label","TDL extra tools");
 const tdlxIconPaths={
+ momentum:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
  home:'<path d="m3 11 9-8 9 8"/><path d="M5 10v11h14V10M9 21v-7h6v7"/>',
  bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/>',
  undo:'<path d="M9 14 4 9l5-5"/><path d="M4 9h9a6 6 0 0 1 0 12h-2"/>',
@@ -35,6 +36,7 @@ bar.innerHTML='<div class="tdlx-tabs"><span class="tdlx-nav-label">WORKSPACE</sp
  '<button type="button" class="btn" data-tdlx-open="inbox" id="tdlx-bell">'+tdlxIcon("bell")+' Inbox <span class="tdlx-pill" id="tdlx-unread" hidden>0</span></button>'+
  '<button type="button" class="btn" data-tdlx-open="calendar">'+tdlxIcon("calendar")+' Week</button>'+
  '<button type="button" class="btn" data-tdlx-open="planner">'+tdlxIcon("planner")+' Planner</button>'+
+ '<button type="button" class="btn" data-tdlx-open="accountability" id="tdlx-momentum">'+tdlxIcon("momentum")+' Momentum</button>'+
  '<button type="button" class="btn" id="tdlx-undo" title="Undo last task change">'+tdlxIcon("undo")+' Undo</button>'+
  '<button type="button" class="btn" id="tdlx-redo" title="Redo last undone task change">'+tdlxIcon("redo")+' Redo</button></div>'+
  '<details class="tdlx-tools"><summary class="btn">More tools <span aria-hidden="true">⌄</span></summary><div class="tdlx-tools-menu">'+
@@ -54,12 +56,13 @@ page.hidden=true;
 page.setAttribute("aria-labelledby","tdlx-page-heading");
 page.innerHTML='<div class="tdlx-page-hero"><div class="tdlx-page-identity"><div class="tdlx-page-eyebrow">TDL / WORKSPACE</div><h2 id="tdlx-page-heading" tabindex="-1">Workspace</h2><p id="tdlx-page-description"></p></div><button class="btn tdlx-page-back" type="button" data-tdlx-route="home">← Dashboard</button></div><div id="tdlx-page-content" class="tdlx-page-content"></div>';
 if(wrap){bar.insertAdjacentElement("afterend",page)}else{document.body.appendChild(page)}
-const pageNames={inbox:"inbox",calendar:"week",planner:"planner"};
-const routeNames={inbox:"inbox",week:"calendar",calendar:"calendar",planner:"planner"};
+const pageNames={inbox:"inbox",calendar:"week",planner:"planner",accountability:"momentum"};
+const routeNames={inbox:"inbox",week:"calendar",calendar:"calendar",planner:"planner",momentum:"accountability",accountability:"accountability"};
 const pageCopy={
  inbox:{heading:"Your inbox",sub:"Deadlines, reminders, and updates in one organized space."},
  calendar:{heading:"Weekly calendar",sub:"Plan time deliberately. Assignment deadlines stay separate from your work blocks."},
- planner:{heading:"Visual planner",sub:"Think in systems. Build boards, arrange ideas and connect the next steps."}
+ planner:{heading:"Visual planner",sub:"Think in systems. Build boards, arrange ideas and connect the next steps."},
+ accountability:{heading:"Momentum",sub:"Intentional commitments, focused work and proof of progress."}
 };
 const screens={};
 let active="", pageActive="", lastFocus=null;

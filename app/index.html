@@ -18,6 +18,7 @@
 </style>
 <link rel="stylesheet" href="./tdl-theme.css">
 <link rel="stylesheet" href="./tdl-workspace.css">
+<link rel="stylesheet" href="./tdl-momentum.css">
 </head>
 <body><div class="wrap">
 <header>
@@ -288,6 +289,10 @@ $("#timerDisplay").addEventListener("blur",applyTimerEdit);
 $("#timerDisplay").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();this.blur()}});
 function tickTimer(){focusAccrue();remainingMs=Math.max(0,timerEnd-Date.now());if(remainingMs<=0){remainingMs=0;timerRunning=false;timerFinished=true;stopTimerInterval();saveFocusSession();$("#timerStatus").textContent="Time is up.";drawTimer();notify("Timer finished");return}drawTimer()}
 $("#timerStart").addEventListener("click",function(){
+ // Do not run both TDL timers concurrently. The active focus room owns its task.
+ if(!timerRunning&&window.TDLMomentum&&window.TDLMomentum.getState().focus.running){
+  notify("Finish or pause the Momentum focus block before using the dashboard timer.");return
+ }
  if(timerRunning){focusAccrue();remainingMs=Math.max(0,timerEnd-Date.now());timerRunning=false;stopTimerInterval();$("#timerStatus").textContent="Paused. Pick it up when you're ready.";drawTimer();return}
  if(document.activeElement===$("#timerDisplay")){if(!applyTimerEdit())return;$("#timerDisplay").blur()}
  if(timerFinished||remainingMs<=0){remainingMs=settings.timerMinutes*60000;timerFinished=false}
@@ -299,7 +304,14 @@ drawTimer();
 if("serviceWorker" in navigator && /^https?:$/.test(location.protocol)){window.addEventListener("load",function(){navigator.serviceWorker.register("./sw.js").catch(function(){/* TDL remains usable without service-worker support. */});});}
 var d=new Date();$("#todayLabel").textContent=d.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"});$("#greeting").textContent=d.getHours()<12?"Good morning.":d.getHours()<18?"Good afternoon.":"Good evening.";
 // Explicit integration bridge; current task storage keys remain unchanged.
-window.TDLAppBridge={getTasks:function(){return tasks},setTasks:function(next){if(!Array.isArray(next))throw Error("Invalid task array");tasks=next},save:save,render:render,openTask:open,notify:notify};
+window.TDLAppBridge={getTasks:function(){return tasks},setTasks:function(next){if(!Array.isArray(next))throw Error("Invalid task array");tasks=next},save:save,render:render,openTask:open,notify:notify,isTimerRunning:function(){return timerRunning},
+ completeTask:function(id){
+  var previous=tasks.find(function(t){return t.id===id});
+  if(!previous||previous.completed)return false;
+  tasks=tasks.map(function(t){return t.id===id?Object.assign({},t,{completed:true,updatedAt:Date.now()}):t});
+  spawnNextOccurrence(previous);
+  save();render();return true
+ }};
 render();
 })();
 </script>
@@ -308,4 +320,5 @@ render();
 <script src="./tdl-inbox.js"></script>
 <script src="./tdl-calendar.js"></script>
 <script src="./tdl-planner.js"></script>
+<script src="./tdl-momentum.js"></script>
 </body></html>

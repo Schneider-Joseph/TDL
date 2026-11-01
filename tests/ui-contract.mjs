@@ -13,7 +13,7 @@ const theme = read("app/tdl-theme.css");
 const sw = read("app/sw.js");
 const core = read("app/tdl-extras-core.js");
 const manifest = JSON.parse(read("app/manifest.webmanifest"));
-const paths = ["app/tdl-extras-core.js","app/tdl-inbox.js","app/tdl-calendar.js","app/tdl-planner.js"];
+const paths = ["app/tdl-extras-core.js","app/tdl-inbox.js","app/tdl-calendar.js","app/tdl-planner.js","app/tdl-momentum.js"];
 
 function contains(source,needle,label){
  assert.ok(source.includes(needle),label+" is missing: "+needle);
@@ -42,6 +42,10 @@ for(const path of paths){
 }
 contains(sw,'"./tdl-theme.css"',"Offline-cached theme");
 contains(html,'href="./tdl-workspace.css"',"Full workspace stylesheet");
+contains(html,'href="./tdl-momentum.css"',"Momentum stylesheet");
+contains(sw,'"./tdl-momentum.css"',"Offline cached Momentum stylesheet");
+const momentumStyle=read("app/tdl-momentum.css");
+for(const selector of [".tdlm-workspace",".tdlm-pulse",".tdlm-decision",".tdlm-focus-room",".tdlm-weekly-chart","max-width:680px"])contains(momentumStyle,selector,"Momentum layout");
 contains(sw,'"./tdl-workspace.css"',"Offline-cached workspace stylesheet");
 const workspace=read("app/tdl-workspace.css");
 for(const selector of [".tdlx-page[hidden]","body.tdlx-page-open",".tdlx-calendar-grid",".tdlx-calendar-event",".tdlx-inbox-layout",".tdlx-board-viewport","max-width:550px"]){
@@ -53,6 +57,13 @@ for(const marker of ['id="tdlx-page"','id="tdlx-page-content"','hashchange','pat
 contains(read("app/tdl-calendar.js"),'tdlx-calendar-grid',"Calendar timeline");
 contains(read("app/tdl-calendar.js"),'tdlx-calendar-agenda',"Calendar agenda view");
 contains(read("app/tdl-inbox.js"),'tdlx-inbox-layout',"Inbox full page");
+contains(core,'data-tdlx-open="accountability"',"Momentum nav button");
+contains(core,'accountability:"momentum"',"Momentum hash route");
+const momentum=read("app/tdl-momentum.js");
+for(const marker of ['tdl.momentum.v1','tdl.completionLog.v1','function rollover()','function aged()','function recommit(taskId)','function startFocus(taskId,minutes)','function renderInsights()','data-momentum="','window.TDLMomentum='])
+ contains(momentum,marker,"Momentum behavior");
+contains(html,"completeTask:function(id)","Recurring-safe Momentum completion bridge");
+assert.ok(!momentum.includes("localStorage.clear("),"Momentum must never clear saved data");
 assert.ok(!html.includes('id="focusModal"'),"Random focus prompt must be removed");
 
 for(const selector of ["--ui-accent:","--ui-surface:","--ui-radius:",".header-utilities",".tdlx-header",".task{",".stat{",".tdlx-dialog","prefers-reduced-motion","max-width:780px","max-width:550px"]){

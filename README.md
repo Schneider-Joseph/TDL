@@ -17,6 +17,7 @@ You do not need to read everything at once.
 | Understand what TDL is and use it safely | [Start Here](docs/START_HERE.md) |
 | **Customize the new look, spacing, colors and menus** | **[Studio UI Design System](docs/DESIGN_SYSTEM.md)** |
 | **Use full Inbox / Week / Planner pages and quiet timer** | **[Workspace Pages Guide](docs/WORKSPACE_PAGES.md)** |
+| **Set up task decay, daily hard caps, single-task focus and Friday analytics** | **[Momentum Guide](docs/MOMENTUM.md)** |
 | **Use the new Inbox, Undo, Calendar, Planner and backups** | **[New Features User Guide](docs/NEW_FEATURES_USER_GUIDE.md)** |
 | **Change any new feature manually in its source code** | **[New Features Developer Guide](docs/NEW_FEATURES_DEVELOPER_GUIDE.md)** |
 | Find exactly which file or function to edit | [Quick Reference — Where Do I Change That?](docs/QUICK_REFERENCE.md) |
@@ -33,6 +34,10 @@ You do not need to read everything at once.
 ## Visual refresh — October 31, 2026
 
 The Studio UI refresh gives TDL a graphite-and-mint design, refined task cards, more consistent spacing, cleaner tool menus, new navigation icons, and responsive desktop/mobile layouts. It is a **visual/navigation update only**: it does not rename or migrate any of your local task data. Use the [design guide](docs/DESIGN_SYSTEM.md) to customize it yourself.
+
+## Momentum accountability — November 1, 2026
+
+**New:** A dedicated **[Momentum](https://schneider-joseph.github.io/TDL/app/#momentum)** workspace offers 3–5 daily commitment caps, explicit review of unfinished commitments after midnight, task aging with a 30-day decision, single-task 2- or 25-minute focus blocks, forgiving streaks, an automatic weekly completion log and Friday recap, and a 72-hour new-task inactivity check with an intentional-rest option. No task is automatically deleted and the original TDL task storage key is unchanged. For instructions and limitations, see **[Momentum Guide](docs/MOMENTUM.md)**.
 
 ## Workspace pages — November 1, 2026
 
@@ -70,6 +75,8 @@ TDL/
 │   ├── tdl-extras.css         ← Styling for added tools
 │   ├── tdl-theme.css          ← Studio UI design tokens, modern layout and responsive polish
 │   ├── tdl-workspace.css      ← Full-page Inbox, calendar and planner layout
+│   ├── tdl-momentum.js       ← Daily commitments, aging, focus and analytics
+│   ├── tdl-momentum.css      ← Momentum workspace appearance
 │   ├── tdl-extras-core.js     ← Panels, task history, full backup/restore
 │   ├── tdl-inbox.js           ← Persistent notification inbox
 │   ├── tdl-calendar.js        ← Weekly view and time blocks
@@ -81,6 +88,7 @@ TDL/
     ├── START_HERE.md
     ├── DESIGN_SYSTEM.md
     ├── WORKSPACE_PAGES.md
+    ├── MOMENTUM.md
     ├── NEW_FEATURES_USER_GUIDE.md
     ├── NEW_FEATURES_DEVELOPER_GUIDE.md
     ├── NEXT_FOUR_FEATURES.md
