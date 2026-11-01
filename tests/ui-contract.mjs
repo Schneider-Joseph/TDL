@@ -45,6 +45,8 @@ for(const selector of ["--ui-accent:","--ui-surface:","--ui-radius:",".header-ut
  contains(theme,selector,"Design token/selector");
 }
 contains(theme,".tdlx-pill[hidden]","Hidden unread indicator");
+contains(theme,".header-utilities:not([open])","Closed header Tools menu rule");
+contains(theme,".tdlx-tools:not([open])","Closed workspace More tools menu rule");
 const inline=html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
 assert.ok(inline,"Missing original inline app JS");
 for(const [path,source] of [["original inline app",inline],...paths.map(path=>[path,read(path)]),["app/sw.js",sw]]){
