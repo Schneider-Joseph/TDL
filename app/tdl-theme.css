@@ -154,6 +154,7 @@ header {
 .tdlx-header [data-tdlx-open="inbox"],.tdlx-header [data-tdlx-open="calendar"],.tdlx-header [data-tdlx-open="planner"] {font-weight:700}
 .tdlx-header #tdlx-undo,.tdlx-header #tdlx-redo{padding-inline:10px;color:#8e9fb0}
 .tdlx-header .tdlx-pill {font-size:10px;min-width:18px;padding:1px 5px;background:var(--ui-accent);color:#142d20}
+.tdlx-header .tdlx-pill[hidden]{display:none!important}
 .tdlx-tools > summary {display:flex;gap:6px;color:#b7c7d6}
 .tdlx-tools-menu{top:calc(100% + 11px);min-width:210px}
 .tdlx-header .tdlx-tools-menu .btn {background:transparent}
