@@ -23,6 +23,7 @@ const ids = new Map();
 const docListeners = new Map();
 const records = new Map();
 let downloaded = [];
+let confirmResult=true;
 
 class FakeElement {
   set id(value){this._id=String(value);if(this._id)ids.set(this._id,this)}
@@ -143,7 +144,7 @@ const sandbox={
   crypto:fakeWindow.crypto,
   CustomEvent:class{constructor(type){this.type=type}},
   alert:message=>{throw new Error("Unexpected alert: "+message)},
-  confirm:()=>true,
+  confirm:()=>confirmResult,
   prompt:()=>null,
   Blob:FakeBlob,
   URL:FakeURL,
@@ -370,6 +371,21 @@ test("Planner nodes can link to an existing TDL task without modifying task stor
  assert.ok(page.innerHTML.includes("tdlc-linked-planner-node"));
  assert.equal(JSON.stringify(saved()),before,"Planner linking must not mutate original tasks");
  X.close();
+});
+test("Dashboard warns on blocked completion and allows only deliberate override",()=>{
+ const target=bridge.getTasks().find(t=>t.id==="links-dependent");
+ assert.ok(target&&!target.completed&&C.isBlocked(target.id));
+ const handlers=query("#taskList").handlers.get("change")||[];
+ assert.ok(handlers.length,"Task list change handler missing");
+ const checkbox={checked:true,matches:sel=>sel==='[data-action="toggle"]',closest:sel=>sel==="[data-id]"?{dataset:{id:target.id}}:null};
+ confirmResult=false;
+ handlers.forEach(fn=>fn({target:checkbox}));
+ assert.equal(checkbox.checked,false,"Refused completion must restore checkbox state");
+ assert.equal(!!bridge.getTasks().find(t=>t.id===target.id).completed,false);
+ confirmResult=true;
+ checkbox.checked=true;
+ handlers.forEach(fn=>fn({target:checkbox}));
+ assert.equal(!!bridge.getTasks().find(t=>t.id===target.id).completed,true,"An explicit override may finish a blocked task");
 });
 test("full backup contains tasks and the extension collections",()=>{
   X.fullBackup();
