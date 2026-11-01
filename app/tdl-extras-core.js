@@ -9,7 +9,7 @@ const copy=x=>JSON.parse(JSON.stringify(x));
 const uid=()=>window.crypto&&crypto.randomUUID?crypto.randomUUID():"tdlx-"+Date.now()+"-"+Math.random().toString(16).slice(2);
 const store=(key,defaultValue)=>{try{const v=JSON.parse(localStorage.getItem(key));return v===null?copy(defaultValue):v}catch(e){return copy(defaultValue)}};
 const put=(key,obj)=>{try{localStorage.setItem(key,JSON.stringify(obj));return true}catch(e){alert("TDL could not save "+key+". Your previous stored data has not been cleared. Check available browser storage and export a backup.");return false}};
-const tasks=()=>Array.isArray(window.tasks)?window.tasks:[];
+const tasks=()=>window.TDLAppBridge&&Array.isArray(window.TDLAppBridge.getTasks())?window.TDLAppBridge.getTasks():[];
 const time=(ms)=>new Date(ms).toLocaleString();
 const root=document.createElement("div");
 root.id="tdlx-root";
@@ -76,8 +76,8 @@ function restoreChanges(changes,target){
   else next.splice(Math.min(Math.max(0,c.beforeIndex),next.length),0,copy(snapshot));
  }
  const previous=current;silentHistory=true;
- try{window.tasks=next;window.save();if(!same(JSON.parse(localStorage.getItem("tdl.tasks.v1")||"[]"),next)){window.tasks=previous;return false}window.render();return true}
- catch(e){window.tasks=previous;console.error(e);return false}
+ try{window.TDLAppBridge.setTasks(next);window.TDLAppBridge.save();if(!same(JSON.parse(localStorage.getItem("tdl.tasks.v1")||"[]"),next)){window.TDLAppBridge.setTasks(previous);return false}window.TDLAppBridge.render();return true}
+ catch(e){window.TDLAppBridge.setTasks(previous);console.error(e);return false}
  finally{silentHistory=false;document.dispatchEvent(new CustomEvent("tdlx:tasks-changed"))}
 }
 function undo(){
