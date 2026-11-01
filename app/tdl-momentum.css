@@ -78,6 +78,9 @@ body.tdlx-page-open .wrap > .tdlm-pulse{display:none!important}
  padding:13px 15px;margin:6px 0;
  background:#1c2d3a;border:1px solid var(--ui-edge-strong);border-radius:12px;
 }
+.tdlm-committed-item.is-completed{background:#203b34;border-color:rgba(137,211,157,.24)}
+.tdlm-committed-item.is-completed .tdlm-task-text strong{color:#c8e6d0}
+.tdlm-done-badge{font-size:11px;font-weight:770;color:#b1e6c1;background:#29483a;border:1px solid rgba(146,226,168,.2);padding:7px 10px;border-radius:9px}
 .tdlm-commit-num{color:#92cea8;font-size:17px;letter-spacing:-.5px;font-weight:820;font-variant-numeric:tabular-nums}
 .tdlm-task-text{flex:1;min-width:0}
 .tdlm-task-text strong{font-size:13px;color:#e5f2ee;font-weight:690;overflow-wrap:anywhere;display:block}
