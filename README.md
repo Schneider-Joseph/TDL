@@ -15,6 +15,7 @@ You do not need to read everything at once.
 | I want to... | Read this |
 | --- | --- |
 | Understand what TDL is and use it safely | [Start Here](docs/START_HERE.md) |
+| **Customize the new look, spacing, colors and menus** | **[Studio UI Design System](docs/DESIGN_SYSTEM.md)** |
 | **Use the new Inbox, Undo, Calendar, Planner and backups** | **[New Features User Guide](docs/NEW_FEATURES_USER_GUIDE.md)** |
 | **Change any new feature manually in its source code** | **[New Features Developer Guide](docs/NEW_FEATURES_DEVELOPER_GUIDE.md)** |
 | Find exactly which file or function to edit | [Quick Reference — Where Do I Change That?](docs/QUICK_REFERENCE.md) |
@@ -27,6 +28,10 @@ You do not need to read everything at once.
 | Understand copyright, public repositories, and secrets | [Ownership and Security](docs/OWNERSHIP_AND_SECURITY.md) |
 | Understand unfamiliar development terminology | [Plain-English Glossary](docs/GLOSSARY.md) |
 | Review future ideas and known bugs | [Roadmap, Decisions, and Known Limitations](docs/ROADMAP_AND_DECISIONS.md) |
+
+## Visual refresh — October 31, 2026
+
+The Studio UI refresh gives TDL a graphite-and-mint design, refined task cards, more consistent spacing, cleaner tool menus, new navigation icons, and responsive desktop/mobile layouts. It is a **visual/navigation update only**: it does not rename or migrate any of your local task data. Use the [design guide](docs/DESIGN_SYSTEM.md) to customize it yourself.
 
 ## What TDL actually does today
 
@@ -58,6 +63,7 @@ TDL/
 ├── app/
 │   ├── index.html             ← Original TDL interface, styles, and JavaScript
 │   ├── tdl-extras.css         ← Styling for added tools
+│   ├── tdl-theme.css          ← Studio UI design tokens, modern layout and responsive polish
 │   ├── tdl-extras-core.js     ← Panels, task history, full backup/restore
 │   ├── tdl-inbox.js           ← Persistent notification inbox
 │   ├── tdl-calendar.js        ← Weekly view and time blocks
@@ -67,6 +73,7 @@ TDL/
 │   └── icon.svg               ← App icon
 └── docs/
     ├── START_HERE.md
+    ├── DESIGN_SYSTEM.md
     ├── NEW_FEATURES_USER_GUIDE.md
     ├── NEW_FEATURES_DEVELOPER_GUIDE.md
     ├── NEXT_FOUR_FEATURES.md
@@ -82,7 +89,7 @@ TDL/
     └── ROADMAP_AND_DECISIONS.md
 ~~~
 
-The original task dashboard remains in **`app/index.html`**, while the new tools have their own JS/CSS files listed above. **No Node build step, Firebase account, or database server is needed for the deployed app.**
+The original task dashboard remains in **`app/index.html`**, while the new tools have their own JS/CSS files listed above. The **Studio UI** stylesheet loads last and makes it straightforward to adjust visuals without altering task logic. **No Node build step, Firebase account, or database server is needed for the deployed app.**
 
 ## Safest way to edit
 

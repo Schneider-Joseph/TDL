@@ -1,8 +1,8 @@
 # Quick Reference — “Where Do I Change That?”
 
-Use this when you have an idea but don't remember which part of the code controls it.
+Use this when you have an idea but don't remember which part of the code controls it. For a step-by-step walkthrough of the new appearance, read the [Studio UI Design System](DESIGN_SYSTEM.md).
 
-**Almost everything is in [app/index.html](../app/index.html).** Open the file in GitHub, VS Code, or github.dev and press Find (Command/Control + F). Search for the exact anchor below.
+**Visual changes now belong in [app/tdl-theme.css](../app/tdl-theme.css).** Most original task behavior remains in [app/index.html](../app/index.html). Open the file in GitHub, VS Code, or github.dev and press Find (Command/Control + F). Search for the exact anchor below.
 
 ## Fast lookup
 
@@ -15,6 +15,9 @@ Use this when you have an idea but don't remember which part of the code control
 | Visual planner / arrows | `app/tdl-planner.js` | `X.register("planner"` | Node IDs and edge endpoints must remain valid |
 | All new styles | `app/tdl-extras.css` | `.tdlx-` | Scoped to new panels |
 | Full data backup/restore | `app/tdl-extras-core.js` | `function fullSnapshot()` | Restoring replaces listed keys |
+| **New Studio UI theme tokens / spacing** | `app/tdl-theme.css` | `:root`, `.task`, `.stat`, `.time-card` | CSS-only visuals; test mobile widths |
+| **Header Tools dropdown** | `app/index.html` | `class="header-utilities"` | Keep all original button IDs |
+| **New workspace navigation** | `app/tdl-extras-core.js` | `bar.innerHTML=` | Keep `data-tdlx-open` and button IDs |
 | Main background/brand colors | `app/index.html` | `:root{color-scheme:dark;` | Text contrast and mobile |
 | Top-left rotating quotes | `app/index.html` | `var taglines=` | Preserve valid JavaScript quotes/commas |
 | Quote speed | `app/index.html` | `},15000);` beside `taglines` | Milliseconds, not seconds |

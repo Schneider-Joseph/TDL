@@ -18,7 +18,28 @@ document.body.appendChild(root);
 const bar=document.createElement("nav");
 bar.className="tdlx-header";
 bar.setAttribute("aria-label","TDL extra tools");
-bar.innerHTML='<button type="button" class="btn" data-tdlx-open="inbox" id="tdlx-bell">🔔 Inbox <span class="tdlx-pill" id="tdlx-unread" hidden>0</span></button><button type="button" class="btn" id="tdlx-undo" title="Undo last task change">↶ Undo</button><button type="button" class="btn" id="tdlx-redo" title="Redo last undone task change">↷ Redo</button><button type="button" class="btn" data-tdlx-open="history">Task history</button><button type="button" class="btn" data-tdlx-open="calendar">📆 Week</button><button type="button" class="btn" data-tdlx-open="planner">⬡ Planner</button><button type="button" class="btn" id="tdlx-backup">Full backup</button><button type="button" class="btn" id="tdlx-restore">Full restore</button>';
+const tdlxIconPaths={
+ bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/>',
+ undo:'<path d="M9 14 4 9l5-5"/><path d="M4 9h9a6 6 0 0 1 0 12h-2"/>',
+ redo:'<path d="m15 14 5-5-5-5"/><path d="M20 9h-9a6 6 0 0 0 0 12h2"/>',
+ calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',
+ planner:'<rect x="2.5" y="3" width="7" height="6" rx="1.5"/><rect x="14.5" y="15" width="7" height="6" rx="1.5"/><path d="M9.5 6h5.5v9"/>',
+ history:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+ download:'<path d="M12 3v12m-4-4 4 4 4-4M4 17v4h16v-4"/>',
+ upload:'<path d="M12 17V5m-4 4 4-4 4 4M4 17v4h16v-4"/>'
+};
+const tdlxIcon=name=>'<svg viewBox="0 0 24 24" aria-hidden="true">'+tdlxIconPaths[name]+'</svg>';
+bar.innerHTML='<div class="tdlx-tabs"><span class="tdlx-nav-label">WORKSPACE</span>'+
+ '<button type="button" class="btn" data-tdlx-open="inbox" id="tdlx-bell">'+tdlxIcon("bell")+' Inbox <span class="tdlx-pill" id="tdlx-unread" hidden>0</span></button>'+
+ '<button type="button" class="btn" data-tdlx-open="calendar">'+tdlxIcon("calendar")+' Week</button>'+
+ '<button type="button" class="btn" data-tdlx-open="planner">'+tdlxIcon("planner")+' Planner</button>'+
+ '<button type="button" class="btn" id="tdlx-undo" title="Undo last task change">'+tdlxIcon("undo")+' Undo</button>'+
+ '<button type="button" class="btn" id="tdlx-redo" title="Redo last undone task change">'+tdlxIcon("redo")+' Redo</button></div>'+
+ '<details class="tdlx-tools"><summary class="btn">More tools <span aria-hidden="true">⌄</span></summary><div class="tdlx-tools-menu">'+
+ '<button type="button" class="btn" data-tdlx-open="history">'+tdlxIcon("history")+' Task history</button>'+
+ '<button type="button" class="btn" id="tdlx-backup">'+tdlxIcon("download")+' Full backup</button>'+
+ '<button type="button" class="btn" id="tdlx-restore">'+tdlxIcon("upload")+' Full restore</button>'+
+ '</div></details>';
 const header=document.querySelector("header");
 if(header)header.insertAdjacentElement("afterend",bar);else document.body.insertBefore(bar,document.body.firstChild);
 const screens={};
