@@ -125,11 +125,11 @@ function graphView(id){
   }
  }
  const left=toLeft.slice(0,5),right=toRight.slice(0,5);
- const yPositions=n=>Array.from({length:n},(_,i)=>Math.round(60+(i+1)*330/(n+1)));
+ const yPositions=n=>Array.from({length:n},(_,i)=>Math.round(25+(i+0.5)*400/n));
  const leftY=yPositions(left.length),rightY=yPositions(right.length);
  const lines=left.map((t,i)=>'<path d="M 240 '+leftY[i]+' C 325 '+leftY[i]+', 360 225, 405 225"/>').join("")+
   right.map((t,i)=>'<path d="M 495 225 C 575 225, 615 '+rightY[i]+', 660 '+rightY[i]+'"/>').join("");
- const item=(t,x,y)=>'<button class="tdlc-graph-node '+(t.completed?"done":isBlocked(t.id)?"blocked":"ready")+'" style="left:'+x+'%;top:'+((y/450)*100).toFixed(2)+'%" type="button" data-conn="pick" data-id="'+esc(t.id)+'" title="'+esc(title(t))+'"><span>'+esc(title(t))+'</span><small>'+(t.completed?"Completed":isBlocked(t.id)?"Blocked":"Ready")+'</small></button>';
+ const item=(t,x,y)=>'<button class="tdlc-graph-node '+(t.id===id?"is-center ":"")+(t.completed?"done":isBlocked(t.id)?"blocked":"ready")+'" style="left:'+x+'%;top:'+((y/450)*100).toFixed(2)+'%" type="button" data-conn="pick" data-id="'+esc(t.id)+'" title="'+esc(title(t))+'"><span>'+esc(title(t))+'</span><small>'+(t.completed?"Completed":isBlocked(t.id)?"Blocked":"Ready")+'</small></button>';
  return '<section class="tdlc-network"><div class="tdlc-network-head"><span>PREREQUISITES</span><span>SELECTED TASK</span><span>UNLOCKS NEXT</span></div>'+
   '<div class="tdlc-network-board" role="group" aria-label="Task dependency map centered on '+esc(title(selectedTask))+'">'+
   '<svg class="tdlc-network-lines" viewBox="0 0 900 450" preserveAspectRatio="none" aria-hidden="true"><defs><marker id="tdlc-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 10 5 0 10Z"/></marker></defs><g>'+lines+'</g></svg>'+
