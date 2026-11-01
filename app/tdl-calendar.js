@@ -41,7 +41,7 @@ function render(c){
  '<div class="tdlx-week">'+days.map(d=>{
   const day=ymd(d);
   const due=X.tasks().filter(t=>t.dueDate===day).sort((a,b)=>(a.dueTime||"").localeCompare(b.dueTime||""));
-  const work=blocks.filter(b=>ymd(at(b.start))===day).sort((a,b)=>a.start.localeCompare(b.start));
+  const work=blocks.filter(b=>at(b.start)&&ymd(at(b.start))===day).sort((a,b)=>a.start.localeCompare(b.start));
   const entries=due.map(t=>'<button type="button" class="tdlx-item task '+(!t.completed&&new Date(t.dueDate+"T"+(t.dueTime||"23:59"))<new Date()?"over":"")+'" data-cal="task" data-id="'+esc(t.id)+'" title="Open task">● '+esc(t.title)+'<small>Deadline '+esc(t.dueTime||"end of day")+(t.completed?" · done":"")+'</small></button>').join("");
   const workHtml=work.map(b=>'<button type="button" draggable="true" class="tdlx-item block" data-cal="edit" data-block="'+esc(b.id)+'" title="Click to edit or drag to another day">▰ '+esc(b.title)+'<small>'+esc(label(b.start))+' – '+esc(label(b.end))+'</small></button>').join("");
   return '<section class="tdlx-day '+(day===ymd(new Date())?"today":"")+'" data-cal-day="'+day+'"><h3>'+esc(d.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"}))+'</h3>'+entries+workHtml+(!due.length&&!work.length?'<small>No scheduled items</small>':'')+'</section>';
