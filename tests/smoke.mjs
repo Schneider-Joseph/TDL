@@ -353,6 +353,24 @@ test("Connections survive deletion until original task is restored",()=>{
  bridge.setTasks(bridge.getTasks().concat(removed));bridge.save();
  assert.equal(C.blockers(target.id)[0].id,missingId);
 });
+test("Planner nodes can link to an existing TDL task without modifying task storage",()=>{
+ const before=JSON.stringify(saved());
+ fakeWindow.prompt=()=> "Lab workflow";
+ X.open("planner");
+ const page=query("#tdlx-page-content");
+ page.onclick({target:{closest:sel=>sel==="[data-planner]"?{dataset:{planner:"createBoard"}}:null}});
+ assert.ok(page.innerHTML.includes("tdlx-board-viewport"),"Board should be created");
+ page.onclick({target:{closest:sel=>sel==="[data-planner]"?{dataset:{planner:"addNode"}}:null}});
+ assert.ok(page.innerHTML.includes("tdlx-node-form"));
+ formValues={title:"Prepare lab",notes:"Use real task link",taskId:"links-dependent"};
+ query("#tdlx-node-form").onsubmit({preventDefault(){}});
+ const boards=JSON.parse(fakeLocalStorage.getItem("tdl.boards.v1"));
+ assert.equal(boards[0].nodes.length,1);
+ assert.equal(boards[0].nodes[0].taskId,"links-dependent");
+ assert.ok(page.innerHTML.includes("tdlc-linked-planner-node"));
+ assert.equal(JSON.stringify(saved()),before,"Planner linking must not mutate original tasks");
+ X.close();
+});
 test("full backup contains tasks and the extension collections",()=>{
   X.fullBackup();
   assert.ok(downloaded.length>0);
@@ -364,6 +382,7 @@ test("full backup contains tasks and the extension collections",()=>{
   assert.ok(output.entries["tdl.momentum.v1"]);
   assert.ok(output.entries["tdl.completionLog.v1"]);
   assert.ok(output.entries["tdl.connections.v1"]);
+  assert.ok(output.entries["tdl.boards.v1"]);
 });
 
 console.log("\nTDL simulated smoke checks passed.");
