@@ -324,10 +324,9 @@ test("Connections workspace opens as a full page and preserves original tasks",(
 });
 test("Task relationship creates blockers, inverse views and safely rejects cycles",()=>{
  const before=JSON.stringify(saved());
- const existing=bridge.getTasks().find(t=>!t.completed);
- assert.ok(existing,"Need an existing open task to link");
+ const existing={id:"links-dependent",title:"Implement the lab",category:"Homework",completed:false,createdAt:Date.now(),subtasks:[]};
  const prerequisite={id:"links-prereq",title:"Prepare lab",category:"Homework",completed:false,createdAt:Date.now(),subtasks:[]};
- bridge.getTasks().push(prerequisite);bridge.save();
+ bridge.getTasks().push(existing,prerequisite);bridge.save();
  const baseline=JSON.stringify(saved());
  assert.equal(C.add(prerequisite.id,existing.id,"blocks").ok,true);
  assert.equal(C.isBlocked(existing.id),true);
@@ -345,7 +344,7 @@ test("Task relationship creates blockers, inverse views and safely rejects cycle
 });
 test("Connections survive deletion until original task is restored",()=>{
  const missingId="links-prereq";
- const target=bridge.getTasks().find(t=>!t.completed&&t.id!==missingId);
+ const target=bridge.getTasks().find(t=>t.id==="links-dependent");
  const removed=bridge.getTasks().find(t=>t.id===missingId);
  assert.ok(removed&&target);
  bridge.setTasks(bridge.getTasks().filter(t=>t.id!==missingId));bridge.save();
