@@ -231,7 +231,7 @@ test("Task history is still a separate modal and can close independently",()=>{
   X.open("calendar");
   X.open("history");
   assert.equal(query("#tdlx-overlay").hidden,false);
-  assert.ok(query("#tdlx-content").innerHTML.includes("Task history"));
+  assert.ok(query("#tdlx-content").innerHTML.includes("recent task changes"));
   X.close();
   assert.equal(query("#tdlx-overlay").hidden,true);
   assert.equal(X.getPage(),"calendar");
