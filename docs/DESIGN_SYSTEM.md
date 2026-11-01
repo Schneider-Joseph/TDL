@@ -65,6 +65,7 @@ Search for these selectors inside `app/tdl-theme.css`:
 | `.activity-section` | Bored? Do This. panel |
 | `.modal`, `.focus-dialog`, `.tdlx-dialog` | Add/Edit and History dialogs |
 | **`.tdlx-page`, `.tdlx-calendar-*`, `.tdlx-inbox-*`** | **Full-page views** in `app/tdl-workspace.css` |
+| **`.tdlc-*`** | **Connections task graph, linked nodes and badges** in `app/tdl-connections.css` |
 
 **Example:** To fit more tasks on screen, find the last `.task` rule and reduce its padding from `17px 16px` to `13px 14px`. Then test a task with a long title, notes, subtasks and action buttons.
 
