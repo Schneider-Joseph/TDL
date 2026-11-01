@@ -1,6 +1,6 @@
 # TDL Next Four Features — Owner's Development Master Plan
 
-> **STATUS: DESIGN ONLY — OCTOBER 31, 2026.** Nothing in this plan is running in production. No app source, existing task data, Firebase project, or current notifications were changed to create this plan. The feature specifications below are proposals you can review and edit.
+> **IMPLEMENTATION UPDATE — OCTOBER 31, 2026:** All four feature modules and a Full backup/restore control have now been added to TDL’s `main` branch and pass syntax and simulated startup/task-history checks. Real-device browser testing and the full acceptance matrix are **not yet verified**. This is the original design rationale; the [New Features User Guide](NEW_FEATURES_USER_GUIDE.md) and [Developer Guide](NEW_FEATURES_DEVELOPER_GUIDE.md) describe the implemented controls. No Firebase or Blackboard connection was added.
 
 ## What this document is for
 
@@ -17,9 +17,9 @@ Read it alongside [Start Here](START_HERE.md), [How TDL Works](HOW_TDL_WORKS.md)
 | **Weekly Calendar** | Monday–Sunday / configurable week view of deadlines and optional study blocks | Know what is due and when you plan to do it | [Weekly Calendar](plans/03_WEEKLY_CALENDAR.md) |
 | **Visual Planner** | Fully editable boards, text boxes, arrows, and a zoomable canvas | Break complex projects into clear steps and decisions | [Visual Planner](plans/04_VISUAL_PLANNER.md) |
 
-**These features remain local-first.** There is no requirement to use Firebase, connect Blackboard, create an account, or buy a subscription. Automatic multi-device synchronization is a different project and is currently **not implemented**. The visual planner also must **not** silently create tasks or restructure plans for you.
+**These new features are local-first.** They do not use Firebase, Blackboard, accounts, or a subscription. Automatic multi-device synchronization is **not implemented**. The planner does not silently create tasks.
 
-## Suggested sequence: user priority vs safe engineering order
+## Original proposed sequence (historical design rationale)
 
 You chose this user-facing priority: **Notification Center → Undo + Task History → Weekly Calendar → Visual Planner**.
 
@@ -35,7 +35,7 @@ I recommend implementing a **small recovery foundation first**, because the late
 
 **Important tradeoff:** Persistent Undo could be moved ahead of the Notification Center if the R0 safety work shows the inbox will otherwise require risky data changes. We will not shortcut backup testing to meet the listed order.
 
-**One release = one narrow change.** Avoid developing all four inside one giant update to the current HTML file.
+**Actual implementation:** Four separate JavaScript modules and one scoped CSS file were added. R0-style full backup controls and simulated functional checks were added, but **a real-browser restore test and a comprehensive automated regression suite are still outstanding**. The code should not be called fully verified until those pass.
 
 ## The source code we have today
 
@@ -55,7 +55,7 @@ The current browser storage keys include:
 
 At present, ordinary **Export** includes only tasks and activities. Ordinary **Import** replaces tasks and, if supplied, activities: it does **not merge** them. That is why R0 must improve recovery before feature work. See [Data and Backups](DATA_AND_BACKUPS.md).
 
-## Proposed storage — not created yet
+## Storage used by the new extension code
 
 | Suggested key/table | Feature | What it would contain |
 | --- | --- | --- |
@@ -64,7 +64,7 @@ At present, ordinary **Export** includes only tasks and activities. Ordinary **I
 | `tdl.timeBlocks.v1` | Weekly Calendar | Planned study/work blocks, separate from assignment deadlines |
 | `tdl.boards.v1` or versioned IndexedDB stores | Visual Planner | Board metadata, nodes, labeled connections, positions |
 
-**These names are proposals, not present storage keys.** Do not write an empty value to a live key or rename existing keys as a shortcut. We should decide the storage engine after running quota and restore tests. Large histories and boards may justify **IndexedDB** rather than unlimited `localStorage`.
+**These keys are now implemented**: `tdl.inbox.v1`, `tdl.taskHistory.v1`, `tdl.timeBlocks.v1`, `tdl.boards.v1`. They are created as needed in browser localStorage. Avoid renaming them without a migration. We should decide the storage engine after running quota and restore tests. Large histories and boards may justify **IndexedDB** rather than unlimited `localStorage`.
 
 A robust backup format should clearly include **tasks, activities, focus history, settings, inbox, calendar blocks, and boards** while excluding or carefully handling OS-specific notification permissions and ephemeral states. We should make restoration a preview-and-confirm operation, preserve unknown fields, and support older `version: 1` backups.
 
@@ -187,9 +187,9 @@ The implementation should be understandable without asking the original develope
 - **Will undo be unlimited forever?** No; bounded history plus separately verified backups.
 - **What about Blackboard?** It stays out of the app.
 
-## Next steps before touching production code
+## Next steps for verification and safe follow-on improvements
 
-**First implement R0 in a branch**: a fixture-backed browser smoke test and verified full data export/import design. After reviewing and testing R0, implement the Notification Center as the first visible feature.
+**Next priority:** test the existing implementation in a clean Chrome profile/localhost with fake tasks; test full backup/restore and offline reopening; then test all four features on the installed desktop and phone PWAs. The current code was committed before that full browser validation, so use the [Safety and Release Checklist](plans/00_SAFETY_AND_RELEASE_CHECKLIST.md) for remaining verification.
 
 The four specifications below are ready to guide those changes. They do not authorize rewriting the app in one go.
 
