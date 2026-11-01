@@ -2,7 +2,7 @@
 
 **First rule: Do not delete browser data to troubleshoot a blank page.** TDL's tasks are browser-local. Clearing site storage or uninstalling/resetting the installed app can erase information you have not backed up.
 
-This guide separates **network problems**, **JavaScript problems**, **stale cached app files**, and **data problems**. They can look similar but require different responses.
+This guide separates **network problems**, **JavaScript problems**, **stale cached app files**, and **data problems**. The October 31 update added separate `tdl-extras-*.js` scripts, so if the original dashboard works but a new Inbox/Week/Planner button fails, inspect that module in DevTools before touching browser storage. They can look similar but require different responses.
 
 ## 1. TDL says “This site can't be reached”
 
@@ -93,7 +93,7 @@ Do not paste secrets or private tasks into public bug reports just because the C
 
 ## 6. Tasks do not sync between devices
 
-**This is currently expected behavior.** There is no Firebase sync in production.
+**This is currently expected behavior.** There is no Firebase sync in production. The new Full backup and Full restore controls do not automatically synchronize devices.
 
 - Tasks on one browser/device are separate from those on another.
 - Use Export/Import for intentional replacement transfer.
