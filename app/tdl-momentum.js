@@ -56,9 +56,11 @@ function rollover(){
 }
 function tidy(){
  let changed=rollover();
- const valid=new Set(openTasks().map(t=>t.id));
- const commitments=state.committed.filter(id=>valid.has(id)).slice(0,state.cap);
- const carry=state.carryover.filter(x=>valid.has(x.id));
+ const existing=new Set(taskList().map(t=>t.id));
+ const unfinished=new Set(openTasks().map(t=>t.id));
+ // Completed tasks stay in today's plan and continue occupying their original slot.
+ const commitments=state.committed.filter(id=>existing.has(id)).slice(0,state.cap);
+ const carry=state.carryover.filter(x=>unfinished.has(x.id));
  if(JSON.stringify(commitments)!==JSON.stringify(state.committed)){state.committed=commitments;changed=true}
  if(JSON.stringify(carry)!==JSON.stringify(state.carryover)){state.carryover=carry;changed=true}
  if(changed)save();
@@ -153,6 +155,7 @@ function recommit(taskId){
  save();updatePulse();X.refresh();return true;
 }
 function dropCommit(taskId){
+ if(state.committed.includes(taskId)&&taskById(taskId)?.completed){X.toast("A completed task keeps its slot until midnight. The daily cap is a real cap.");return}
  state.committed=state.committed.filter(id=>id!==taskId);
  state.carryover=state.carryover.filter(x=>x.id!==taskId);
  save();updatePulse();X.refresh();
@@ -298,7 +301,7 @@ function renderToday(){
  '<div class="tdlm-summary-side"><span class="tdlx-page-eyebrow">MOMENTUM</span><strong>'+streak()+'<small> active days</small></strong><p>One missed day is forgiven between active days.</p><div class="tdlm-summary-dots">'+Array.from({length:state.cap},(_,i)=>'<i class="'+(i<state.committed.length?"filled":"")+'"></i>').join("")+'</div></div></div>'+
  renderCarryover()+renderDecay()+renderInactivity()+
  '<section class="tdlm-panel"><div class="tdlm-section-head"><div><span class="tdlx-page-eyebrow">THE DAY IN FRONT OF YOU</span><h3>Today’s commitments</h3><p>'+(blockers?"Resolve yesterday’s review before selecting fresh commitments.":capacity?"Make fewer promises. Finish them.":"You’ve reached your daily cap. Remove a commitment to make room.")+'</p></div><span class="tdlm-counter">'+state.committed.length+' / '+state.cap+'</span></div>'+
- '<div class="tdlm-committed">'+(committed.length?committed.map((t,i)=>'<article class="tdlm-committed-item"><div class="tdlm-commit-num">'+String(i+1).padStart(2,"0")+'</div><div class="tdlm-task-text"><strong>'+esc(t.title)+'</strong><span>'+esc(t.category||"Personal")+' · '+age(t)+' days since touch</span></div><div class="tdlm-card-actions">'+safeActionButton("doNow",t.id,"Focus","primary")+safeActionButton("uncommit",t.id,"Remove")+'</div></article>').join(""):'<div class="tdlm-empty">Your day is still open. Choose up to '+state.cap+' tasks below.</div>')+'</div></section>'+
+ '<div class="tdlm-committed">'+(committed.length?committed.map((t,i)=>'<article class="tdlm-committed-item '+(t.completed?"is-completed":"")+'"><div class="tdlm-commit-num">'+(t.completed?"✓":String(i+1).padStart(2,"0"))+'</div><div class="tdlm-task-text"><strong>'+esc(t.title)+'</strong><span>'+esc(t.category||"Personal")+' · '+(t.completed?"Completed today’s commitment":age(t)+' days since touch')+'</span></div><div class="tdlm-card-actions">'+(t.completed?'<span class="tdlm-done-badge">Done · slot retained</span>':safeActionButton("doNow",t.id,"Focus","primary")+safeActionButton("uncommit",t.id,"Remove"))+'</div></article>').join(""):'<div class="tdlm-empty">Your day is still open. Choose up to '+state.cap+' tasks below.</div>')+'</div></section>'+
  '<section class="tdlm-panel"><div class="tdlm-section-head"><div><span class="tdlx-page-eyebrow">BACKLOG</span><h3>Choose what deserves today.</h3><p>Adding to the backlog is unrestricted. Daily commitments are not.</p></div><button type="button" class="btn" data-momentum="newTask">＋ New task</button></div>'+
  '<div class="tdlm-backlog">'+(ready.length?ready.sort((a,b)=>age(b)-age(a)).map(t=>'<article class="tdlm-backlog-item"><div class="tdlm-task-text"><strong>'+esc(t.title)+'</strong><span><em class="tdlm-decay-pill '+tone(age(t))+'">'+age(t)+'d untouched</em> '+esc(t.category||"Personal")+(t.dueDate?" · due "+esc(t.dueDate):"")+'</span></div>'+safeActionButton("recommit",t.id,age(t)>=30?"Review first":"＋ Commit",capacity>0&&!blockers&&age(t)<30?"primary":"")+'</article>').join(""):'<div class="tdlm-empty">No uncommitted tasks. You have '+total+' saved task records.</div>')+'</div></section>';
 }
