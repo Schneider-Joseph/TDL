@@ -6,7 +6,7 @@
 
 The navigation at the top is:
 
-**Dashboard · Inbox · Week · Planner · Undo · Redo · More tools**
+**Dashboard · Inbox · Week · Planner · Connections · Momentum · Undo · Redo · More tools**
 
 Selecting Inbox, Week or Planner changes the URL fragment within TDL:
 
@@ -16,6 +16,8 @@ Selecting Inbox, Week or Planner changes the URL fragment within TDL:
 | Inbox | `#inbox` | Dedicated notification list, counters and filters |
 | Week | `#week` | Full-screen-friendly weekly calendar with hourly timeline or agenda |
 | Planner | `#planner` | Dedicated project board and expanded canvas |
+| Connections | `#connections` | Dependency graph, related tasks, parent–child structure and readiness |
+| Momentum | `#momentum` | Daily commitments, focus timer and weekly analytics |
 
 The **Dashboard** tab and **← Dashboard** button return home. Browser Back and Forward navigate between views. You can bookmark the URL of a view; it loads in the same application.
 
@@ -140,3 +142,7 @@ If a UI update causes a problem, revert the relevant Git commit or pull request 
 ## 9. Momentum workspace
 
 The new **Momentum** tab opens a dedicated full-page accountability workspace at `#momentum`. See [Momentum Guide](MOMENTUM.md) for daily task caps, decay and the 30-day decision, midnight carryover, focus and weekly analytics.
+
+## 10. Connected tasks
+
+The **Connections** tab is a full-page explorer at `#connections`. It supports prerequisite chains, two-way Related links and parent/child rollups. Its links are authoritative for Momentum blocked-task status; **Planner arrows remain visual and do not create task dependencies automatically**. See [Connections Guide](CONNECTIONS.md).
