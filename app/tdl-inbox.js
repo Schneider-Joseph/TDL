@@ -27,8 +27,8 @@ function scan(){
   if(!t||t.completed||!t.id)continue;const d=asDate(t);if(!d)continue;
   const types=[];
   if(d.valueOf()<now)types.push("overdue");
+  else if(t.dueDate===today())types.push("due_today");
   else if(d.valueOf()-now<=120*60000)types.push("due_soon");
-  if(t.dueDate===today())types.push("due_today");
   for(const type of types){
    const eventKey=type+":"+t.id+":"+t.dueDate+":"+(t.dueTime||"end");
    if(inbox.items.some(x=>x.eventKey===eventKey))continue;
