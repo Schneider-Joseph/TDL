@@ -45,3 +45,6 @@
 .tdlx-sr{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
 @media(max-width:850px){.tdlx-week{display:block}.tdlx-day{margin-bottom:9px;min-height:0}.tdlx-form{grid-template-columns:1fr}.tdlx-form label.full{grid-column:auto}.tdlx-overlay{padding:4px}.tdlx-dialog{max-height:98vh}.tdlx-content{padding:12px}}
 @media(prefers-reduced-motion:reduce){.tdlx-node{transition:none}}
+
+.tdlx-undo-toast[hidden]{display:none}
+.tdlx-undo-toast{position:fixed;z-index:4500;bottom:22px;right:22px;display:flex;align-items:center;gap:14px;background:#233329;color:#f3ffeb;border:1px solid #66876a;border-radius:12px;padding:12px 14px;box-shadow:0 9px 30px #0009;max-width:min(95vw,450px)}
