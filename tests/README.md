@@ -11,9 +11,17 @@ TDL now includes a **dependency-free simulated smoke test** in [smoke.mjs](smoke
 
 ```bash
 node tests/smoke.mjs
+node tests/ui-contract.mjs
 ```
 
 It should print `PASS startup` and `PASS behavior` lines, ending with `TDL simulated smoke checks passed.` If a check fails, the process exits with an error message and stack trace.
+
+## Which test does what?
+
+- `node tests/smoke.mjs` runs the original in-memory browser simulation for tasks, history, inbox and panels.
+- `node tests/ui-contract.mjs` checks the Studio UI structure, button IDs, script loading, offline assets, responsive CSS selectors, PWA manifest and JavaScript syntax.
+
+Both run **without external Node packages** or private user tasks. Neither is a substitute for a real visual browser test.
 
 ## What the test checks
 
