@@ -232,6 +232,32 @@ body.tdlx-page-open .wrap > .footer{display:none!important}
 .tdlx-agenda-work strong{font-size:13px;overflow-wrap:anywhere}
 .tdlx-agenda-work small{color:#a2b7c5;font-size:11px}
 
+.tdlx-planner-intro{
+ display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;
+ margin-bottom:17px;padding:22px 25px;
+ border:1px solid var(--ui-edge-strong);border-radius:18px;
+ background:linear-gradient(125deg,#1e3434,#182838 70%);
+}
+.tdlx-planner-intro h3{font-size:clamp(21px,2.7vw,29px);letter-spacing:-.8px;margin:7px 0 4px;line-height:1.2}
+.tdlx-planner-intro p{font-size:12px;color:#9eb6c3;margin:0}
+.tdlx-planner-metrics{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.tdlx-planner-metrics span{
+ display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:78px;
+ padding:11px 12px;border-radius:12px;background:rgba(12,26,35,.53);
+ border:1px solid var(--ui-edge);font-size:10px;color:#9db3b8
+}
+.tdlx-planner-metrics b{font-size:20px;font-weight:740;color:#cff0d8;font-variant-numeric:tabular-nums}
+.tdlx-planner-empty{
+ min-height:clamp(480px,64vh,750px);display:flex;flex-direction:column;align-items:center;justify-content:center;
+ text-align:center;padding:40px 20px;
+ border:1px solid rgba(156,218,184,.23);border-radius:20px;
+ background:radial-gradient(ellipse 520px 320px at 50% 38%,rgba(91,163,137,.12),transparent 80%),#152330;
+}
+.tdlx-planner-empty-icon{display:grid;place-items:center;width:86px;height:86px;border-radius:25px;background:#233e39;color:#b2e9c8;font-size:58px;line-height:1;margin-bottom:21px}
+.tdlx-planner-empty h3{font-size:clamp(23px,3vw,32px);letter-spacing:-1px;margin:12px 0 5px}
+.tdlx-planner-empty p{max-width:500px;color:#9eb4bf;line-height:1.65;font-size:13px;margin:0 0 24px}
+.tdlx-planner-empty small{font-size:11px;color:#869ba7;margin-top:17px}
+
 /* Planner: large workspace canvas and tools, without modal constraints */
 .tdlx-page .tdlx-board-controls{
  display:flex;align-items:center;justify-content:flex-start;
