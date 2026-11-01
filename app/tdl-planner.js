@@ -32,10 +32,15 @@ function deleteNode(){
 }
 function nodeForm(b){
  const current=b.nodes.find(n=>n.id===selectedNode);
- const n=newNode||!current?{title:"",notes:""}:current;
+ const n=newNode||!current?{title:"",notes:"",taskId:""}:current;
+ const options=X.tasks().slice().sort((a,b)=>a.title.localeCompare(b.title)).map(t=>'<option value="'+esc(t.id)+'" '+(n.taskId===t.id?"selected":"")+'>'+esc(t.title)+(t.completed?" ✓":"")+'</option>').join("");
  return '<form id="tdlx-node-form" class="tdlx-form"><label class="full">Node title<input required maxlength="100" name="title" value="'+esc(n.title)+'" placeholder="Research the problem"></label>'+
  '<label class="full">Node details / next steps<textarea name="notes" maxlength="1500">'+esc(n.notes||"")+'</textarea></label>'+
- '<div class="tdlx-actions"><button class="btn primary" type="submit">'+(current&&!newNode?"Save node":"Add node")+'</button><button class="btn" type="button" data-planner="cancelNode">Cancel</button>'+(current&&!newNode?'<button class="btn" type="button" data-planner="deleteNode">Delete node</button>':'')+'</div></form>';
+ '<label class="full">Linked TDL task (optional)<select name="taskId"><option value="">Not linked</option>'+options+
+ (n.taskId&&!X.tasks().some(t=>t.id===n.taskId)?'<option value="'+esc(n.taskId)+'" selected>Missing task — preserve link</option>':"")+
+ '</select><small>Link to an existing task without changing or deleting it. View its dependencies in Connections.</small></label>'+
+ '<div class="tdlx-actions"><button class="btn primary" type="submit">'+(current&&!newNode?"Save node":"Add node")+'</button><button class="btn" type="button" data-planner="cancelNode">Cancel</button>'+
+ (n.taskId&&X.tasks().some(t=>t.id===n.taskId)?'<button class="btn" type="button" data-planner="viewTask" data-id="'+esc(n.taskId)+'">↗ Open linked task</button>':"")+(current&&!newNode?'<button class="btn" type="button" data-planner="deleteNode">Delete node</button>':'')+'</div></form>';
 }
 function draw(c){
  const b=board();
@@ -50,7 +55,10 @@ function draw(c){
  '<div class="tdlx-board-controls"><label class="tdlx-muted">Board <select id="tdlx-board-select">'+boards.map(q=>'<option value="'+esc(q.id)+'" '+(q.id===b.id?"selected":"")+'>'+esc(q.title)+'</option>').join("")+'</select></label><button class="btn" data-planner="createBoard">+ New board</button><button class="btn" data-planner="renameBoard">Rename</button><button class="btn" data-planner="removeBoard">Delete board</button></div>'+
  '<div class="tdlx-board-controls"><button class="btn primary" data-planner="addNode">+ Add node</button><button class="btn" data-planner="connect">'+(connectFrom?"Pick second node…":"→ Connect nodes")+'</button><button class="btn" data-planner="cancelConnect">Cancel connection</button><button class="btn" data-planner="zoomIn">Zoom +</button><button class="btn" data-planner="zoomOut">Zoom −</button><button class="btn" data-planner="resetView">Reset view</button><span class="tdlx-muted">'+Math.round(zoom*100)+'%</span></div>'+
  '<div class="tdlx-board-viewport" id="tdlx-board-viewport" aria-label="Visual project planning canvas"><div class="tdlx-board-world" id="tdlx-board-world" style="transform:translate('+panX+'px,'+panY+'px) scale('+zoom+')">'+svg+
- b.nodes.map(n=>'<button type="button" class="tdlx-node '+(selectedNode===n.id?"active":"")+'" data-node="'+esc(n.id)+'" style="left:'+clamp(Number(n.x)||0,0,2200)+'px;top:'+clamp(Number(n.y)||0,0,1300)+'px" title="Click to edit; drag to move; arrow keys to nudge" aria-label="'+esc(n.title)+'"><strong>'+esc(n.title)+'</strong><small>'+esc(n.notes||"")+'</small></button>').join("")+'</div></div>'+
+ b.nodes.map(n=>{const linked=n.taskId?X.tasks().find(t=>t.id===n.taskId):null;
+  return '<button type="button" class="tdlx-node '+(selectedNode===n.id?"active":"")+' '+(n.taskId?"tdlc-linked-planner-node":"")+'" data-node="'+esc(n.id)+'" style="left:'+clamp(Number(n.x)||0,0,2200)+'px;top:'+clamp(Number(n.y)||0,0,1300)+'px" title="Click to edit; drag to move; arrow keys to nudge" aria-label="'+esc(n.title)+'"><strong>'+esc(n.title)+'</strong><small>'+esc(n.notes||"")+'</small>'+
+  (n.taskId?'<small class="tdlc-planner-node-tag '+(!linked?"is-missing":linked.completed?"is-done":"")+'">↗ '+esc(linked?linked.title:"Missing linked task")+'</small>':"")+'</button>'
+ }).join("")+'</div></div>'+
  '<p class="tdlx-status" id="tdlx-board-status">'+(connectFrom?"Choose a second node to create an arrow.":"Click a node to edit it. Drag a box to move it. Drag empty space to pan. Press arrow keys on a selected node for precise movement.")+'</p>'+
  ((newNode||selectedNode)?nodeForm(b):"")+
  '<div class="tdlx-card"><strong>Connections ('+edges.length+')</strong><div class="tdlx-edge-list">'+(edges.length?edges.map(e=>'<div class="tdlx-edge"><span>'+esc(nodeMap.get(e.from).title)+' → '+esc(nodeMap.get(e.to).title)+' ('+esc(e.label||"unlabeled")+')</span><span><button class="btn" data-edge-act="rename" data-edge="'+esc(e.id)+'">Label</button> <button class="btn" data-edge-act="delete" data-edge="'+esc(e.id)+'">Remove</button></span></div>').join(""):'<p class="tdlx-muted">No arrows yet. Click Connect nodes, then choose two boxes.</p>')+'</div></div>'+
@@ -60,12 +68,12 @@ function draw(c){
 function bind(c){
  const s=$("#tdlx-board-select",c);if(s)s.onchange=e=>{selectedBoard=e.target.value;selectedNode="";newNode=false;connectFrom="";X.refresh()};
  const f=$("#tdlx-node-form",c);
- if(f)f.onsubmit=e=>{e.preventDefault();const fd=new FormData(f),title=String(fd.get("title")||"").trim(),notes=String(fd.get("notes")||"").trim();
+ if(f)f.onsubmit=e=>{e.preventDefault();const fd=new FormData(f),title=String(fd.get("title")||"").trim(),notes=String(fd.get("notes")||"").trim(),taskId=String(fd.get("taskId")||"");
   if(!title){alert("A node needs a title.");return}
   const b=board(),current=b.nodes.find(n=>n.id===selectedNode);
   let next;
-  if(current&&!newNode){next={...b,nodes:b.nodes.map(n=>n.id===current.id?{...n,title,notes}:n),updatedAt:Date.now()}}
-  else{const newOne={id:X.uid(),title,notes,x:120+Math.floor(Math.random()*200),y:130+Math.floor(Math.random()*180)};
+  if(current&&!newNode){next={...b,nodes:b.nodes.map(n=>n.id===current.id?{...n,title,notes,taskId}:n),updatedAt:Date.now()}}
+  else{const newOne={id:X.uid(),title,notes,taskId,x:120+Math.floor(Math.random()*200),y:130+Math.floor(Math.random()*180)};
    next={...b,nodes:b.nodes.concat(newOne),updatedAt:Date.now()};
    selectedNode=newOne.id;
   }
@@ -83,6 +91,7 @@ function bind(c){
   if(button){
    const action=button.dataset.planner;
    if(action==="createBoard")makeBoard();
+   if(action==="viewTask"&&window.TDLConnections)window.TDLConnections.openTask(button.dataset.id);
    if(action==="renameBoard")renameBoard();
    if(action==="removeBoard")removeBoard();
    if(action==="addNode"){selectedNode="";newNode=true;connectFrom="";X.refresh()}
