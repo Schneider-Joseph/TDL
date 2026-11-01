@@ -68,7 +68,7 @@ X.register("inbox","Notification Center",function(c){
  $("#tdlx-inbox-filter",c).value=filter;
  $("#tdlx-inbox-filter",c).addEventListener("change",e=>{filter=e.target.value;X.refresh()});
  $("#tdlx-inbox-markall",c).addEventListener("click",()=>{inbox.items.forEach(x=>{if(status(x)==="unread")x.readAt=Date.now()});saved();scan();X.refresh()});
- c.addEventListener("click",e=>{const b=e.target.closest("[data-inbox]");if(!b)return;const item=inbox.items.find(x=>x.id===b.dataset.id);if(b.dataset.inbox==="open")openTask(item);else act(b.dataset.id,b.dataset.inbox)});
+ c.onclick=e=>{const b=e.target.closest("[data-inbox]");if(!b)return;const item=inbox.items.find(x=>x.id===b.dataset.id);if(b.dataset.inbox==="open")openTask(item);else act(b.dataset.id,b.dataset.inbox)};
 });
 inbox=read();scan();
 document.addEventListener("tdlx:tasks-changed",()=>{scan()});
