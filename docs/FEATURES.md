@@ -1,6 +1,6 @@
 # Feature Guide — What TDL Does Today
 
-This describes the **current app** as inspected in October 2026. It is not a wish list. If a feature is planned but absent, it is labeled as such.
+This describes the **original TDL dashboard** and its existing task behaviors. On October 31, 2026 the app also gained a local Notification Center, Undo + Task History, Weekly Calendar, Visual Planner and Full Backup/Restore. For those installed additions, see the [New Features User Guide](NEW_FEATURES_USER_GUIDE.md) and [Developer Guide](NEW_FEATURES_DEVELOPER_GUIDE.md).
 
 ## 1. Adding a task
 
@@ -19,7 +19,7 @@ Click **Add task**. The form includes:
 | Notes | More context | Multiline text |
 | Steps / subtasks | Smaller pieces of the task | Up to 50 steps in the editor |
 
-Use the **Edit** button on an existing task to change those fields. Use **Delete** to remove an item; deletion is not reversible from the UI unless you have a backup.
+Use the **Edit** button on an existing task to change those fields. The new **Undo** and **Task history** controls can reverse or recover recent deletions, within the retained history limit. Keep external backups for longer-term protection.
 
 ### Categories are not fixed
 
@@ -120,16 +120,16 @@ There is **no Blackboard connection, live school integration, or automatic impor
 
 **Settings** currently includes focus-check preference, default timer duration, notification controls, and task-backup export.
 
-**Export** downloads a JSON file containing **tasks and activities**. **Import** replaces existing tasks after confirmation; if the backup includes an activities array, it also replaces the activity bank. The ordinary export does **not** include focus history, local reminder history, or settings.
+The **original Export** downloads JSON containing **tasks and activities**. **Import** replaces existing tasks after confirmation; if the backup includes an activities array, it also replaces the activity bank. The ordinary export does **not** include focus history, local reminder history, or settings. The new **Full backup** button captures current TDL browser storage collections for a fuller recovery route. See [New Features User Guide](NEW_FEATURES_USER_GUIDE.md).
 
 **Install:** Open the GitHub Pages app in Chrome or a compatible browser and use the browser's install option. Installing adds an app-like window, not a cloud account.
 
 **Offline:** The service worker caches app files when installation and caching succeed. The app's *source* can work offline, but initial installation, updates, and future cloud features need networking.
 
-## 11. Planned / not implemented
+## 11. Newly implemented and still planned
 
 - **Firebase cross-device synchronization:** Design documented only in [Firebase Sync Design](FIREBASE_SYNC_DESIGN.md). Do not treat it as live.
-- **TDL Canvas / flowchart decision planner:** Discussed as a future idea, not present in current source.
+- **Visual Planner:** Implemented in separate `app/tdl-planner.js`. Create user-controlled boards, nodes, and connections. Read the [New Features User Guide](NEW_FEATURES_USER_GUIDE.md).
 - **True closed-app scheduled notifications:** Not implemented.
 - **Blackboard import or API integration:** Not implemented and not part of the active plan.
 
