@@ -6,7 +6,7 @@ TDL is an offline-first web application for homework, responsibilities, focus se
 
 **Live app:** https://schneider-joseph.github.io/TDL/app/
 
-> **Important as of October 2026:** TDL does **not** have accounts, Firebase, automatic cross-device sync, or Blackboard integration. Those features are not silently running in the background. Firebase sync is **only a documented proposal**. Your data currently lives separately on each device/browser.
+> **October 31, 2026 update:** TDL now includes a local Notification Center, task Undo/Redo + History, Weekly Calendar, user-controlled Visual Planner, and Full Backup/Restore. These were added in separate source files and passed code-level checks; real-device/browser verification is still recommended. **Firebase/cloud sync and Blackboard integration are NOT installed.** Each browser/device still has independent data.
 
 ## Start here: choose what you want to learn
 
@@ -15,6 +15,8 @@ You do not need to read everything at once.
 | I want to... | Read this |
 | --- | --- |
 | Understand what TDL is and use it safely | [Start Here](docs/START_HERE.md) |
+| **Use the new Inbox, Undo, Calendar, Planner and backups** | **[New Features User Guide](docs/NEW_FEATURES_USER_GUIDE.md)** |
+| **Change any new feature manually in its source code** | **[New Features Developer Guide](docs/NEW_FEATURES_DEVELOPER_GUIDE.md)** |
 | Find exactly which file or function to edit | [Quick Reference — Where Do I Change That?](docs/QUICK_REFERENCE.md) |
 | Learn every existing feature and its behavior | [Feature Guide](docs/FEATURES.md) |
 | Understand how the actual code works | [How TDL Works](docs/HOW_TDL_WORKS.md) |
@@ -36,9 +38,14 @@ You do not need to read everything at once.
 - Display due-date counts, countdowns, and local browser notifications where supported.
 - Ask about overdue tasks approximately every **90 minutes while the app is running**.
 - Lock the **“Bored? Do This.”** activity bank until today's and overdue tasks have been completed.
-- Export and import JSON backups; work from the installed web app offline after its app files have been cached.
+- Export and import JSON task backups; work from the installed web app offline after its app files have been cached.
+- Keep a persistent **in-app Notification Center** even when native banners do not display (app-open detection only).
+- **Undo/Redo task changes**, review recent Task History, and restore deleted tasks from retained history.
+- Use a **Weekly Calendar** to view deadlines and schedule separate draggable work blocks.
+- Build fully **manual Visual Planner** boards with movable nodes, labeled connections, zoom/pan, and keyboard nudging.
+- Download a **Full backup** of local TDL data and restore it with explicit confirmation.
 
-**Not currently implemented:** automatic cloud sync, Firebase accounts, Blackboard calendar integration, a flowchart canvas, server-scheduled notifications while the app is closed.
+**Not currently implemented:** automatic cross-device cloud sync, Firebase accounts, Blackboard calendar integration, or server-scheduled notifications while the app is closed. The four new tools are local-first; changes on one device do not automatically appear on another.
 
 ## Folder map
 
@@ -49,12 +56,20 @@ TDL/
 ├── .gitignore                 ← Files Git should leave out
 ├── index.html                 ← Redirects visitors into app/
 ├── app/
-│   ├── index.html             ← Actual TDL interface, styles, and JavaScript
+│   ├── index.html             ← Original TDL interface, styles, and JavaScript
+│   ├── tdl-extras.css         ← Styling for added tools
+│   ├── tdl-extras-core.js     ← Panels, task history, full backup/restore
+│   ├── tdl-inbox.js           ← Persistent notification inbox
+│   ├── tdl-calendar.js        ← Weekly view and time blocks
+│   ├── tdl-planner.js         ← User-controlled visual boards
 │   ├── sw.js                  ← Offline cache/service worker
 │   ├── manifest.webmanifest   ← Installed app name/icon/start URL
 │   └── icon.svg               ← App icon
 └── docs/
     ├── START_HERE.md
+    ├── NEW_FEATURES_USER_GUIDE.md
+    ├── NEW_FEATURES_DEVELOPER_GUIDE.md
+    ├── NEXT_FOUR_FEATURES.md
     ├── QUICK_REFERENCE.md
     ├── FEATURES.md
     ├── HOW_TDL_WORKS.md
@@ -67,7 +82,7 @@ TDL/
     └── ROADMAP_AND_DECISIONS.md
 ~~~
 
-Most day-to-day changes happen in **`app/index.html`**. It is currently a single-file HTML/CSS/JavaScript application; **no build tool, Node installation, or database is needed for the existing app**.
+The original task dashboard remains in **`app/index.html`**, while the new tools have their own JS/CSS files listed above. **No Node build step, Firebase account, or database server is needed for the deployed app.**
 
 ## Safest way to edit
 
@@ -96,4 +111,4 @@ The repository is currently **public**, and adding an all-rights-reserved notice
 
 Keep TDL understandable and reliable first. **Firebase cross-device synchronization is deliberately on hold while we document and design a safe migration**. The complete proposed architecture is in [Firebase Sync Design](docs/FIREBASE_SYNC_DESIGN.md); it is **not production code**.
 
-**Start with [START_HERE.md](docs/START_HERE.md)**, or jump directly to the [Quick Reference](docs/QUICK_REFERENCE.md) whenever you want to make a specific manual change.
+**To use the additions:** [New Features User Guide](docs/NEW_FEATURES_USER_GUIDE.md). **To modify them:** [Developer Guide](docs/NEW_FEATURES_DEVELOPER_GUIDE.md). For the original task manager, begin with [START_HERE.md](docs/START_HERE.md).
