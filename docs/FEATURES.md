@@ -77,6 +77,10 @@ This is useful for recurring study sessions or bills. Be mindful that editing on
 
 The randomized focus questions and their Settings toggle have been **removed**. The timer runs without quiz pop-ups, even when you're focused on a different application. Focus-session history remains stored separately in this browser; previous records aren't erased. See [Workspace Pages](WORKSPACE_PAGES.md).
 
+## 5a. Momentum accountability workspace (November 1, 2026)
+
+Momentum is a separate page at [`#momentum`](https://schneider-joseph.github.io/TDL/app/#momentum). It adds 3–5 daily commitment limits, explicit midnight rollover review, task decay at 30 days, a quiet 2-minute or 25-minute single-task focus timer, forgiving active-day streaks, weekly completion analytics, a Friday summary, and a three-day inactivity check with deliberate-rest escape. The original Dashboard and task list still work normally; no task is automatically deleted. See [Momentum Guide](MOMENTUM.md).
+
 ## 6. Deadline notifications
 
 If your browser permits them and you grant permission, TDL can show local browser notifications for tasks due today and deadlines approaching within 24 hours.
