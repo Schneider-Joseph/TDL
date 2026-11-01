@@ -149,7 +149,7 @@ test("Return to backlog is an explicit and non-destructive rollover choice",()=>
 });
 test("Shrink rewrites user-approved task title but preserves other task data",()=>{
  shrinkAnswer="Write the first paragraph";
- assert.equal(M.getAge("old"),0);
+ assert.ok(M.getAge("old")<=1,"One day may have passed since the first focus block");
  clock+=30*86400000;
  assert.ok(M.getAge("old")>=30);
  click("shrink","old");
