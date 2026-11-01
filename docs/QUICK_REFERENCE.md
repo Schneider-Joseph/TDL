@@ -15,6 +15,9 @@ Use this when you have an idea but don't remember which part of the code control
 | Visual planner / arrows | `app/tdl-planner.js` | `X.register("planner"` | Node IDs and edge endpoints must remain valid |
 | All new styles | `app/tdl-extras.css` | `.tdlx-` | Scoped to new panels |
 | Full data backup/restore | `app/tdl-extras-core.js` | `function fullSnapshot()` | Restoring replaces listed keys |
+| **Full Inbox, Calendar and Planner page layouts** | `app/tdl-workspace.css` | `.tdlx-page`, `.tdlx-calendar-*`, `.tdlx-inbox-*` | See [Workspace Pages](WORKSPACE_PAGES.md) |
+| **Hash routing / browser back** | `app/tdl-extras-core.js` | `syncRoute()` and `navigate()` | Never change task storage to route between pages |
+| **Quiet timer / history** | `app/index.html` | `startFocusSession()` and `tickTimer()` | Randomized questions removed; preserve past records |
 | **New Studio UI theme tokens / spacing** | `app/tdl-theme.css` | `:root`, `.task`, `.stat`, `.time-card` | CSS-only visuals; test mobile widths |
 | **Header Tools dropdown** | `app/index.html` | `class="header-utilities"` | Keep all original button IDs |
 | **New workspace navigation** | `app/tdl-extras-core.js` | `bar.innerHTML=` | Keep `data-tdlx-open` and button IDs |
