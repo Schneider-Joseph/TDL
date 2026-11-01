@@ -1,6 +1,6 @@
 # Using TDL's New Tools — A Beginner-Friendly Manual
 
-**Updated: October 31, 2026.** The new feature code has been added to TDL's GitHub repository. This guide describes the actual controls implemented in the source. Device-specific behavior still needs checking in your installed browser/PWA; code-level tests alone cannot guarantee every browser works identically.
+**Updated: November 1, 2026.** The new feature code has been added to TDL's GitHub repository. This guide describes the actual controls implemented in the source. Device-specific behavior still needs checking in your installed browser/PWA; code-level tests alone cannot guarantee every browser works identically.
 
 **Live app:** https://schneider-joseph.github.io/TDL/app/
 
@@ -8,14 +8,9 @@
 
 ## 1. Find the new buttons
 
-Below TDL's usual header, you should see an additional row:
+Below the normal header you now have **Dashboard · Inbox · Week · Planner · Undo · Redo · More tools**. Inbox, Week and Planner each open a **full-page view**, not a popup. The browser Back button navigates between these pages. Task History, Full backup and Full restore are under **More tools**.
 
-~~~text
-🔔 Inbox | ↶ Undo | ↷ Redo | Task history | 📆 Week | ⬡ Planner |
-Full backup | Full restore
-~~~
-
-This row belongs to **TDL Extras**, implemented in four separate JavaScript files. If the row is missing:
+See [Workspace Pages](WORKSPACE_PAGES.md) for a walkthrough. If the row is missing:
 
 1. Open the direct app URL above.
 2. Make sure the GitHub Pages deployment has finished.
@@ -33,10 +28,10 @@ macOS or Chrome can suppress an OS notification. TDL now also keeps an **in-app 
 
 1. Click **🔔 Inbox**.
 2. The number next to the bell indicates **unread** items.
-3. Open the filter and choose **Unread**, **All**, or **Archived/resolved**.
+3. Use the page filters **Unread**, **All reminders**, or **Archived**.
 4. Choose **Open task** to jump to the original task.
 5. Choose **Mark read** when you've looked at an alert.
-6. Choose **15m**, **1h**, or **Tomorrow** to snooze it.
+6. Open **Remind later** and choose **In 15 minutes**, **In 1 hour**, or **Tomorrow morning**.
 7. Choose **Dismiss** to dismiss the **notification**, *not* the task.
 8. Choose **Mark all read** to clear unread status without deleting messages.
 
@@ -69,7 +64,7 @@ Undo checks that the involved task records still match the expected version. If 
 
 ### Recover a deleted task
 
-1. Open **Task history**.
+1. Open **More tools → Task history**.
 2. Find a “Deleted …” entry.
 3. Click **Restore deleted: [task name]**.
 4. Confirm the restoration. The task will be recreated with its original ID if no conflicting ID exists.
@@ -101,8 +96,8 @@ Undo checks that the involved task records still match the expected version. If 
 ### See your week
 
 1. Click **📆 Week**.
-2. Choose **Previous week**, **Next week**, or **Today**.
-3. Find task deadlines under their calendar days.
+2. Use **←**, **→**, or **This week** for navigation.
+3. Read task deadlines in the top row, and planned blocks in the hourly timeline; switch to **Agenda** if preferred.
 4. Click a task deadline to open its original Add/Edit Task form.
 
 The current calendar defaults to **Monday** as the first day of the week.
@@ -114,7 +109,7 @@ The current calendar defaults to **Monday** as the first day of the week.
 3. Enter its **start** and **end** times.
 4. Optionally select the TDL task it supports.
 5. Add notes if needed.
-6. Click **Add block**.
+6. Click **Create work block**.
 
 ### Edit or move work
 
@@ -122,11 +117,11 @@ The current calendar defaults to **Monday** as the first day of the week.
 - Change the times, notes, title, or linked task, then save.
 - On desktop, **drag a green block onto another day** to move its day while preserving its approximate clock schedule.
 - On phone, use the form instead of relying on dragging.
-- To delete a work block, open it and click **Delete this block**. That does **not** delete the linked TDL task.
+- To delete a work block, open it and click **Delete block**. That does **not** delete the linked TDL task.
 
 ### Limitations
 
-- It currently shows a **seven-day agenda layout**, not a minute-by-minute Google Calendar clone.
+- It now has a **24-hour, seven-day timeline** and a separate **Agenda** view, with overlapping work blocks shown side by side. It is not connected to an external calendar.
 - It displays existing saved recurring task occurrences; it doesn't create unsaved future task copies.
 - Time blocks use the device's **local time**. Daylight saving time transitions require care.
 - Calendar block operations are **not yet part of task Undo history**.

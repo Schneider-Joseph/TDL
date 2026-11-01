@@ -16,7 +16,6 @@ function save(next){
 }
 function board(){return boards.find(b=>b.id===selectedBoard)}
 function saveBoard(updated){return save(boards.map(b=>b.id===updated.id?updated:b))}
-function dateNow(){return new Date().toLocaleString()}
 function promptTitle(message,initial){const v=window.prompt(message,initial||"");return v===null?null:v.trim().slice(0,100)}
 function makeBoard(){
  const title=promptTitle("Name your new visual board","New project");if(!title)return;
@@ -40,14 +39,14 @@ function nodeForm(b){
 }
 function draw(c){
  const b=board();
- if(!b){c.innerHTML='<p class="tdlx-help">No boards yet. Create your own from scratch: choose a title, add boxes, and manually connect them.</p><button class="btn primary" type="button" data-planner="createBoard">+ Create first board</button>';bind(c);return}
+ if(!b){c.innerHTML='<div class="tdlx-planner-empty"><span class="tdlx-planner-empty-icon" aria-hidden="true">◇</span><span class="tdlx-page-eyebrow">A FRESH CANVAS</span><h3>Start with a blank canvas.</h3><p>Build a flowchart, map a project, or make a plan that only you control. Add nodes, label connections, and rearrange your ideas visually.</p><button class="btn primary" type="button" data-planner="createBoard">＋ Create first board</button><small>All boards are saved privately in this browser.</small></div>';bind(c);return}
  const nodeMap=new Map(b.nodes.map(n=>[n.id,n]));
  const edges=b.edges.filter(e=>nodeMap.has(e.from)&&nodeMap.has(e.to));
  const svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 1400" class="tdlx-board-lines" aria-hidden="true"><defs><marker id="tdlx-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#9ebea5"/></marker></defs>'+
  edges.map(e=>{const a=nodeMap.get(e.from),z=nodeMap.get(e.to),x1=a.x+width/2,y1=a.y+height/2,x2=z.x+width/2,y2=z.y+height/2;
   return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="#9ebea5" stroke-width="3" marker-end="url(#tdlx-arrow)"/><text x="'+((x1+x2)/2)+'" y="'+((y1+y2)/2-9)+'" text-anchor="middle" fill="#f7e1a0" font-size="18">'+esc(e.label||"")+'</text>';
  }).join("")+'</svg>';
- c.innerHTML='<p class="tdlx-help">Make your own flowcharts: drag boxes, connect any two nodes, rename arrows, and zoom/pan. Nodes do <strong>not</strong> automatically create or delete tasks. Changes are saved in this browser.</p>'+
+ c.innerHTML='<div class="tdlx-planner-intro"><div><span class="tdlx-page-eyebrow">ACTIVE BOARD</span><h3>'+esc(b.title)+'</h3><p>Arrange your ideas freely. Nothing here automatically creates or deletes TDL tasks.</p></div><div class="tdlx-planner-metrics"><span><b>'+b.nodes.length+'</b> nodes</span><span><b>'+edges.length+'</b> connections</span><span><b>'+boards.length+'</b> boards</span></div></div>'+
  '<div class="tdlx-board-controls"><label class="tdlx-muted">Board <select id="tdlx-board-select">'+boards.map(q=>'<option value="'+esc(q.id)+'" '+(q.id===b.id?"selected":"")+'>'+esc(q.title)+'</option>').join("")+'</select></label><button class="btn" data-planner="createBoard">+ New board</button><button class="btn" data-planner="renameBoard">Rename</button><button class="btn" data-planner="removeBoard">Delete board</button></div>'+
  '<div class="tdlx-board-controls"><button class="btn primary" data-planner="addNode">+ Add node</button><button class="btn" data-planner="connect">'+(connectFrom?"Pick second node…":"→ Connect nodes")+'</button><button class="btn" data-planner="cancelConnect">Cancel connection</button><button class="btn" data-planner="zoomIn">Zoom +</button><button class="btn" data-planner="zoomOut">Zoom −</button><button class="btn" data-planner="resetView">Reset view</button><span class="tdlx-muted">'+Math.round(zoom*100)+'%</span></div>'+
  '<div class="tdlx-board-viewport" id="tdlx-board-viewport" aria-label="Visual project planning canvas"><div class="tdlx-board-world" id="tdlx-board-world" style="transform:translate('+panX+'px,'+panY+'px) scale('+zoom+')">'+svg+
@@ -55,7 +54,7 @@ function draw(c){
  '<p class="tdlx-status" id="tdlx-board-status">'+(connectFrom?"Choose a second node to create an arrow.":"Click a node to edit it. Drag a box to move it. Drag empty space to pan. Press arrow keys on a selected node for precise movement.")+'</p>'+
  ((newNode||selectedNode)?nodeForm(b):"")+
  '<div class="tdlx-card"><strong>Connections ('+edges.length+')</strong><div class="tdlx-edge-list">'+(edges.length?edges.map(e=>'<div class="tdlx-edge"><span>'+esc(nodeMap.get(e.from).title)+' → '+esc(nodeMap.get(e.to).title)+' ('+esc(e.label||"unlabeled")+')</span><span><button class="btn" data-edge-act="rename" data-edge="'+esc(e.id)+'">Label</button> <button class="btn" data-edge-act="delete" data-edge="'+esc(e.id)+'">Remove</button></span></div>').join(""):'<p class="tdlx-muted">No arrows yet. Click Connect nodes, then choose two boxes.</p>')+'</div></div>'+
- '<p class="tdlx-help">Board saved: '+esc(dateNow())+' · '+b.nodes.length+' nodes. Use Full backup in the top toolbar to preserve this board outside the browser.</p>';
+ '<p class="tdlx-help">Changes are saved locally as you edit. Use More tools → Full backup to preserve this board outside the browser.</p>';
  bind(c);
 }
 function bind(c){

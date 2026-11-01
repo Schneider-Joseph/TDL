@@ -59,16 +59,37 @@ function openTask(item){
 X.register("inbox","Notification Center",function(c){
  scan();
  const all=inbox.items.slice().sort((a,b)=>b.at-a.at);
- const visible=all.filter(x=>filter==="all"||(filter==="unread"?status(x)==="unread":["dismissed","resolved"].includes(status(x))));
- c.innerHTML='<p class="tdlx-help">In-app reminders are saved in this browser even if Chrome or macOS hides a notification. TDL detects new overdue items when you open it; it cannot send scheduled alerts while fully closed.</p>'+
- '<div class="tdlx-actions"><label class="tdlx-muted">Show <select id="tdlx-inbox-filter"><option value="unread">Unread</option><option value="all">All</option><option value="archived">Archived/resolved</option></select></label><button class="btn" id="tdlx-inbox-markall">Mark all read</button><span class="tdlx-muted">'+unread()+' unread · '+all.length+' stored</span></div>'+
- (visible.length?visible.map(item=>{const state=status(item),label=item.type==="due_today"?"Due today":item.type==="due_soon"?"Due soon":"Overdue";
-  return '<div class="tdlx-card"><div class="tdlx-row"><strong>'+(state==="unread"?"● ":"○ ")+esc(label)+" — "+esc(item.title)+'</strong><small class="tdlx-muted">'+esc(new Date(item.at).toLocaleString())+'</small></div><p class="tdlx-muted">Deadline: '+esc(item.deadline)+' · '+esc(state)+'</p><div class="tdlx-actions"><button class="btn" data-inbox="open" data-id="'+esc(item.id)+'">Open task</button><button class="btn" data-inbox="read" data-id="'+esc(item.id)+'">Mark read</button><button class="btn" data-inbox="snooze15" data-id="'+esc(item.id)+'">15m</button><button class="btn" data-inbox="snooze60" data-id="'+esc(item.id)+'">1h</button><button class="btn" data-inbox="snoozeTomorrow" data-id="'+esc(item.id)+'">Tomorrow</button><button class="btn" data-inbox="dismiss" data-id="'+esc(item.id)+'">Dismiss</button></div></div>'
- }).join(""):'<div class="tdlx-card"><p>No reminders in this view.</p></div>');
- $("#tdlx-inbox-filter",c).value=filter;
- $("#tdlx-inbox-filter",c).addEventListener("change",e=>{filter=e.target.value;X.refresh()});
- $("#tdlx-inbox-markall",c).addEventListener("click",()=>{inbox.items.forEach(x=>{if(status(x)==="unread")x.readAt=Date.now()});saved();scan();X.refresh()});
- c.onclick=e=>{const b=e.target.closest("[data-inbox]");if(!b)return;const item=inbox.items.find(x=>x.id===b.dataset.id);if(b.dataset.inbox==="open")openTask(item);else act(b.dataset.id,b.dataset.inbox)};
+ const stateCounts={unread:0,archived:0,all:all.length};
+ for(const item of all){const s=status(item);if(s==="unread")stateCounts.unread++;if(s==="dismissed"||s==="resolved")stateCounts.archived++}
+ const visible=all.filter(item=>filter==="all"||(filter==="unread"?status(item)==="unread":["dismissed","resolved"].includes(status(item))));
+ const entries=visible.map(item=>{
+  const state=status(item);
+  const label=item.type==="due_today"?"Due today":item.type==="due_soon"?"Approaching deadline":"Overdue";
+  const stateClass=item.type==="overdue"?"is-overdue":item.type==="due_today"?"is-today":"is-upcoming";
+  return '<article class="tdlx-inbox-entry '+(state==="unread"?"is-unread":"")+'"><div class="tdlx-inbox-icon '+stateClass+'" aria-hidden="true">'+(item.type==="overdue"?"!":item.type==="due_today"?"●":"↗")+'</div>'+
+   '<div class="tdlx-inbox-entry-body"><div class="tdlx-inbox-entry-top"><span class="tdlx-inbox-kicker">'+esc(label)+'</span><span class="tdlx-inbox-timestamp">'+esc(new Date(item.at).toLocaleString())+'</span></div>'+
+   '<h3>'+esc(item.title)+'</h3><p>Deadline: '+esc(item.deadline)+' <span aria-hidden="true">·</span> '+esc(state)+'</p>'+
+   '<div class="tdlx-inbox-entry-actions"><button class="btn primary" type="button" data-inbox="open" data-id="'+esc(item.id)+'">Open task</button>'+
+   (state==="unread"?'<button class="btn" type="button" data-inbox="read" data-id="'+esc(item.id)+'">Mark read</button>':"")+
+   (state!=="dismissed"&&state!=="resolved"?'<details class="tdlx-inbox-snooze"><summary class="btn">Remind later ⌄</summary><div class="tdlx-inbox-snooze-menu"><button class="btn" data-inbox="snooze15" data-id="'+esc(item.id)+'" type="button">In 15 minutes</button><button class="btn" data-inbox="snooze60" data-id="'+esc(item.id)+'" type="button">In 1 hour</button><button class="btn" data-inbox="snoozeTomorrow" data-id="'+esc(item.id)+'" type="button">Tomorrow morning</button></div></details><button class="btn" type="button" data-inbox="dismiss" data-id="'+esc(item.id)+'">Dismiss</button>':"")+'</div></div></article>';
+ }).join("");
+ const filterTab=(value,label,count)=>'<button type="button" class="tdlx-inbox-filter '+(filter===value?"is-active":"")+'" data-filter="'+value+'" aria-pressed="'+(filter===value)+'"><span>'+label+'</span><strong>'+count+'</strong></button>';
+ c.innerHTML='<div class="tdlx-inbox-overview"><div class="tdlx-inbox-overview-main"><span class="tdlx-page-eyebrow">NOTIFICATION CENTER</span><div class="tdlx-inbox-big-count">'+stateCounts.unread+'<span> unread</span></div><p>Your reminders, all in one place. Nothing here changes an assignment deadline.</p></div>'+
+ '<button class="btn" id="tdlx-inbox-markall" type="button" '+(!stateCounts.unread?"disabled":"")+'>✓ Mark all as read</button></div>'+
+ '<div class="tdlx-inbox-layout"><nav class="tdlx-inbox-sidebar" aria-label="Filter reminders"><div class="tdlx-page-eyebrow">FILTERS</div>'+
+ filterTab("unread","Unread",stateCounts.unread)+filterTab("all","All reminders",stateCounts.all)+filterTab("archived","Archived",stateCounts.archived)+
+ '<p>Reminders are generated while TDL is open. They are kept locally in this browser, not pushed from a server.</p></nav>'+
+ '<div class="tdlx-inbox-feed"><div class="tdlx-inbox-feed-head"><h3>'+(filter==="unread"?"Unread reminders":filter==="all"?"All reminders":"Archived reminders")+'</h3><span>'+visible.length+' items</span></div>'+
+ (entries||'<div class="tdlx-inbox-empty"><div aria-hidden="true">✓</div><h3>All clear</h3><p>'+(filter==="unread"?"No unread reminders right now.":"Nothing in this category yet.")+'</p></div>')+'</div></div>';
+ const mark=$("#tdlx-inbox-markall",c);
+ if(mark)mark.addEventListener("click",()=>{inbox.items.forEach(item=>{if(status(item)==="unread")item.readAt=Date.now()});saved();scan();X.refresh()});
+ c.onclick=e=>{
+  const tab=e.target.closest("[data-filter]");
+  if(tab){filter=tab.dataset.filter;X.refresh();return}
+  const b=e.target.closest("[data-inbox]");if(!b)return;
+  const item=inbox.items.find(x=>x.id===b.dataset.id);
+  if(b.dataset.inbox==="open")openTask(item);else act(b.dataset.id,b.dataset.inbox)
+ };
 });
 inbox=read();scan();
 document.addEventListener("tdlx:tasks-changed",()=>{scan()});

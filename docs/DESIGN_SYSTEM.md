@@ -14,7 +14,7 @@
 | [app/manifest.webmanifest](../app/manifest.webmanifest) | Installed app name and colors |
 | [app/sw.js](../app/sw.js) | Offline app-shell cache, including the theme CSS |
 
-For Git and local testing, also read [Editing TDL](EDITING_TDL.md).
+For Git and local testing, also read [Editing TDL](EDITING_TDL.md). The full-page layouts live in [app/tdl-workspace.css](../app/tdl-workspace.css) and are explained in [Workspace Pages](WORKSPACE_PAGES.md).
 
 ## 1. Make it your own: change the palette
 
@@ -63,7 +63,8 @@ Search for these selectors inside `app/tdl-theme.css`:
 | `.toolbar` | Task-list heading, search and sorting |
 | `.task`, `.pill`, `.actions` | Task rows, metadata chips, Edit/Delete controls |
 | `.activity-section` | Bored? Do This. panel |
-| `.modal`, `.focus-dialog`, `.tdlx-dialog` | Add/Edit and extra-feature dialogs |
+| `.modal`, `.focus-dialog`, `.tdlx-dialog` | Add/Edit and History dialogs |
+| **`.tdlx-page`, `.tdlx-calendar-*`, `.tdlx-inbox-*`** | **Full-page views** in `app/tdl-workspace.css` |
 
 **Example:** To fit more tasks on screen, find the last `.task` rule and reduce its padding from `17px 16px` to `13px 14px`. Then test a task with a long title, notes, subtasks and action buttons.
 
@@ -73,7 +74,7 @@ In `app/index.html`, find `class="header-actions"`. The current controls are **S
 
 The Tools dropdown is a built-in HTML `details` / `summary` element. It holds the original **Export tasks**, **Import tasks**, and **Paste assignment** buttons.
 
-The second row is created in `app/tdl-extras-core.js`. Search for `bar.innerHTML=`. Main tabs are **Inbox**, **Week**, **Planner**, **Undo**, and **Redo**. The **More tools** dropdown contains **Task history**, **Full backup**, and **Full restore**.
+The second row is created in `app/tdl-extras-core.js`. Search for `bar.innerHTML=`. Main tabs are **Dashboard**, **Inbox**, **Week**, **Planner**, **Undo**, and **Redo**. The **More tools** dropdown contains **Task history**, **Full backup**, and **Full restore**.
 
 **Never rename IDs** like `add`, `settingsOpen`, `export`, `importBtn`, `quickAdd`, `tdlx-undo`, or `tdlx-backup` just to change their labels or move them. JavaScript uses those exact IDs.
 

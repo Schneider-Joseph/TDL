@@ -73,11 +73,9 @@ This is useful for recurring study sessions or bills. Be mindful that editing on
 - You can select an unfinished task or leave a session as **General focus session**.
 - Start, pause/resume, and reset are controlled in the timer card.
 
-### Focus checks
+### Quiet focus sessions (November 1, 2026)
 
-Random questions are enabled by default and can be turned off in **Settings**. They appear roughly **7–18 minutes** into an active session, then again on a randomized interval after a check. A prompt can time out after **90 seconds**. Session history is stored separately in the browser.
-
-This is a productivity prompt, not a secure examination or proof that you were studying. If Chrome suspends timers in the background, elapsed-time accounting and exact check timing can be imperfect.
+The randomized focus questions and their Settings toggle have been **removed**. The timer runs without quiz pop-ups, even when you're focused on a different application. Focus-session history remains stored separately in this browser; previous records aren't erased. See [Workspace Pages](WORKSPACE_PAGES.md).
 
 ## 6. Deadline notifications
 

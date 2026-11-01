@@ -80,10 +80,12 @@ Only when the extension exists. The history module compares **before** and **aft
 
 | Name | Meaning |
 | --- | --- |
-| `TDLX.register(name, title, renderFn)` | Register one panel |
-| `TDLX.open(name)` | Open a panel |
-| `TDLX.close()` | Close the extra panel |
-| `TDLX.refresh()` | Redraw whichever extra panel is open |
+| `TDLX.register(name, title, renderFn)` | Register a page or utility dialog |
+| `TDLX.open(name)` | Open a full page (Inbox/Calendar/Planner) or modal (History) |
+| `TDLX.close()` | Close History, or return an active workspace page to Dashboard |
+| `TDLX.navigate(name)` | Navigate to a workspace route and update the URL hash |
+| `TDLX.getPage()` | Return the current page name, or blank for Dashboard |
+| `TDLX.refresh()` | Redraw the active workspace page or open utility dialog |
 | `TDLX.tasks()` | Read the current original task array |
 | `TDLX.store(key, fallback)` | Safely parse JSON from a local storage key |
 | `TDLX.put(key, value)` | Attempt to write a JSON value to browser storage |
@@ -94,6 +96,8 @@ Only when the extension exists. The history module compares **before** and **aft
 | `TDLX.toast(text)` | Show TDL's existing feedback message |
 
 **Never use `TDLX.put("tdl.tasks.v1",...)` to overwrite real tasks from experimental code.** The normal task saving and history bridge should own that path.
+
+**New layout:** Dedicated page routes (`#inbox`, `#week`, `#planner`) live in `app/tdl-extras-core.js`; their visual rules are in `app/tdl-workspace.css`. `app/tdl-calendar.js` now renders both an hourly Timeline and Agenda. See [Workspace Pages](WORKSPACE_PAGES.md) for the mental model, navigation, local test steps and data-safety rules.
 
 ## 4. Customize the Notification Center
 
@@ -191,7 +195,10 @@ If step 5 or 7 fails, don't merge the change.
 | Block storage limit | `next.length>500` | Prevents excessive local growth |
 | Moving between days | `c.ondrop=e=>` | Shifts block date, keeping its clock time |
 | Open original task | `window.TDLAppBridge.openTask(t)` | Doesn't duplicate or recreate a task |
-| Calendar UI | `X.register("calendar"` | Displays task deadlines and blocks |
+| Calendar UI | `X.register("calendar"` | Renders a 24-hour weekly Timeline and Agenda inside the full page |
+| Timeline events | `daySegments(d)` and `eventChip(event)` | Splits blocks across days and assigns lanes for overlaps |
+| Agenda rows | `agenda(days)` | Alternative list view on narrow screens |
+| Page styling | `app/tdl-workspace.css` | Grid tracks, deadline row and full-page editor |
 
 ### Example: change to Sunday week start
 
