@@ -159,6 +159,7 @@ async function restoreFile(file){
  "\n\nThis REPLACES the listed storage keys (including tasks if included), but leaves other keys untouched. Changes are not merged. A safety backup will download first.\n\nProceed?";
  if(!confirm(detail))return;
  if(!fullBackup())return;
+ if(!confirm("IMPORTANT: Check your Downloads folder and verify that the safety backup file exists BEFORE proceeding. If it did not download, click Cancel and make a Full backup manually. Have you verified the backup and want to replace the listed data now?"))return;
  // Capture previous values and restore them if any write fails.
  const old={};names.forEach(k=>old[k]=localStorage.getItem(k));
  try{names.forEach(k=>localStorage.setItem(k,b.entries[k]))}
