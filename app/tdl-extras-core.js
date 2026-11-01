@@ -19,6 +19,7 @@ const bar=document.createElement("nav");
 bar.className="tdlx-header";
 bar.setAttribute("aria-label","TDL extra tools");
 const tdlxIconPaths={
+ home:'<path d="m3 11 9-8 9 8"/><path d="M5 10v11h14V10M9 21v-7h6v7"/>',
  bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/>',
  undo:'<path d="M9 14 4 9l5-5"/><path d="M4 9h9a6 6 0 0 1 0 12h-2"/>',
  redo:'<path d="m15 14 5-5-5-5"/><path d="M20 9h-9a6 6 0 0 0 0 12h2"/>',
@@ -30,6 +31,7 @@ const tdlxIconPaths={
 };
 const tdlxIcon=name=>'<svg viewBox="0 0 24 24" aria-hidden="true">'+tdlxIconPaths[name]+'</svg>';
 bar.innerHTML='<div class="tdlx-tabs"><span class="tdlx-nav-label">WORKSPACE</span>'+
+ '<button type="button" class="btn tdlx-home-link" data-tdlx-route="home" id="tdlx-home">'+tdlxIcon("home")+' Dashboard</button>'+
  '<button type="button" class="btn" data-tdlx-open="inbox" id="tdlx-bell">'+tdlxIcon("bell")+' Inbox <span class="tdlx-pill" id="tdlx-unread" hidden>0</span></button>'+
  '<button type="button" class="btn" data-tdlx-open="calendar">'+tdlxIcon("calendar")+' Week</button>'+
  '<button type="button" class="btn" data-tdlx-open="planner">'+tdlxIcon("planner")+' Planner</button>'+
@@ -42,16 +44,87 @@ bar.innerHTML='<div class="tdlx-tabs"><span class="tdlx-nav-label">WORKSPACE</sp
  '</div></details>';
 const header=document.querySelector("header");
 if(header)header.insertAdjacentElement("afterend",bar);else document.body.insertBefore(bar,document.body.firstChild);
+// First-class, hash-addressable workspace pages. No stored task migration.
+// History is still a modal: inbox, week and planner are NOT modal dialogs.
+const wrap=document.querySelector(".wrap");
+const page=document.createElement("section");
+page.id="tdlx-page";
+page.className="tdlx-page";
+page.hidden=true;
+page.setAttribute("aria-labelledby","tdlx-page-heading");
+page.innerHTML='<div class="tdlx-page-hero"><div class="tdlx-page-identity"><div class="tdlx-page-eyebrow">TDL / WORKSPACE</div><h2 id="tdlx-page-heading" tabindex="-1">Workspace</h2><p id="tdlx-page-description"></p></div><button class="btn tdlx-page-back" type="button" data-tdlx-route="home">← Dashboard</button></div><div id="tdlx-page-content" class="tdlx-page-content"></div>';
+if(wrap){bar.insertAdjacentElement("afterend",page)}else{document.body.appendChild(page)}
+const pageNames={inbox:"inbox",calendar:"week",planner:"planner"};
+const routeNames={inbox:"inbox",week:"calendar",calendar:"calendar",planner:"planner"};
+const pageCopy={
+ inbox:{heading:"Your inbox",sub:"Deadlines, reminders, and updates in one organized space."},
+ calendar:{heading:"Weekly calendar",sub:"Plan time deliberately. Assignment deadlines stay separate from your work blocks."},
+ planner:{heading:"Visual planner",sub:"Think in systems. Build boards, arrange ideas and connect the next steps."}
+};
 const screens={};
-let active="", lastFocus=null;
-function register(name,title,render){screens[name]={title,render};if(active===name)refresh()}
+let active="", pageActive="", lastFocus=null;
+function register(name,title,render){screens[name]={title,render};if(active===name||pageActive===name)refresh()}
+function pathRoute(){try{return routeNames[String(location.hash||"").replace(/^#/,"").toLowerCase()]||""}catch(_e){return ""}}
+function updateNavigation(){
+ document.body.classList.toggle("tdlx-page-open",!!pageActive);
+ page.hidden=!pageActive;
+ bar.querySelectorAll("[data-tdlx-open]").forEach(b=>{
+  const selected=!!pageActive&&b.dataset.tdlxOpen===pageActive;
+  b.classList.toggle("active",selected);
+  if(selected)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");
+ });
+ const home=bar.querySelector("#tdlx-home");
+ if(home){home.classList.toggle("active",!pageActive);if(!pageActive)home.setAttribute("aria-current","page");else home.removeAttribute("aria-current")}
+}
+function syncRoute(focusHeading=false){
+ const next=pathRoute();
+ if(next===pageActive&&page.hidden===!next){if(next)refresh();return}
+ pageActive=next;
+ if(active){active="";$("#tdlx-overlay").hidden=true;$("#tdlx-content").innerHTML=""}
+ updateNavigation();
+ if(pageActive){
+  const info=pageCopy[pageActive];
+  $("#tdlx-page-heading").textContent=info.heading;
+  $("#tdlx-page-description").textContent=info.sub;
+  refresh();
+  if(focusHeading&&$("#tdlx-page-heading").focus)$("#tdlx-page-heading").focus();
+ }else{$("#tdlx-page-content").innerHTML=""}
+}
+function navigate(name){
+ const route=pageNames[name]||(name==="home"?"home":null);
+ if(!route)return;
+ // Assigning a hash creates a browser-history entry and preserves GitHub Pages URL.
+ const target="#"+route;
+ if(location.hash!==target)location.hash=target;
+ syncRoute(true);
+ if(name==="home"){const current=bar.querySelector("#tdlx-home");if(current&&current.focus)current.focus()}
+}
 function open(name){
+ if(pageNames[name]){navigate(name);return}
  if(!screens[name])return;
  lastFocus=document.activeElement;active=name;$("#tdlx-heading").textContent=screens[name].title;
  $("#tdlx-overlay").hidden=false;refresh();$("#tdlx-close").focus();
 }
-function close(){active="";$("#tdlx-overlay").hidden=true;$("#tdlx-content").innerHTML="";if(lastFocus&&lastFocus.focus)lastFocus.focus()}
-function refresh(){if(active&&screens[active]){try{screens[active].render($("#tdlx-content"))}catch(e){console.error("TDL "+active+" panel failed:",e);$("#tdlx-content").innerHTML='<p role="alert">This panel could not load. Your task list has not been cleared. Close this window and check the browser Console.</p>'}}}
+function close(){
+ if(active){
+  active="";$("#tdlx-overlay").hidden=true;$("#tdlx-content").innerHTML="";
+  if(lastFocus&&lastFocus.focus)lastFocus.focus();
+  return;
+ }
+ if(pageActive)navigate("home");
+}
+function refresh(){
+ if(active&&screens[active]){
+  try{screens[active].render($("#tdlx-content"))}
+  catch(e){console.error("TDL "+active+" panel failed:",e);$("#tdlx-content").innerHTML='<p role="alert">This panel could not load. Your tasks remain intact. Close this window and inspect the browser Console.</p>'}
+ }
+ if(pageActive){
+  const target=$("#tdlx-page-content");
+  if(!screens[pageActive]){target.innerHTML='<div class="tdlx-card">Loading this workspace view…</div>';return}
+  try{screens[pageActive].render(target)}
+  catch(e){console.error("TDL "+pageActive+" page failed:",e);target.innerHTML='<div class="tdlx-card" role="alert"><strong>This view could not load.</strong><p>Your saved tasks and boards have not been deleted. Return to Dashboard and inspect the browser Console.</p></div>'}
+ }
+}
 function toast(message){if(window.TDLAppBridge&&typeof window.TDLAppBridge.notify==="function")window.TDLAppBridge.notify(message);else console.info("TDL:",message)}
 const historyKey="tdl.taskHistory.v1";
 let silentHistory=false;
@@ -191,7 +264,10 @@ async function restoreFile(file){
 $("#tdlx-close").addEventListener("click",close);
 $("#tdlx-overlay").addEventListener("click",e=>{if(e.target.id==="tdlx-overlay")close()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&active){close()}});
+window.addEventListener("hashchange",()=>syncRoute(true));
+page.addEventListener("click",e=>{if(e.target.closest('[data-tdlx-route="home"]'))navigate("home")});
 bar.addEventListener("click",e=>{
+ const routeButton=e.target.closest("[data-tdlx-route]");if(routeButton){navigate(routeButton.dataset.tdlxRoute);return}
  const openButton=e.target.closest("[data-tdlx-open]");if(openButton){open(openButton.dataset.tdlxOpen);return}
  if(e.target.closest("#tdlx-undo"))undo();
  if(e.target.closest("#tdlx-redo"))redo();
@@ -205,5 +281,6 @@ $("#tdlx-content").addEventListener("click",e=>{
  if(b.dataset.historyAction==="undo")undo();else if(b.dataset.historyAction==="redo")redo();
 });
 updateUndoButtons();
-window.TDLX={register,open,close,refresh,escape,copy,uid,store,put,tasks,toast,afterTaskSave,undo,redo,fullBackup,updateBadge(n){const el=$("#tdlx-unread");el.hidden=!n;el.textContent=String(n)}};
+window.TDLX={register,open,close,navigate,refresh,getPage:()=>pageActive,escape,copy,uid,store,put,tasks,toast,afterTaskSave,undo,redo,fullBackup,updateBadge(n){const el=$("#tdlx-unread");el.hidden=!n;el.textContent=String(n)}};
+syncRoute();
 })();
