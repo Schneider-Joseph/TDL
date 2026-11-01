@@ -127,6 +127,8 @@ test("Daily commitment max 3 is enforced even with a larger backlog",()=>{
 });
 test("Task completion is logged; reopening revokes the completion",()=>{
  B.completeTask("a");
+ assert.equal(M.getState().committed.length,3,"Completing a task must not free its daily slot");
+ assert.equal(M.recommit("c"),false,"The cap cannot be bypassed by completing the original three tasks");
  assert.equal(M.getLog().filter(x=>x.taskId==="a").length,1);
  tasks.find(x=>x.id==="a").completed=false;B.save();
  assert.equal(M.getLog().filter(x=>x.taskId==="a").length,0);
@@ -182,6 +184,14 @@ test("Task records never changed because of commitment or rollover only",()=>{
  assert.ok(storage.has("tdl.tasks.v1"));
  assert.ok(storage.has("tdl.momentum.v1"));
  assert.ok(storage.has("tdl.completionLog.v1"));
+});
+
+test("Importing an already-completed task does not invent a completion event",()=>{
+ tasks.push({id:"importedDone",title:"Old completed assignment",completed:true,createdAt:stamp(40),updatedAt:stamp(40)});
+ B.save();
+ assert.equal(M.getLog().filter(x=>x.taskId==="importedDone").length,0);
+ tasks.splice(tasks.findIndex(x=>x.id==="importedDone"),1);
+ B.save();
 });
 
 console.log("Momentum time-based tests passed. Also test local browser/installed PWA interactions.");
