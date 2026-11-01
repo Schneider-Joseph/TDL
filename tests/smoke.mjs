@@ -15,7 +15,7 @@ const inline = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
 assert.ok(inline, "TDL inline source was not found");
 const scripts = [
   {name:"app/index.html (inline)", source:inline},
-  ...["tdl-extras-core.js","tdl-inbox.js","tdl-calendar.js","tdl-planner.js","tdl-momentum.js"]
+  ...["tdl-extras-core.js","tdl-inbox.js","tdl-calendar.js","tdl-planner.js","tdl-momentum.js","tdl-connections.js"]
     .map(name=>({name,source:fs.readFileSync("app/"+name,"utf8")}))
 ];
 
@@ -23,6 +23,7 @@ const ids = new Map();
 const docListeners = new Map();
 const records = new Map();
 let downloaded = [];
+let confirmResult=true;
 
 class FakeElement {
   set id(value){this._id=String(value);if(this._id)ids.set(this._id,this)}
@@ -143,7 +144,7 @@ const sandbox={
   crypto:fakeWindow.crypto,
   CustomEvent:class{constructor(type){this.type=type}},
   alert:message=>{throw new Error("Unexpected alert: "+message)},
-  confirm:()=>true,
+  confirm:()=>confirmResult,
   prompt:()=>null,
   Blob:FakeBlob,
   URL:FakeURL,
@@ -163,8 +164,8 @@ for(const {name,source} of scripts){
     throw error;
   }
 }
-const bridge=fakeWindow.TDLAppBridge,X=fakeWindow.TDLX,M=fakeWindow.TDLMomentum;
-assert.ok(bridge&&X&&M,"New feature bridge/core/Momentum missing");
+const bridge=fakeWindow.TDLAppBridge,X=fakeWindow.TDLX,M=fakeWindow.TDLMomentum,C=fakeWindow.TDLConnections;
+assert.ok(bridge&&X&&M&&C,"Task bridge, Momentum or Connections module missing");
 const saved=()=>JSON.parse(fakeLocalStorage.getItem("tdl.tasks.v1")||"[]");
 const hist=()=>JSON.parse(fakeLocalStorage.getItem("tdl.taskHistory.v1")||"{}");
 const inbox=()=>JSON.parse(fakeLocalStorage.getItem("tdl.inbox.v1")||'{"items":[]}');
@@ -312,6 +313,80 @@ test("Momentum Friday/weekly analytics have separate saved metadata",()=>{
   assert.ok(Array.isArray(M.getLog()));
   assert.ok(fakeLocalStorage.getItem("tdl.completionLog.v1"));
 });
+test("Connections workspace opens as a full page and preserves original tasks",()=>{
+ const original=JSON.stringify(saved());
+ X.open("connections");
+ assert.equal(fakeLocation.hash,"#connections");
+ assert.equal(query("#tdlx-page").hidden,false);
+ assert.equal(query("#tdlx-overlay").hidden,true);
+ assert.ok(query("#tdlx-page-content").innerHTML.includes("RELATIONSHIP EDITOR"));
+ assert.equal(JSON.stringify(saved()),original);
+ X.close();
+});
+test("Task relationship creates blockers, inverse views and safely rejects cycles",()=>{
+ const before=JSON.stringify(saved());
+ const existing={id:"links-dependent",title:"Implement the lab",category:"Homework",completed:false,createdAt:Date.now(),subtasks:[]};
+ const prerequisite={id:"links-prereq",title:"Prepare lab",category:"Homework",completed:false,createdAt:Date.now(),subtasks:[]};
+ bridge.getTasks().push(existing,prerequisite);bridge.save();
+ const baseline=JSON.stringify(saved());
+ assert.equal(C.add(prerequisite.id,existing.id,"blocks").ok,true);
+ assert.equal(C.isBlocked(existing.id),true);
+ assert.equal(C.summary(existing.id).blocked,1);
+ assert.equal(C.add(existing.id,prerequisite.id,"blocks").ok,false);
+ assert.equal(C.add(existing.id,existing.id,"related").ok,false);
+ assert.equal(C.add(existing.id,prerequisite.id,"related").ok,true);
+ assert.equal(C.add(prerequisite.id,existing.id,"related").ok,false);
+ assert.equal(JSON.stringify(saved()),baseline,"Adding links must not mutate task data");
+ C.openTask(existing.id);
+ assert.equal(fakeLocation.hash,"#connections");
+ assert.ok(query("#tdlx-page-content").innerHTML.includes("Prepare lab"));
+ assert.ok(query("#tdlx-page-content").innerHTML.includes("Blocked by"));
+ X.close();
+});
+test("Connections survive deletion until original task is restored",()=>{
+ const missingId="links-prereq";
+ const target=bridge.getTasks().find(t=>t.id==="links-dependent");
+ const removed=bridge.getTasks().find(t=>t.id===missingId);
+ assert.ok(removed&&target);
+ bridge.setTasks(bridge.getTasks().filter(t=>t.id!==missingId));bridge.save();
+ assert.equal(C.isBlocked(target.id),true,"Orphan prerequisite must remain unresolved");
+ assert.equal(C.blockers(target.id)[0].missing,true);
+ bridge.setTasks(bridge.getTasks().concat(removed));bridge.save();
+ assert.equal(C.blockers(target.id)[0].id,missingId);
+});
+test("Planner nodes can link to an existing TDL task without modifying task storage",()=>{
+ const before=JSON.stringify(saved());
+ fakeWindow.prompt=()=> "Lab workflow";
+ X.open("planner");
+ const page=query("#tdlx-page-content");
+ page.onclick({target:{closest:sel=>sel==="[data-planner]"?{dataset:{planner:"createBoard"}}:null}});
+ assert.ok(page.innerHTML.includes("tdlx-board-viewport"),"Board should be created");
+ page.onclick({target:{closest:sel=>sel==="[data-planner]"?{dataset:{planner:"addNode"}}:null}});
+ assert.ok(page.innerHTML.includes("tdlx-node-form"));
+ formValues={title:"Prepare lab",notes:"Use real task link",taskId:"links-dependent"};
+ query("#tdlx-node-form").onsubmit({preventDefault(){}});
+ const boards=JSON.parse(fakeLocalStorage.getItem("tdl.boards.v1"));
+ assert.equal(boards[0].nodes.length,1);
+ assert.equal(boards[0].nodes[0].taskId,"links-dependent");
+ assert.ok(page.innerHTML.includes("tdlc-linked-planner-node"));
+ assert.equal(JSON.stringify(saved()),before,"Planner linking must not mutate original tasks");
+ X.close();
+});
+test("Dashboard warns on blocked completion and allows only deliberate override",()=>{
+ const target=bridge.getTasks().find(t=>t.id==="links-dependent");
+ assert.ok(target&&!target.completed&&C.isBlocked(target.id));
+ const handlers=query("#taskList").handlers.get("change")||[];
+ assert.ok(handlers.length,"Task list change handler missing");
+ const checkbox={checked:true,matches:sel=>sel==='[data-action="toggle"]',closest:sel=>sel==="[data-id]"?{dataset:{id:target.id}}:null};
+ confirmResult=false;
+ handlers.forEach(fn=>fn({target:checkbox}));
+ assert.equal(checkbox.checked,false,"Refused completion must restore checkbox state");
+ assert.equal(!!bridge.getTasks().find(t=>t.id===target.id).completed,false);
+ confirmResult=true;
+ checkbox.checked=true;
+ handlers.forEach(fn=>fn({target:checkbox}));
+ assert.equal(!!bridge.getTasks().find(t=>t.id===target.id).completed,true,"An explicit override may finish a blocked task");
+});
 test("full backup contains tasks and the extension collections",()=>{
   X.fullBackup();
   assert.ok(downloaded.length>0);
@@ -322,6 +397,8 @@ test("full backup contains tasks and the extension collections",()=>{
   assert.ok(output.entries["tdl.inbox.v1"]);
   assert.ok(output.entries["tdl.momentum.v1"]);
   assert.ok(output.entries["tdl.completionLog.v1"]);
+  assert.ok(output.entries["tdl.connections.v1"]);
+  assert.ok(output.entries["tdl.boards.v1"]);
 });
 
 console.log("\nTDL simulated smoke checks passed.");

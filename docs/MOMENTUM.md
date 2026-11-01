@@ -95,6 +95,10 @@ The check prevents adding a *new daily commitment* until you choose one of those
 
 This distinction is intentional: forcing the creation of meaningless tasks would undermine the daily hard cap and increase backlog rather than improve productivity.
 
+## 6a. Task dependencies
+
+Momentum now respects TDL's independent **[Connections](CONNECTIONS.md)** graph. Tasks that have an unfinished or missing blocking prerequisite cannot be newly committed, started via **Do 2 minutes**, or started in a Momentum focus block. The backlog provides a **View blockers** action to inspect the dependency chain. Original task records and deadlines remain unchanged.
+
 ## 7. Data ownership, offline mode and backups
 
 Momentum uses independent versioned browser-storage keys:

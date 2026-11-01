@@ -136,6 +136,13 @@ function deleteTask(taskId){
  state.carryover=state.carryover.filter(x=>x.id!==taskId);
  save();X.toast("Task deleted. Use Undo if this was a mistake.");return true;
 }
+function unmetDependencies(taskId){return window.TDLConnections?window.TDLConnections.blockers(taskId):[]}
+function blockedNotice(taskId){
+ const pending=unmetDependencies(taskId);
+ if(!pending.length)return false;
+ X.toast("Finish "+pending.slice(0,2).map(t=>t.title).join(", ")+(pending.length>2?" and "+(pending.length-2)+" more":"")+" before starting this task. View Connections for the dependency chain.");
+ return true
+}
 function recommit(taskId){
  tidy();
  if(state.carryover.length&& !state.carryover.some(x=>x.id===taskId)){
@@ -152,6 +159,7 @@ function recommit(taskId){
  const t=taskById(taskId);
  if(!t||t.completed)return false;
  if(age(t)>=30){X.toast("This task needs its 30-day decision. Choose Do it or Shrink it first.");return false}
+ if(blockedNotice(taskId))return false;
  state.committed.push(taskId);state.carryover=state.carryover.filter(x=>x.id!==taskId);
  save();updatePulse();X.refresh();return true;
 }
@@ -167,6 +175,7 @@ function shrinkAndRecommit(taskId){
 }
 function doNow(taskId){
  const t=taskById(taskId);if(!t||t.completed)return;
+ if(blockedNotice(taskId))return;
  if(!state.committed.includes(taskId)&&state.committed.length>=state.cap){
   X.toast("Today's slots are full. Uncommit a task first.");return
  }
@@ -225,6 +234,7 @@ function startFocus(taskId,minutes){
  if(state.focus.running){X.toast("One task at a time. Finish, pause, or end the current block.");return false}
  const t=taskById(taskId);
  if(!t||t.completed||!state.committed.includes(taskId)){X.toast("Commit to an active task first.");return false}
+ if(blockedNotice(taskId))return false;
  const durationMs=minutes*60000;
  state.focus={taskId,durationMs,remainingMs:durationMs,endsAt:Date.now()+durationMs,running:true,startedAt:Date.now()};
  state.touches[taskId]=Date.now();save();return true;
@@ -305,7 +315,7 @@ function renderToday(){
  '<section class="tdlm-panel"><div class="tdlm-section-head"><div><span class="tdlx-page-eyebrow">THE DAY IN FRONT OF YOU</span><h3>Today’s commitments</h3><p>'+(blockers?"Resolve yesterday’s review before selecting fresh commitments.":capacity?"Make fewer promises. Finish them.":"You’ve reached your daily cap. Remove a commitment to make room.")+'</p></div><span class="tdlm-counter">'+state.committed.length+' / '+state.cap+'</span></div>'+
  '<div class="tdlm-committed">'+(committed.length?committed.map((t,i)=>'<article class="tdlm-committed-item '+(t.completed?"is-completed":"")+'"><div class="tdlm-commit-num">'+(t.completed?"✓":String(i+1).padStart(2,"0"))+'</div><div class="tdlm-task-text"><strong>'+esc(t.title)+'</strong><span>'+esc(t.category||"Personal")+' · '+(t.completed?"Completed today’s commitment":age(t)+' days since touch')+'</span></div><div class="tdlm-card-actions">'+(t.completed?'<span class="tdlm-done-badge">Done · slot retained</span>':safeActionButton("doNow",t.id,"Focus","primary")+safeActionButton("uncommit",t.id,"Remove"))+'</div></article>').join(""):'<div class="tdlm-empty">Your day is still open. Choose up to '+state.cap+' tasks below.</div>')+'</div></section>'+
  '<section class="tdlm-panel"><div class="tdlm-section-head"><div><span class="tdlx-page-eyebrow">BACKLOG</span><h3>Choose what deserves today.</h3><p>Adding to the backlog is unrestricted. Daily commitments are not.</p></div><button type="button" class="btn" data-momentum="newTask">＋ New task</button></div>'+
- '<div class="tdlm-backlog">'+(ready.length?ready.sort((a,b)=>age(b)-age(a)).map(t=>'<article class="tdlm-backlog-item"><div class="tdlm-task-text"><strong>'+esc(t.title)+'</strong><span><em class="tdlm-decay-pill '+tone(age(t))+'">'+age(t)+'d untouched</em> '+esc(t.category||"Personal")+(t.dueDate?" · due "+esc(t.dueDate):"")+'</span></div>'+safeActionButton("recommit",t.id,age(t)>=30?"Review first":"＋ Commit",capacity>0&&!blockers&&age(t)<30?"primary":"")+'</article>').join(""):'<div class="tdlm-empty">No uncommitted tasks. You have '+total+' saved task records.</div>')+'</div></section>';
+ '<div class="tdlm-backlog">'+(ready.length?ready.sort((a,b)=>age(b)-age(a)).map(t=>'<article class="tdlm-backlog-item"><div class="tdlm-task-text"><strong>'+esc(t.title)+'</strong><span><em class="tdlm-decay-pill '+tone(age(t))+'">'+age(t)+'d untouched</em> '+esc(t.category||"Personal")+(t.dueDate?" · due "+esc(t.dueDate):"")+(unmetDependencies(t.id).length?' · ⛔ '+unmetDependencies(t.id).length+' prerequisites':"")+'</span></div>'+ (unmetDependencies(t.id).length?safeActionButton("links",t.id,"View blockers"):safeActionButton("recommit",t.id,age(t)>=30?"Review first":"＋ Commit",capacity>0&&!blockers&&age(t)<30?"primary":""))+'</article>').join(""):'<div class="tdlm-empty">No uncommitted tasks. You have '+total+' saved task records.</div>')+'</div></section>';
 }
 function renderFocus(){
  tidy();focusClock();
@@ -357,6 +367,7 @@ function render(container){
   const b=e.target.closest("[data-momentum]");if(!b)return;
   const action=b.dataset.momentum,id=b.dataset.id||"";
   if(action==="newTask"){openNewTask();return}
+  if(action==="links"){if(window.TDLConnections)window.TDLConnections.openTask(id);return}
   if(action==="rest"){state.restUntil=today();save();X.refresh();updatePulse();return}
   if(action==="recommit"){recommit(id);return}
   if(action==="uncommit"||action==="backlog"){dropCommit(id);return}

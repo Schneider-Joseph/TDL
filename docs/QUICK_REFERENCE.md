@@ -17,6 +17,8 @@ Use this when you have an idea but don't remember which part of the code control
 | Full data backup/restore | `app/tdl-extras-core.js` | `function fullSnapshot()` | Restoring replaces listed keys |
 | **Full Inbox, Calendar and Planner page layouts** | `app/tdl-workspace.css` | `.tdlx-page`, `.tdlx-calendar-*`, `.tdlx-inbox-*` | See [Workspace Pages](WORKSPACE_PAGES.md) |
 | **Momentum daily caps, decay, midnight review, focus and Friday analytics** | `app/tdl-momentum.js` | `tdl.momentum.v1`, `tdl.completionLog.v1`, `recommit()`, `renderInsights()` | See [Momentum Guide](MOMENTUM.md) |
+| **Task relation graph, two-way links and blockers** | `app/tdl-connections.js` | `tdl.connections.v1`, `addLink()`, `summary()`, `isBlocked()` | See [Connections Guide](CONNECTIONS.md) |
+| **Linked-task graph and Planner task badges CSS** | `app/tdl-connections.css` | `.tdlc-*` | Offline-cached, additive |
 | **Momentum CSS** | `app/tdl-momentum.css` | `.tdlm-*` | Offline-cached, additive styling |
 | **Hash routing / browser back** | `app/tdl-extras-core.js` | `syncRoute()` and `navigate()` | Never change task storage to route between pages |
 | **Quiet timer / history** | `app/index.html` | `startFocusSession()` and `tickTimer()` | Randomized questions removed; preserve past records |

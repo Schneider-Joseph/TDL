@@ -172,6 +172,8 @@ The **Connections** list underneath the board allows you to **Label** or **Remov
 
 These are **your** diagrams. Nothing generates nodes automatically, and nodes do **not** secretly create/delete tasks in TDL. This first release doesn't have account sync or automatic task-node dependencies.
 
+**New: Link Planner nodes to actual tasks.** In Add/Edit node, select **Linked TDL task (optional)**. Linked nodes display the task title/status. Open a linked task's dependencies with **↗ Open linked task**. The arrow between two visual nodes does **not** automatically create a Blocks dependency; use [Connections](CONNECTIONS.md) for that.
+
 The current limits are **30 boards**, **120 nodes per board**, and **300 arrows per board**. These are practical initial safeguards against filling local browser storage.
 
 ### Where it's stored

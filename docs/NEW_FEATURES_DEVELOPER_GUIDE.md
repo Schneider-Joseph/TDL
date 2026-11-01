@@ -232,6 +232,10 @@ const getWeek=d=>{
 
 The calendar is deliberately **not** a second copy of your entire to-do list.
 
+## 6a. Connected task graph and Planner node references
+
+TDL now has an independent `app/tdl-connections.js` module and `tdl.connections.v1` storage key for validated directional and symmetric relationships. **Planner nodes** can optionally store a `taskId` referring to an existing original task; this does not rewrite the underlying task. To navigate from a Planner node, use `window.TDLConnections.openTask(taskId)`. See [Connections](CONNECTIONS.md).
+
 ## 7. Customize Visual Planner
 
 **File:** `app/tdl-planner.js`.

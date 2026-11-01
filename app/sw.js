@@ -1,5 +1,5 @@
-const CACHE_NAME = "tdl-shell-v27";
-const APP_SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg", "./tdl-extras.css", "./tdl-theme.css", "./tdl-workspace.css", "./tdl-momentum.css", "./tdl-extras-core.js", "./tdl-inbox.js", "./tdl-calendar.js", "./tdl-planner.js", "./tdl-momentum.js"];
+const CACHE_NAME = "tdl-shell-v28";
+const APP_SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg", "./tdl-extras.css", "./tdl-theme.css", "./tdl-workspace.css", "./tdl-momentum.css", "./tdl-connections.css", "./tdl-extras-core.js", "./tdl-inbox.js", "./tdl-calendar.js", "./tdl-planner.js", "./tdl-momentum.js", "./tdl-connections.js"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

@@ -13,7 +13,7 @@ const theme = read("app/tdl-theme.css");
 const sw = read("app/sw.js");
 const core = read("app/tdl-extras-core.js");
 const manifest = JSON.parse(read("app/manifest.webmanifest"));
-const paths = ["app/tdl-extras-core.js","app/tdl-inbox.js","app/tdl-calendar.js","app/tdl-planner.js","app/tdl-momentum.js"];
+const paths = ["app/tdl-extras-core.js","app/tdl-inbox.js","app/tdl-calendar.js","app/tdl-planner.js","app/tdl-momentum.js","app/tdl-connections.js"];
 
 function contains(source,needle,label){
  assert.ok(source.includes(needle),label+" is missing: "+needle);
@@ -44,6 +44,11 @@ contains(sw,'"./tdl-theme.css"',"Offline-cached theme");
 contains(html,'href="./tdl-workspace.css"',"Full workspace stylesheet");
 contains(html,'href="./tdl-momentum.css"',"Momentum stylesheet");
 contains(sw,'"./tdl-momentum.css"',"Offline cached Momentum stylesheet");
+contains(html,'href="./tdl-connections.css"',"Connections stylesheet");
+contains(sw,'"./tdl-connections.css"',"Offline-cached Connections stylesheet");
+const linkCSS=read("app/tdl-connections.css");
+for(const selector of [".tdlc-page",".tdlc-network-board",".tdlc-link-form",".tdlc-graph-node",".tdlc-task-blocked",".tdlc-linked-planner-node","max-width:490px"])
+ contains(linkCSS,selector,"Connections responsive design");
 const momentumStyle=read("app/tdl-momentum.css");
 for(const selector of [".tdlm-workspace",".tdlm-pulse",".tdlm-decision",".tdlm-focus-room",".tdlm-weekly-chart","max-width:680px"])contains(momentumStyle,selector,"Momentum layout");
 contains(sw,'"./tdl-workspace.css"',"Offline-cached workspace stylesheet");
@@ -59,6 +64,16 @@ contains(read("app/tdl-calendar.js"),'tdlx-calendar-agenda',"Calendar agenda vie
 contains(read("app/tdl-inbox.js"),'tdlx-inbox-layout',"Inbox full page");
 contains(core,'data-tdlx-open="accountability"',"Momentum nav button");
 contains(core,'accountability:"momentum"',"Momentum hash route");
+contains(core,'data-tdlx-open="connections"',"Connections nav");
+contains(core,'connections:"connections"',"Connections hash route");
+const linkModule=read("app/tdl-connections.js");
+for(const marker of ['tdl.connections.v1','function addLink(from,to,type)','function reaches(start,target,type)','function isBlocked(id)','function summary(id)','window.TDLConnections=','getEdges:()=>X.copy(edges())'])
+ contains(linkModule,marker,"Task relation graph logic");
+contains(html,'data-action=\\"connections\\"',"Dashboard task connection control");
+contains(html,'relationMeta(t)',"Task relationship summaries");
+contains(read("app/tdl-planner.js"),'name="taskId"',"Planner-to-task linking");
+contains(read("app/tdl-momentum.js"),'function unmetDependencies(taskId)',"Momentum dependency guard");
+assert.ok(!linkModule.includes("localStorage.clear("),"Connections must never clear saved tasks");
 const momentum=read("app/tdl-momentum.js");
 for(const marker of ['tdl.momentum.v1','tdl.completionLog.v1','function rollover()','function aged()','function recommit(taskId)','function startFocus(taskId,minutes)','function renderInsights()','data-momentum="','window.TDLMomentum='])
  contains(momentum,marker,"Momentum behavior");
@@ -82,4 +97,4 @@ assert.equal(manifest.start_url,"./index.html","PWA entry changed unexpectedly")
 assert.equal(manifest.scope,"./","PWA scope changed unexpectedly");
 assert.equal(manifest.theme_color,"#090f18","Manifest theme mismatch");
 console.log("PASS Studio UI controls, cache, CSS contract and original data key.");
-console.log("Verify routes #inbox / #week / #planner, scheduling, keyboard and responsive layout in Chrome.");
+console.log("Verify #connections, inverse relations, Planner linked nodes, Momentum blockers, keyboard and mobile layout in real browsers.");
