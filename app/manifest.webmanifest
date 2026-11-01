@@ -1,13 +1,13 @@
 {
   "id": "./index.html",
-  "name": "TDL — Task Dashboard",
+  "name": "TDL — Personal Workspace",
   "short_name": "TDL",
-  "description": "A private, offline-first task dashboard.",
+  "description": "A thoughtful, private, offline-first task and planning workspace.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#11151d",
-  "theme_color": "#11151d",
+  "background_color": "#090f18",
+  "theme_color": "#090f18",
   "icons": [
     {
       "src": "./icon.svg",
