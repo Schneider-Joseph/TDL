@@ -31,7 +31,7 @@ function open(name){
 }
 function close(){active="";$("#tdlx-overlay").hidden=true;$("#tdlx-content").innerHTML="";if(lastFocus&&lastFocus.focus)lastFocus.focus()}
 function refresh(){if(active&&screens[active]){try{screens[active].render($("#tdlx-content"))}catch(e){console.error("TDL "+active+" panel failed:",e);$("#tdlx-content").innerHTML='<p role="alert">This panel could not load. Your task list has not been cleared. Close this window and check the browser Console.</p>'}}}
-function toast(message){if(typeof window.notify==="function")window.notify(message);else console.info("TDL:",message)}
+function toast(message){if(window.TDLAppBridge&&typeof window.TDLAppBridge.notify==="function")window.TDLAppBridge.notify(message);else console.info("TDL:",message)}
 const historyKey="tdl.taskHistory.v1";
 let silentHistory=false;
 function history(){let h=store(historyKey,{version:1,entries:[],cursor:0});if(!h||!Array.isArray(h.entries)||!Number.isInteger(h.cursor))return {version:1,entries:[],cursor:0};h.cursor=Math.min(Math.max(0,h.cursor),h.entries.length);return h}
