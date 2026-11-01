@@ -1,6 +1,6 @@
 # R0 — Safe Backups, Testing, and Release Procedure
 
-> **STATUS: PLAN ONLY.** None of these upgrades has been implemented in the app. This is the checklist that must exist **before** the four new features are released.
+> **STATUS UPDATE (OCTOBER 31, 2026):** The four features and local Full backup/restore controls are now committed in the app. The dependency-free simulated smoke suite is in [tests/smoke.mjs](../../tests/smoke.mjs). **A real-browser restore exercise, installed-PWA/offline test and full acceptance matrix are still outstanding.** This remains the release-verification checklist, not a claim that every box is completed.
 
 [Back to master plan](../NEXT_FOUR_FEATURES.md)
 
