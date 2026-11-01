@@ -109,7 +109,7 @@ function weeklyTimeline(days){
  const hours=Array.from({length:24},(_,i)=>'<div class="tdlx-calendar-hour" style="top:'+(i*HOUR_HEIGHT)+'px"><span>'+String(i).padStart(2,"0")+':00</span></div>').join("");
  const grids=days.map(d=>'<div class="tdlx-calendar-day-track '+(ymd(d)===ymd(new Date())?"is-today":"")+'" data-cal-day="'+ymd(d)+'" tabindex="0" role="group" aria-label="'+esc(dayLabel(d))+'; click an hour to schedule work">'+daySegments(d).map(eventChip).join("")+'</div>').join("");
  return '<div class="tdlx-calendar-scroll" role="region" aria-label="Weekly calendar grid" tabindex="0"><div class="tdlx-calendar-grid">'+
- '<div class="tdlx-calendar-corner"><span>GMT '+esc(String(-new Date().getTimezoneOffset()/60))+'</span></div>'+dayHeaders+
+ '<div class="tdlx-calendar-corner"><span>LOCAL</span></div>'+dayHeaders+
  '<div class="tdlx-calendar-all-day-heading">DEADLINES</div>'+dueRows+
  '<div class="tdlx-calendar-hours" style="height:'+DAY_HEIGHT+'px">'+hours+'</div>'+grids+'</div></div>'+
  '<div class="tdlx-calendar-legend"><span><i class="tdlx-legend-work"></i> Planned focus</span><span><i class="tdlx-legend-due"></i> Task deadlines</span><span>Click empty time to schedule · Drag work blocks between days</span></div>';
@@ -141,7 +141,7 @@ function render(c){
  '<div class="tdlx-calendar-surface">'+(view==="week"?weeklyTimeline(days):agenda(days))+'</div>'+
  '<div class="tdlx-calendar-footnote"><strong>Two kinds of time, one calendar.</strong> Deadlines come directly from tasks and never move when you drag or edit a green scheduled work block. All changes remain on this device.</div>';
  const scroller=$(".tdlx-calendar-scroll",c);
- if(scroller){scroller.scrollTop=previousScroll===null?6*HOUR_HEIGHT:previousScroll;scroller.scrollLeft=previousHorizontal===null?0:previousHorizontal}
+ if(scroller){const track=$(".tdlx-calendar-day-track",c);const trackTop=track&&Number.isFinite(track.offsetTop)?track.offsetTop:132;scroller.scrollTop=previousScroll===null?trackTop+6*HOUR_HEIGHT:previousScroll;scroller.scrollLeft=previousHorizontal===null?0:previousHorizontal}
  const form=$("#tdlx-block-form",c);
  if(form)form.onsubmit=e=>{
   e.preventDefault();
