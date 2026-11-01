@@ -82,9 +82,10 @@ function activityChanges(){
  let changed=false;
  for(const t of current){
   const old=oldMap.get(t.id);
-  if(!old){const created=safeTimestamp(t.createdAt)||Date.now();state.lastAddedAt=Math.max(state.lastAddedAt,created);changed=true}
+  if(!old){state.lastAddedAt=Date.now();changed=true}
   const previousComplete=!!(old&&old.completed),complete=!!t.completed;
   if(!previousComplete&&complete){
+   if(state.focus.taskId===t.id)endFocus();
    log.push({id:X.uid(),taskId:t.id,title:t.title,category:t.category||"Personal",at:Date.now()});
    changed=true;
   }else if(previousComplete&&!complete){
@@ -134,6 +135,12 @@ function recommit(taskId){
  tidy();
  if(state.carryover.length&& !state.carryover.some(x=>x.id===taskId)){
   X.toast("Review carried-over tasks before committing something new.");return false;
+ }
+ if(dueInactivity()){
+  X.toast("It's been more than three days since you added a task. Add something useful or deliberately declare a rest day first.");return false
+ }
+ if(aged().some(t=>t.id!==taskId)){
+  X.toast("Resolve your 30-day task decisions before adding a new commitment.");return false
  }
  if(state.committed.includes(taskId)){state.carryover=state.carryover.filter(x=>x.id!==taskId);save();return true}
  if(state.committed.length>=state.cap){X.toast("Today's commitment limit is full. Remove one commitment or return a carried task to your backlog.");return false}
@@ -328,7 +335,7 @@ function render(container){
  tidy();focusClock();
  const tabs=[["today","Today"],["focus","Single-task focus"],["insights","Weekly review"]];
  const w=weekly();
- container.innerHTML='<div class="tdlm-workspace"><div class="tdlm-tabs" role="tablist" aria-label="Momentum sections">'+tabs.map(([id,label])=>'<button type="button" role="tab" data-momentum-tab="'+id+'" aria-selected="'+(tab===id)+'" class="'+(tab===id?"active":"")+'">'+label+(id==="insights"&&new Date().getDay()===5?'<span class="tdlm-friday-indicator">Friday</span>':"")+'</button>').join("")+'</div>'+
+ container.innerHTML='<div class="tdlm-workspace"><div class="tdlm-tabs" role="group" aria-label="Momentum sections">'+tabs.map(([id,label])=>'<button type="button" data-momentum-tab="'+id+'" aria-pressed="'+(tab===id)+'" class="'+(tab===id?"active":"")+'">'+label+(id==="insights"&&new Date().getDay()===5?'<span class="tdlm-friday-indicator">Friday</span>':"")+'</button>').join("")+'</div>'+
  (tab==="today"?renderToday():tab==="focus"?renderFocus():renderInsights())+'</div>';
  const cap=$("#tdlm-cap",container);if(cap){
   cap.value=String(state.cap);cap.onchange=e=>{
