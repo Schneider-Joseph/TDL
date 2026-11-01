@@ -25,6 +25,8 @@ const records = new Map();
 let downloaded = [];
 
 class FakeElement {
+  set id(value){this._id=String(value);if(this._id)ids.set(this._id,this)}
+  get id(){return this._id||""}
   constructor(tag="div"){
     this.tagName=tag.toUpperCase();
     this.dataset={};
