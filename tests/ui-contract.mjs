@@ -41,6 +41,20 @@ for(const path of paths){
  contains(sw,'"./'+name+'"',"Offline-cached script");
 }
 contains(sw,'"./tdl-theme.css"',"Offline-cached theme");
+contains(html,'href="./tdl-workspace.css"',"Full workspace stylesheet");
+contains(sw,'"./tdl-workspace.css"',"Offline-cached workspace stylesheet");
+const workspace=read("app/tdl-workspace.css");
+for(const selector of [".tdlx-page[hidden]","body.tdlx-page-open",".tdlx-calendar-grid",".tdlx-calendar-event",".tdlx-inbox-layout",".tdlx-board-viewport","max-width:550px"]){
+ contains(workspace,selector,"Full workspace layout");
+}
+for(const marker of ['id="tdlx-page"','id="tdlx-page-content"','hashchange','pathRoute()','navigate("home")','getPage:()=>pageActive']){
+ contains(core,marker,"Hash-addressable workspace routing");
+}
+contains(read("app/tdl-calendar.js"),'tdlx-calendar-grid',"Calendar timeline");
+contains(read("app/tdl-calendar.js"),'tdlx-calendar-agenda',"Calendar agenda view");
+contains(read("app/tdl-inbox.js"),'tdlx-inbox-layout',"Inbox full page");
+assert.ok(!html.includes('id="focusModal"'),"Random focus prompt must be removed");
+
 for(const selector of ["--ui-accent:","--ui-surface:","--ui-radius:",".header-utilities",".tdlx-header",".task{",".stat{",".tdlx-dialog","prefers-reduced-motion","max-width:780px","max-width:550px"]){
  contains(theme,selector,"Design token/selector");
 }
@@ -57,4 +71,4 @@ assert.equal(manifest.start_url,"./index.html","PWA entry changed unexpectedly")
 assert.equal(manifest.scope,"./","PWA scope changed unexpectedly");
 assert.equal(manifest.theme_color,"#090f18","Manifest theme mismatch");
 console.log("PASS Studio UI controls, cache, CSS contract and original data key.");
-console.log("Still test in a real browser at desktop and mobile widths.");
+console.log("Verify routes #inbox / #week / #planner, scheduling, keyboard and responsive layout in Chrome.");
