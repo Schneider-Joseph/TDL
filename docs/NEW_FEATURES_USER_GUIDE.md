@@ -207,7 +207,8 @@ The current limits are **30 boards**, **120 nodes per board**, and **300 arrows 
 2. Select a previously saved **TDL full backup** JSON file.
 3. Review the confirmation message—it shows the number of stored keys and tasks.
 4. If you proceed, TDL first attempts to download a **safety backup** of the current data.
-5. The specified storage entries are replaced and the app reloads.
+5. **Check your Downloads folder and verify that safety backup exists.** TDL now asks for a second explicit confirmation before overwriting anything. If no file appeared, **cancel** and create a manual Full backup first.
+6. Only after your confirmation are the specified storage entries replaced and the app reloaded.
 
 **Warning: Full restore replaces listed storage collections; it is not a merge.** It does not automatically combine tasks from two devices. It is not a Firebase replacement.
 
