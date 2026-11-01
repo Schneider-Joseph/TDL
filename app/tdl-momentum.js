@@ -221,6 +221,7 @@ function focusClock(){
  return true;
 }
 function startFocus(taskId,minutes){
+ if(bridge.isTimerRunning&&bridge.isTimerRunning()){X.toast("Pause your dashboard timer before starting a Momentum focus block.");return false}
  if(state.focus.running){X.toast("One task at a time. Finish, pause, or end the current block.");return false}
  const t=taskById(taskId);
  if(!t||t.completed||!state.committed.includes(taskId)){X.toast("Commit to an active task first.");return false}
