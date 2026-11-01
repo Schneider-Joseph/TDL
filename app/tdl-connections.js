@@ -27,7 +27,9 @@ function activeEdges(){const map=taskMap();return edges().filter(e=>map.has(e.fr
 function getTask(id){return taskMap().get(id)||null}
 function blockers(id){
  const map=taskMap();
- return edges().filter(e=>e.type==="blocks"&&e.to===id&&map.has(e.from)&&map.has(id)&&!map.get(e.from).completed).map(e=>map.get(e.from));
+ // A deleted prerequisite must NOT silently unlock its dependent task.
+ return edges().filter(e=>e.type==="blocks"&&e.to===id&&map.has(id)&&(!map.has(e.from)||!map.get(e.from).completed))
+  .map(e=>map.get(e.from)||{id:e.from,title:"Missing prerequisite ("+e.from+")",completed:false,missing:true});
 }
 function isBlocked(id){return blockers(id).length>0}
 function children(id){const map=taskMap();return edges().filter(e=>e.type==="parent"&&e.from===id&&map.has(e.to)).map(e=>map.get(e.to))}
@@ -44,13 +46,14 @@ function canonical(from,to,type){
  return {from,to,type}
 }
 function reaches(start,target,type){
- const visited=new Set(),queue=[start],map=taskMap();
+ const visited=new Set(),queue=[start];
  while(queue.length){
   const here=queue.shift();
   if(here===target)return true;
   if(visited.has(here))continue;
   visited.add(here);
-  for(const e of edges())if(e.type===type&&e.from===here&&map.has(e.to))queue.push(e.to);
+  // Include orphan references in cycle checks; restoring a deleted task must not create a cycle.
+  for(const e of edges())if(e.type===type&&e.from===here)queue.push(e.to);
  }
  return false;
 }
