@@ -61,6 +61,7 @@ function afterTaskSave(beforeRaw){
   if(h.entries.length>50)h.entries.splice(0,h.entries.length-50);
   h.cursor=h.entries.length;
   if(!historyWrite(h))toast("Task saved, but its Undo history was not saved. Export a full backup.");
+  else showUndoToast(h.entries[h.entries.length-1].label);
   updateUndoButtons();
   document.dispatchEvent(new CustomEvent("tdlx:tasks-changed"));
  }catch(e){console.error("TDL history error:",e);toast("Task saved; history unavailable. Export a backup.")}
@@ -93,10 +94,35 @@ function redo(){
  h.cursor++;historyWrite(h);updateUndoButtons();toast("Redid: "+action.label);refresh();
 }
 function updateUndoButtons(){const h=history();$("#tdlx-undo").disabled=h.cursor===0;$("#tdlx-redo").disabled=h.cursor>=h.entries.length}
+
+let undoToastTimer=0;
+const undoToast=document.createElement("div");
+undoToast.className="tdlx-undo-toast";undoToast.hidden=true;undoToast.setAttribute("role","status");
+undoToast.innerHTML='<span id="tdlx-toast-text"></span> <button type="button" class="btn" id="tdlx-toast-undo">Undo</button>';
+document.body.appendChild(undoToast);
+undoToast.querySelector("#tdlx-toast-undo").addEventListener("click",()=>{undo();undoToast.hidden=true});
+function showUndoToast(label){
+ undoToast.querySelector("#tdlx-toast-text").textContent=label;
+ undoToast.hidden=false;window.clearTimeout(undoToastTimer);
+ undoToastTimer=window.setTimeout(()=>{undoToast.hidden=true},10000);
+}
+function recoverDeleted(actionId,taskId){
+ const h=history(),entry=h.entries.find(e=>e.id===actionId);
+ const d=entry&&entry.changes.find(c=>c.id===taskId&&c.before&&!c.after);
+ if(!d)return;
+ if(tasks().some(t=>t.id===taskId)){alert("This task is already present. Nothing was overwritten.");return}
+ if(!confirm("Restore deleted task: "+d.before.title+"?"))return;
+ const previous=tasks(),next=previous.concat(copy(d.before));
+ window.TDLAppBridge.setTasks(next);window.TDLAppBridge.save();
+ if(localStorage.getItem("tdl.tasks.v1")!==JSON.stringify(next)){
+  window.TDLAppBridge.setTasks(previous);alert("The restore could not be saved. Keep your backups and retry.");return;
+ }
+ window.TDLAppBridge.render();toast("Deleted task restored.");refresh();
+}
 register("history","Task history & recovery",function(container){
  const h=history();
  container.innerHTML='<p class="tdlx-help">Your recent task changes are stored locally on this device. Undo and Redo check for conflicting edits; this is not a substitute for a full backup. Up to 50 actions are retained.</p><div class="tdlx-actions"><button class="btn" type="button" data-history-action="undo" '+(h.cursor===0?"disabled":"")+'>↶ Undo</button><button class="btn" type="button" data-history-action="redo" '+(h.cursor>=h.entries.length?"disabled":"")+'>↷ Redo</button></div>'+
- (h.entries.length?h.entries.slice().reverse().map((e,i)=>'<div class="tdlx-card"><div class="tdlx-row"><strong>'+escape(e.label)+'</strong><span class="tdlx-muted">'+escape(time(e.at))+'</span></div><small class="tdlx-muted">'+e.changes.length+' affected record(s) · '+(h.entries.length-i<=h.cursor?"Applied":"Undone")+'</small>'+ (e.changes.some(x=>x.before&&!x.after)?'<p class="tdlx-muted">Deleted task data remains available in history until old records are pruned. Undo actions in reverse order, or use a full backup for longer-term recovery.</p>':"")+'</div>').join(""):'<p class="tdlx-help">No task changes have been recorded since this feature was installed.</p>');
+ (h.entries.length?h.entries.slice().reverse().map((e,i)=>'<div class="tdlx-card"><div class="tdlx-row"><strong>'+escape(e.label)+'</strong><span class="tdlx-muted">'+escape(time(e.at))+'</span></div><small class="tdlx-muted">'+e.changes.length+' affected record(s) · '+(h.entries.length-i<=h.cursor?"Applied":"Undone")+'</small>'+ (e.changes.filter(x=>x.before&&!x.after).map(x=>'<button type="button" class="btn" data-recover-action="'+escape(e.id)+'" data-recover-task="'+escape(x.id)+'">Restore deleted: '+escape(x.before.title)+'</button>').join(""))+'</div>').join(""):'<p class="tdlx-help">No task changes have been recorded since this feature was installed.</p>');
 });
 const validKeys=k=>/^tdl\.[A-Za-z][A-Za-z0-9]*\.v[0-9]+$/.test(k);
 function fullSnapshot(){
@@ -152,6 +178,7 @@ bar.addEventListener("click",e=>{
 });
 $("#tdlx-restore-file").addEventListener("change",e=>{const f=e.target.files[0];e.target.value="";if(f)restoreFile(f)});
 $("#tdlx-content").addEventListener("click",e=>{
+ const recover=e.target.closest("[data-recover-action]");if(recover){recoverDeleted(recover.dataset.recoverAction,recover.dataset.recoverTask);return}
  const b=e.target.closest("[data-history-action]");if(!b)return;
  if(b.dataset.historyAction==="undo")undo();else if(b.dataset.historyAction==="redo")redo();
 });
