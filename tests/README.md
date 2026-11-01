@@ -18,8 +18,8 @@ It should print `PASS startup` and `PASS behavior` lines, ending with `TDL simul
 
 ## Which test does what?
 
-- `node tests/smoke.mjs` runs the original in-memory browser simulation for tasks, history, inbox and panels.
-- `node tests/ui-contract.mjs` checks the Studio UI structure, button IDs, script loading, offline assets, responsive CSS selectors, PWA manifest and JavaScript syntax.
+- `node tests/smoke.mjs` runs an in-memory browser simulation for tasks, history, full-page routes, inbox, calendar scheduling and planner rendering.
+- `node tests/ui-contract.mjs` checks the Studio UI structure, full-page routing, removed focus-quiz controls, button IDs, script loading, offline assets, responsive CSS selectors, PWA manifest and JavaScript syntax.
 
 Both run **without external Node packages** or private user tasks. Neither is a substitute for a real visual browser test.
 
@@ -31,12 +31,15 @@ Both run **without external Node packages** or private user tasks. Neither is a 
 - Undo and Redo restore expected task data.
 - Undoing a recurring completion plus creation of the next instance reverses both changes.
 - The new in-app inbox can detect a task due today.
-- The four panels render without throwing.
-- Full backup includes task/history/inbox storage keys.
+- Inbox, Week and Planner open dedicated routed pages rather than overlays.
+- Direct hash navigation works; Task History remains a separate dialog.
+- Calendar timeline, Agenda, work-block editor and saving a work block do not alter task deadlines.
+- Random timer focus questions are removed, while timer controls and history remain.
+- Full backup includes task/history/inbox and scheduled work-block storage keys.
 
 ## Safety
 
-The test uses **in-memory fake localStorage and fake tasks**. It does **not** open your real Chrome profile, contact Firebase, connect Blackboard, call GitHub APIs, or read your saved assignments.
+The tests use **in-memory fake localStorage and fake tasks**. It does **not** open your real Chrome profile, contact Firebase, connect Blackboard, call GitHub APIs, or read your saved assignments.
 
 ## What it DOES NOT prove
 
