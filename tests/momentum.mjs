@@ -155,7 +155,7 @@ test("Shrink rewrites user-approved task title but preserves other task data",()
  click("shrink","old");
  assert.equal(tasks.find(t=>t.id==="old").title,"Write the first paragraph");
  assert.equal(M.getAge("old"),0);
- assert.ok(M.getState().committed.includes("c"));
+ assert.ok(M.getState().carryover.some(x=>x.id==="c"),"Old commitments must remain in pending review after time advances");
 });
 test("No task is deleted without confirmation",()=>{
  confirmDelete=false;
