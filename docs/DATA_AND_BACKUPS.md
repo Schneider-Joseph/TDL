@@ -28,8 +28,14 @@ TDL currently uses these local storage keys:
 | `tdl.overdueCheckins.v1` | Per-task 90-minute check-in timestamps | **No** |
 | `tdl.notificationHistory.v2` | Deadline notification history | **No** |
 | `tdl.notificationPrompt.v1` | Whether notification prompt was answered | **No** |
+| `tdl.inbox.v1` | New in-app notification entries, read status and snoozes | **No** |
+| `tdl.taskHistory.v1` | Recent Undo/Redo action snapshots and cursor | **No** |
+| `tdl.timeBlocks.v1` | Weekly planned work blocks (not deadlines) | **No** |
+| `tdl.boards.v1` | Visual boards, nodes, positions and arrows | **No** |
 
 A key ending in `v1` is an informal storage format version. **Do not rename it just for cosmetic reasons.** Changing the key without a migration makes the app look for data under a different name.
+
+**October 31 update:** The separate **Full backup** button captures recognized TDL storage keys, including these new collections. **Full restore** imports this full-local-backup format after confirmation and attempts to download a safety snapshot first; it **replaces listed keys**, not merges them. See the [New Features User Guide](NEW_FEATURES_USER_GUIDE.md). The original Export/Import behavior described below has **not** changed.
 
 ## 3. Ordinary Export: easiest backup
 
