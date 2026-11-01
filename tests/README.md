@@ -13,6 +13,7 @@ TDL now includes a **dependency-free simulated smoke test** in [smoke.mjs](smoke
 node tests/smoke.mjs
 node tests/ui-contract.mjs
 node tests/momentum.mjs
+node tests/connections.mjs
 ```
 
 It should print `PASS startup` and `PASS behavior` lines, ending with `TDL simulated smoke checks passed.` If a check fails, the process exits with an error message and stack trace.
@@ -20,6 +21,7 @@ It should print `PASS startup` and `PASS behavior` lines, ending with `TDL simul
 ## Which test does what?
 
 - `node tests/smoke.mjs` runs an in-memory browser simulation for tasks, history, full-page routes, inbox, calendar scheduling and planner rendering.
+- `node tests/connections.mjs` uses a fake task database to check inverse links, cycles, hierarchy, missing references, confirmation before unlinking and HTML escaping.
 - `node tests/momentum.mjs` uses a deterministic fake clock to test 30-day aging, 3–5 commitment caps, midnight rollover, 2-minute focus, activity analytics, inactivity checks and deletion confirmation.
 - `node tests/ui-contract.mjs` checks the Studio UI structure, full-page routing, removed focus-quiz controls, button IDs, script loading, offline assets, responsive CSS selectors, PWA manifest and JavaScript syntax.
 
@@ -27,7 +29,7 @@ All run **without external Node packages** or private user tasks. Neither is a s
 
 ## What the test checks
 
-- The original inline application and all five extension JavaScript modules can initialize in a simulated browser environment.
+- The original inline application and all six extension JavaScript modules can initialize in a simulated browser environment.
 - Task creation still writes to `tdl.tasks.v1`.
 - Creating/editing a task records a history entry.
 - Undo and Redo restore expected task data.
@@ -36,6 +38,8 @@ All run **without external Node packages** or private user tasks. Neither is a s
 - Inbox, Week and Planner open dedicated routed pages rather than overlays.
 - Direct hash navigation works; Task History remains a separate dialog.
 - Calendar timeline, Agenda, work-block editor and saving a work block do not alter task deadlines.
+- Connections opens its own page, creates validated inverse links, survives missing tasks and is included in Full backup.
+- Planner nodes store an optional real task ID without mutating any task.
 - Random timer focus questions are removed, while timer controls and history remain.
 - Full backup includes task/history/inbox and scheduled work-block storage keys.
 
