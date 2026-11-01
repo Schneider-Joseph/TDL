@@ -73,9 +73,11 @@ for (const match of html.matchAll(/\bid="([^"]+)"/g)){
   ids.set(match[1],new FakeElement());
 }
 const fakeDefault = new FakeElement();
+const fakeWrap = new FakeElement();
 const fakeHeader = new FakeElement("header");
 function query(selector){
   if(selector==="header")return fakeHeader;
+  if(selector===".wrap")return fakeWrap;
   if(selector.startsWith("#"))return ids.get(selector.slice(1))||fakeDefault;
   return fakeDefault;
 }
@@ -99,10 +101,11 @@ const fakeLocalStorage={
   setItem(k,v){records.set(k,String(v))},
   removeItem(k){records.delete(k)}
 };
-const fakeLocation={protocol:"http:",origin:"http://localhost:8000",reload(){}};
+const fakeLocation={protocol:"http:",origin:"http://localhost:8000",hash:"",reload(){}};
 const fakeNotification=function(){};
 fakeNotification.permission="denied";
 fakeNotification.requestPermission=async()=> "denied";
+const windowListeners=new Map();
 const fakeWindow={
   Notification:fakeNotification,
   isSecureContext:true,
@@ -111,8 +114,12 @@ const fakeWindow={
   setTimeout(){},
   clearInterval(){},
   clearTimeout(){},
-  addEventListener(){}
+  addEventListener(type,handler){
+    if(!windowListeners.has(type))windowListeners.set(type,[]);
+    windowListeners.get(type).push(handler);
+  }
 };
+function dispatchWindow(type){for(const f of windowListeners.get(type)||[])f({type})}
 const urls=new Map();
 let nextUrl=0;
 class FakeBlob{
@@ -122,6 +129,7 @@ const FakeURL={
   createObjectURL(blob){const url="blob:fake-"+(++nextUrl);urls.set(url,blob.content);return url},
   revokeObjectURL(_url){}
 };
+let formValues={};
 const sandbox={
   window:fakeWindow,
   document:fakeDocument,
@@ -137,7 +145,7 @@ const sandbox={
   Blob:FakeBlob,
   URL:FakeURL,
   FileReader:class{},
-  FormData:class{},
+  FormData:class{get(name){return formValues[name]??""}},
   console,
   setTimeout(){},
   clearTimeout(){}
@@ -200,13 +208,70 @@ test("atomic logical undo of recurring completion plus next occurrence",()=>{
   X.redo();
   assert.equal(saved().length,2);
 });
-test("inbox/history/week/planner panels initialize",()=>{
-  for(const name of ["inbox","history","calendar","planner"]){
+test("Inbox, Calendar and Planner are full pages with shareable routes",()=>{
+  for(const [name,hash,marker] of [
+    ["inbox","#inbox","tdlx-inbox-layout"],
+    ["calendar","#week","tdlx-calendar-grid"],
+    ["planner","#planner","Create first board"]
+  ]){
     X.open(name);
-    assert.equal(query("#tdlx-overlay").hidden,false);
-    assert.ok(query("#tdlx-content").innerHTML.length>0);
+    assert.equal(fakeLocation.hash,hash);
+    assert.equal(query("#tdlx-page").hidden,false);
+    assert.equal(query("#tdlx-overlay").hidden,true);
+    assert.ok(query("#tdlx-page-content").innerHTML.includes(marker),"Missing "+name+" page content");
   }
   X.close();
+  assert.equal(fakeLocation.hash,"#home");
+  assert.equal(query("#tdlx-page").hidden,true);
+  assert.equal(saved().length,2,"Navigation must never replace task data");
+});
+test("Task history is still a separate modal and can close independently",()=>{
+  X.open("calendar");
+  X.open("history");
+  assert.equal(query("#tdlx-overlay").hidden,false);
+  assert.ok(query("#tdlx-content").innerHTML.includes("Task history"));
+  X.close();
+  assert.equal(query("#tdlx-overlay").hidden,true);
+  assert.equal(X.getPage(),"calendar");
+  X.close();
+});
+test("Direct URL route, Back/Forward and dashboard return",()=>{
+  fakeLocation.hash="#inbox";dispatchWindow("hashchange");
+  assert.equal(X.getPage(),"inbox");
+  fakeLocation.hash="#week";dispatchWindow("hashchange");
+  assert.equal(X.getPage(),"calendar");
+  fakeLocation.hash="#planner";dispatchWindow("hashchange");
+  assert.equal(X.getPage(),"planner");
+  fakeLocation.hash="#home";dispatchWindow("hashchange");
+  assert.equal(X.getPage(),"");
+});
+test("Timeline, agenda and schedule editor preserve task deadlines",()=>{
+  const before=JSON.stringify(saved());
+  X.open("calendar");
+  let page=query("#tdlx-page-content");
+  assert.ok(page.innerHTML.includes("tdlx-calendar-grid"));
+  page.onclick({target:{closest:sel=>sel==="[data-cal]"?{dataset:{cal:"modeAgenda"}}:null}});
+  assert.ok(page.innerHTML.includes("tdlx-calendar-agenda"));
+  page.onclick({target:{closest:sel=>sel==="[data-cal]"?{dataset:{cal:"modeWeek"}}:null}});
+  page.onclick({target:{closest:sel=>sel==="[data-cal]"?{dataset:{cal:"new"}}:null}});
+  assert.ok(page.innerHTML.includes("tdlx-block-form"));
+  formValues={title:"Study session",taskId:"test-1",start:"2026-11-02T10:00",end:"2026-11-02T11:30",notes:"Practice"};
+  query("#tdlx-block-form").onsubmit({preventDefault(){}});
+  const work=JSON.parse(fakeLocalStorage.getItem("tdl.timeBlocks.v1"));
+  assert.equal(work.length,1);
+  assert.equal(work[0].title,"Study session");
+  assert.equal(JSON.stringify(saved()),before,"Calendar must not change task records");
+  assert.ok(page.innerHTML.includes("Study session"));
+  X.close();
+});
+test("Random focus questions are absent but timer and focus history remain",()=>{
+  assert.ok(!html.includes('id="focusModal"'));
+  assert.ok(!inline.includes("maybeFocusCheck"));
+  assert.ok(!inline.includes("scheduleFocusCheck"));
+  assert.ok(!inline.includes("focusQuestions"));
+  assert.ok(html.includes('id="timerStart"'));
+  assert.ok(html.includes('id="focusHistory"'));
+  assert.ok(html.includes('tdl.focusSessions.v1'));
 });
 test("full backup contains tasks and the extension collections",()=>{
   X.fullBackup();
