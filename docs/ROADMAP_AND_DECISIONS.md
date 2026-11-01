@@ -2,7 +2,7 @@
 
 **Purpose:** Keep a clear record of what TDL does, which ideas have been discussed, and which decisions were deliberate. This prevents a future change from accidentally reversing something you wanted.
 
-**As of October 2026:** No Firebase sync or Blackboard integration exists in production. This is a planning document, not a list of installed features.
+**October 31, 2026:** Firebase sync and Blackboard integration remain absent. TDL now includes the **local Notification Center, Task History/Undo, Weekly Calendar, and Visual Planner** in separate JS files. The source passes code-level checks; full browser acceptance testing remains outstanding. See [New Features User Guide](NEW_FEATURES_USER_GUIDE.md).
 
 ## 1. Principles guiding TDL
 
@@ -26,7 +26,7 @@
 
 See [Feature Guide](FEATURES.md) for details and exceptions.
 
-## 3. Designed but NOT implemented: TDL Canvas
+## 3. Visual Planner — implemented initial version
 
 ### The idea
 
@@ -56,7 +56,7 @@ A **user-editable freeform canvas plus decision-tree planner**. You create and a
 5. How do you export/restore a canvas without breaking task backup files?
 6. What layout remains accessible to keyboard-only users?
 
-**Status:** Concept only. There is no Canvas button or canvas data model in the current app.
+**Status:** The initial version is now in `app/tdl-planner.js`: multiple boards, draggable nodes, editable notes, labeled arrows, zoom, pan, keyboard position controls and separate local storage. Some older suggested enhancements above (task linking, refined touch testing, separate board Undo) remain future work.
 
 ## 4. Designed but NOT implemented: Firebase sync
 
@@ -127,10 +127,10 @@ Before deploying, update *all* sort comparators that use the old pattern and tes
 - Put data schema and storage functions behind one well-tested interface.
 - Add automated tests for date/recurrence logic, filtering and notifications.
 
-**Third: Optional new workspaces**
+**Third: Verify and improve the new local workspaces**
 
-- Prototype a Canvas on a branch with local-only data.
-- Design independent canvas export/import formats.
+- Verify the new Visual Planner in desktop/mobile browsers with fake data.
+- Test the new Full backup/restore format containing board and calendar data.
 - Avoid coupling experimental UI directly to production task storage.
 
 **Fourth: Optional cloud sync**
