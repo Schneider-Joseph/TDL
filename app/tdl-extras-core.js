@@ -44,14 +44,76 @@ const header=document.querySelector("header");
 if(header)header.insertAdjacentElement("afterend",bar);else document.body.insertBefore(bar,document.body.firstChild);
 const screens={};
 let active="", lastFocus=null;
+const workspace=document.createElement("main");
+workspace.id="tdlx-workspace";
+workspace.className="tdlx-workspace";
+workspace.hidden=true;
+workspace.innerHTML='<div class="tdlx-page-head"><div><span class="tdlx-page-eyebrow">TDL / WORKSPACE</span><h1 id="tdlx-page-heading">Workspace</h1><p id="tdlx-page-subtitle">Your personal space to plan and organize.</p></div><button type="button" class="btn" id="tdlx-dashboard">← Dashboard</button></div><div id="tdlx-page-content" class="tdlx-page-content"></div>';
+bar.insertAdjacentElement("afterend",workspace);
+const pageNames=["inbox","calendar","planner"];
+const pageMeta={
+ inbox:{label:"Inbox",subtitle:"Keep track of what needs your attention."},
+ calendar:{label:"Calendar",subtitle:"Plan your week without changing your task deadlines."},
+ planner:{label:"Visual planner",subtitle:"Turn ideas into connected plans on a spacious canvas."}
+};
 function register(name,title,render){screens[name]={title,render};if(active===name)refresh()}
+function navigate(name,replace=false){
+ const hash=name&&pageNames.includes(name)?"#"+name:"#dashboard";
+ if(location.hash!==hash){if(replace)history.replaceState(null,"",hash);else history.pushState(null,"",hash)}
+ showRoute(name);
+}
+function showRoute(name){
+ if(!pageNames.includes(name)||!screens[name])name="";
+ active=name;
+ const page=!!name;
+ document.body.classList.toggle("tdlx-page-active",page);
+ workspace.hidden=!page;
+ $("#tdlx-overlay").hidden=true;
+ if(page){
+  const meta=pageMeta[name];
+  $("#tdlx-page-heading").textContent=meta.label;
+  $("#tdlx-page-subtitle").textContent=meta.subtitle;
+  refresh();
+  workspace.scrollIntoView({block:"start",behavior:"instant"});
+ }else{
+  $("#tdlx-page-content").innerHTML="";
+ }
+ bar.querySelectorAll("[data-tdlx-open]").forEach(b=>{
+  const selected=b.dataset.tdlxOpen===name;
+  b.classList.toggle("tdlx-selected",selected);
+  b.setAttribute("aria-current",selected?"page":"false");
+ });
+}
 function open(name){
  if(!screens[name])return;
- lastFocus=document.activeElement;active=name;$("#tdlx-heading").textContent=screens[name].title;
- $("#tdlx-overlay").hidden=false;refresh();$("#tdlx-close").focus();
+ lastFocus=document.activeElement;
+ if(pageNames.includes(name)){navigate(name);return}
+ active=name;
+ $("#tdlx-heading").textContent=screens[name].title;
+ $("#tdlx-overlay").hidden=false;
+ refresh();
+ $("#tdlx-close").focus();
 }
-function close(){active="";$("#tdlx-overlay").hidden=true;$("#tdlx-content").innerHTML="";if(lastFocus&&lastFocus.focus)lastFocus.focus()}
-function refresh(){if(active&&screens[active]){try{screens[active].render($("#tdlx-content"))}catch(e){console.error("TDL "+active+" panel failed:",e);$("#tdlx-content").innerHTML='<p role="alert">This panel could not load. Your task list has not been cleared. Close this window and check the browser Console.</p>'}}}
+function close(){
+ if(pageNames.includes(active)){navigate("");return}
+ active="";
+ $("#tdlx-overlay").hidden=true;
+ $("#tdlx-content").innerHTML="";
+ if(lastFocus&&lastFocus.focus)lastFocus.focus();
+}
+function refresh(){
+ if(!active||!screens[active])return;
+ const isPage=pageNames.includes(active);
+ const container=$(isPage?"#tdlx-page-content":"#tdlx-content");
+ try{screens[active].render(container)}
+ catch(e){
+  console.error("TDL "+active+" view failed:",e);
+  container.innerHTML='<p role="alert">This view could not load. Your saved tasks were not cleared. Check the browser Console.</p>';
+ }
+}
+workspace.querySelector("#tdlx-dashboard").addEventListener("click",()=>navigate(""));
+window.addEventListener("popstate",()=>showRoute(location.hash.slice(1)));
+window.addEventListener("hashchange",()=>showRoute(location.hash.slice(1)));
 function toast(message){if(window.TDLAppBridge&&typeof window.TDLAppBridge.notify==="function")window.TDLAppBridge.notify(message);else console.info("TDL:",message)}
 const historyKey="tdl.taskHistory.v1";
 let silentHistory=false;
@@ -190,7 +252,7 @@ async function restoreFile(file){
 }
 $("#tdlx-close").addEventListener("click",close);
 $("#tdlx-overlay").addEventListener("click",e=>{if(e.target.id==="tdlx-overlay")close()});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&active){close()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&active&&!pageNames.includes(active)){close()}});
 bar.addEventListener("click",e=>{
  const openButton=e.target.closest("[data-tdlx-open]");if(openButton){open(openButton.dataset.tdlxOpen);return}
  if(e.target.closest("#tdlx-undo"))undo();
@@ -205,5 +267,6 @@ $("#tdlx-content").addEventListener("click",e=>{
  if(b.dataset.historyAction==="undo")undo();else if(b.dataset.historyAction==="redo")redo();
 });
 updateUndoButtons();
+window.setTimeout(()=>showRoute(location.hash.slice(1)),0);
 window.TDLX={register,open,close,refresh,escape,copy,uid,store,put,tasks,toast,afterTaskSave,undo,redo,fullBackup,updateBadge(n){const el=$("#tdlx-unread");el.hidden=!n;el.textContent=String(n)}};
 })();
