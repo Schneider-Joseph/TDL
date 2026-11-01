@@ -36,6 +36,8 @@ function read(){
   sessions:Array.isArray(s.sessions)?s.sessions.filter(x=>x&&typeof x.at==="number"&&typeof x.taskId==="string").slice(-1500):[]};
 }
 let state=read(),snapshot=X.copy(taskList()),log=readLog(),tab="today",pulse=null,focusTicker=null;
+// Persist the first-visit baseline immediately; otherwise the 3-day inactivity clock would restart on every reload.
+if(localStorage.getItem(STATE_KEY)===null)X.put(STATE_KEY,state);
 function readLog(){
  const l=X.store(LOG_KEY,[]);
  return Array.isArray(l)?l.filter(x=>x&&typeof x.taskId==="string"&&typeof x.at==="number"&&typeof x.title==="string").slice(-5000):[];
