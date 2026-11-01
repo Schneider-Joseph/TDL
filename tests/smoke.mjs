@@ -15,7 +15,7 @@ const inline = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
 assert.ok(inline, "TDL inline source was not found");
 const scripts = [
   {name:"app/index.html (inline)", source:inline},
-  ...["tdl-extras-core.js","tdl-inbox.js","tdl-calendar.js","tdl-planner.js"]
+  ...["tdl-extras-core.js","tdl-inbox.js","tdl-calendar.js","tdl-planner.js","tdl-momentum.js"]
     .map(name=>({name,source:fs.readFileSync("app/"+name,"utf8")}))
 ];
 
@@ -162,8 +162,8 @@ for(const {name,source} of scripts){
     throw error;
   }
 }
-const bridge=fakeWindow.TDLAppBridge,X=fakeWindow.TDLX;
-assert.ok(bridge&&X,"New feature bridge/core missing");
+const bridge=fakeWindow.TDLAppBridge,X=fakeWindow.TDLX,M=fakeWindow.TDLMomentum;
+assert.ok(bridge&&X&&M,"New feature bridge/core/Momentum missing");
 const saved=()=>JSON.parse(fakeLocalStorage.getItem("tdl.tasks.v1")||"[]");
 const hist=()=>JSON.parse(fakeLocalStorage.getItem("tdl.taskHistory.v1")||"{}");
 const inbox=()=>JSON.parse(fakeLocalStorage.getItem("tdl.inbox.v1")||'{"items":[]}');
@@ -275,6 +275,42 @@ test("Random focus questions are absent but timer and focus history remain",()=>
   assert.ok(html.includes('id="focusHistory"'));
   assert.ok(html.includes('tdl.focusSessions.v1'));
 });
+test("Momentum page is a full page and not a dialog",()=>{
+  X.open("accountability");
+  assert.equal(fakeLocation.hash,"#momentum");
+  assert.equal(query("#tdlx-page").hidden,false);
+  assert.equal(query("#tdlx-overlay").hidden,true);
+  assert.ok(query("#tdlx-page-content").innerHTML.includes("DAILY HARD CAP"));
+  assert.ok(query("#tdlx-page-content").innerHTML.includes("DAILY HARD CAP"));
+  X.close();
+});
+test("Momentum commits only open tasks and keeps original storage separate",()=>{
+  const original=JSON.stringify(saved());
+  const open=saved().find(t=>!t.completed);
+  assert.ok(open,"An open recurring test task must exist");
+  assert.equal(M.recommit(open.id),true);
+  assert.equal(M.getState().committed.length,1);
+  assert.equal(JSON.stringify(saved()),original,"Daily commitment cannot change original task records");
+  assert.ok(fakeLocalStorage.getItem("tdl.momentum.v1"));
+});
+test("Momentum completion log tracks task transitions and Undo",()=>{
+  const id=saved().find(t=>!t.completed)?.id;
+  assert.ok(id);
+  const prior=M.getLog().filter(x=>x.taskId===id).length;
+  bridge.completeTask(id);
+  assert.equal(M.getLog().filter(x=>x.taskId===id).length,prior+1);
+  X.undo();
+  assert.equal(M.getLog().filter(x=>x.taskId===id).length,prior);
+  X.redo();
+  assert.equal(M.getLog().filter(x=>x.taskId===id).length,prior+1);
+});
+test("Momentum Friday/weekly analytics have separate saved metadata",()=>{
+  const week=M.getWeek();
+  assert.equal(week.days.length,7);
+  assert.ok(Array.isArray(week.events));
+  assert.ok(Array.isArray(M.getLog()));
+  assert.ok(fakeLocalStorage.getItem("tdl.completionLog.v1"));
+});
 test("full backup contains tasks and the extension collections",()=>{
   X.fullBackup();
   assert.ok(downloaded.length>0);
@@ -283,6 +319,8 @@ test("full backup contains tasks and the extension collections",()=>{
   assert.ok(output.entries["tdl.tasks.v1"]);
   assert.ok(output.entries["tdl.taskHistory.v1"]);
   assert.ok(output.entries["tdl.inbox.v1"]);
+  assert.ok(output.entries["tdl.momentum.v1"]);
+  assert.ok(output.entries["tdl.completionLog.v1"]);
 });
 
 console.log("\nTDL simulated smoke checks passed.");
