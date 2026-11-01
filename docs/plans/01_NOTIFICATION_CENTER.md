@@ -1,6 +1,6 @@
 # R1 — Notification Center: Complete Feature Specification
 
-> **PLANNED, NOT IMPLEMENTED.** TDL currently has a notification permission control, a test notification button, deadline checks while the app is running, and a 90-minute overdue modal. It does **not** currently have the persistent inbox described here.
+> **IMPLEMENTED INITIAL VERSION (OCTOBER 31, 2026).** TDL now contains `app/tdl-inbox.js`, an in-app inbox with unread/read, snooze, dismiss, open-task links and persistent local storage. This document captures the design goals; see the [user guide](../NEW_FEATURES_USER_GUIDE.md) for actual controls. Remaining work includes full real-browser tests, optional quiet hours, and more polished reminder deduplication.
 
 [Master plan](../NEXT_FOUR_FEATURES.md) · [Safety checklist](00_SAFETY_AND_RELEASE_CHECKLIST.md)
 
