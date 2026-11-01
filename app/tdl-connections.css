@@ -61,12 +61,12 @@
  background-size:23px 23px;
 }
 .tdlc-network-lines{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
-.tdlc-network-lines path{fill:none;stroke:#6dbb9d;stroke-width:2.2;marker-end:url(#tdlc-arrow);vector-effect:non-scaling-stroke}
+.tdlc-network-lines g > path{fill:none;stroke:#6dbb9d;stroke-width:2.2;marker-end:url(#tdlc-arrow);vector-effect:non-scaling-stroke}
 .tdlc-network-lines marker path{fill:#86d3aa;stroke:none}
 .tdlc-graph-node{
  position:absolute;transform:translate(-50%,-50%);
  display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:5px;
- width:min(26%,205px);min-height:67px;text-align:left;padding:11px 13px;
+ width:min(23%,190px);min-height:65px;text-align:left;padding:11px 13px;
  background:linear-gradient(130deg,#255443,#224438);border:1px solid #82c5a1;border-radius:11px;
  box-shadow:0 7px 25px #0005;color:#e8f8ed;cursor:pointer;
 }
