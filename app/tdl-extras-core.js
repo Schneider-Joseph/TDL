@@ -183,5 +183,5 @@ $("#tdlx-content").addEventListener("click",e=>{
  if(b.dataset.historyAction==="undo")undo();else if(b.dataset.historyAction==="redo")redo();
 });
 updateUndoButtons();
-window.TDLX={register,open,close,refresh,escape,copy,uid,store,put,tasks,toast,afterTaskSave,fullBackup,updateBadge(n){const el=$("#tdlx-unread");el.hidden=!n;el.textContent=String(n)}};
+window.TDLX={register,open,close,refresh,escape,copy,uid,store,put,tasks,toast,afterTaskSave,undo,redo,fullBackup,updateBadge(n){const el=$("#tdlx-unread");el.hidden=!n;el.textContent=String(n)}};
 })();
