@@ -32,6 +32,14 @@ You do not need to read everything at once.
 | Understand unfamiliar development terminology | [Plain-English Glossary](docs/GLOSSARY.md) |
 | Review future ideas and known bugs | [Roadmap, Decisions, and Known Limitations](docs/ROADMAP_AND_DECISIONS.md) |
 
+## Kinetic Studio — November 2026
+
+TDL now has an interactive, motion-led interface: oversized typography, a reactive liquid-chrome sculpture, a spring-following cursor bubble with contextual hover labels, click ripples and a focus timer that reflects its running state. Graphite starts new visits in black, chalk and acid yellow; previously saved themes remain selected.
+
+Motion respects your system's reduced-motion preference, and you can switch it off in **Settings → Interactive motion & cursor bubble**. Touch devices keep normal touch interactions. Everything renders locally and works offline after the app shell is cached. See the [design guide](docs/DESIGN_SYSTEM.md#kinetic-studio--november-2026).
+
+[Desktop preview](docs/previews/kinetic-desktop.png) · [Mobile preview](docs/previews/kinetic-mobile.png) · [Motion demo](docs/previews/kinetic-motion.gif)
+
 ## Workspace themes — November 2026
 
 TDL now includes **Paper**, **Graphite**, **Forest**, and **Dusk** themes. Choose **Appearance** in the header to preview and apply one; the selection saves automatically on this device. The redesigned desktop layout has persistent workspace navigation, a task-first center and a separate focus column. On phones, the task list comes before the focus widgets. All existing workspace pages follow the selected palette, including offline use after the app shell is cached.

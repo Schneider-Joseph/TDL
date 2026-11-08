@@ -19,3 +19,6 @@ tdl-backup-*.json
 tdl-full-backup-*.json
 *.ics
 *.ical
+
+# Local browser acceptance artifacts
+work/

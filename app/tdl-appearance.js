@@ -3,16 +3,16 @@
  "use strict";
  var key = "tdl.appearance.v1";
  var themes = [
-  {id:"paper",name:"Paper",note:"Warm & minimal",bg:"#f6f5f1",rail:"#edeee7",surface:"#ffffff",accent:"#436a50",text:"#292d2a"},
-  {id:"graphite",name:"Graphite",note:"Quiet after hours",bg:"#161819",rail:"#1c1f20",surface:"#2a2e2e",accent:"#b7d7a5",text:"#eeeee9"},
+  {id:"paper",name:"Paper",note:"Warm & graphic",bg:"#eae9e2",rail:"#eae9e2",surface:"#f3f2eb",accent:"#282e16",text:"#171815"},
+  {id:"graphite",name:"Graphite",note:"Electric after hours",bg:"#101010",rail:"#101010",surface:"#252525",accent:"#e5ff58",text:"#f0f0e9"},
   {id:"forest",name:"Forest",note:"A fresh perspective",bg:"#eef2ed",rail:"#dfe9dc",surface:"#fbfdf9",accent:"#2c6b52",text:"#203b31"},
   {id:"dusk",name:"Dusk",note:"A softer dark mode",bg:"#211e2a",rail:"#282231",surface:"#373141",accent:"#cbb4ee",text:"#f2eaf6"}
  ];
  function valid(id) { return themes.some(function(t) { return t.id === id; }); }
- var selected = "paper";
+ var selected = "graphite";
  try { var saved = localStorage.getItem(key); if (valid(saved)) selected = saved; } catch (_) {}
  function apply(id) {
-  selected = valid(id) ? id : "paper";
+  selected = valid(id) ? id : "graphite";
   document.documentElement.dataset.theme = selected;
   var meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.content = themes.find(function(t) { return t.id === selected; }).bg;
