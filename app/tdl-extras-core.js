@@ -17,7 +17,7 @@ root.innerHTML='<div id="tdlx-overlay" class="tdlx-overlay" hidden><section clas
 document.body.appendChild(root);
 const bar=document.createElement("nav");
 bar.className="tdlx-header";
-bar.setAttribute("aria-label","TDL extra tools");
+bar.setAttribute("aria-label","Workspace navigation");
 const tdlxIconPaths={
  connections:'<circle cx="7" cy="12" r="3"/><circle cx="17" cy="6" r="3"/><circle cx="17" cy="18" r="3"/><path d="m9.6 10.5 4.8-3M9.6 13.5l4.8 3"/>',
  momentum:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
@@ -84,7 +84,7 @@ function updateNavigation(){
 }
 function syncRoute(focusHeading=false){
  const next=pathRoute();
- if(next===pageActive&&page.hidden===!next){if(next)refresh();return}
+ if(next===pageActive&&page.hidden===!next){updateNavigation();if(next)refresh();return}
  pageActive=next;
  if(active){active="";$("#tdlx-overlay").hidden=true;$("#tdlx-content").innerHTML=""}
  updateNavigation();

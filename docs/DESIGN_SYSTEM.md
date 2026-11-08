@@ -145,3 +145,11 @@ Only the appearance and grouping of existing controls changed. The TDL task data
 ## Purple accent restoration — November 2026
 
 The original Studio UI layout has been restored. Purple/lavender replaces the green/mint accents in the dashboard, navigation, timer, dialogs, Week, Planner, Momentum, Connections and app icon. Task behavior and browser data are unchanged. The experimental appearance picker, kinetic hero, cursor bubble and chrome sculpture have been removed. App-shell v31 refreshes the restored assets without clearing saved tasks.
+
+## Workspace sidebar — November 2026
+
+Dashboard, Inbox, Week, Planner, Connections and Momentum now sit in a persistent left sidebar. Undo, Redo and More tools remain in that sidebar. The dashboard and purple palette retain their existing design.
+
+On screens 900px wide or narrower, **Menu** opens navigation in a drawer on the left. The drawer contains keyboard focus, closes with Escape or a navigation choice, and returns focus to Menu when dismissed. The same navigation elements move between the desktop sidebar and drawer, so IDs, unread counts and actions stay synchronized.
+
+`app/tdl-sidebar.css` controls positioning and responsive layout; `app/tdl-sidebar.js` handles the mobile drawer. Both are included in offline app-shell v32. Task data and storage keys are unchanged.
