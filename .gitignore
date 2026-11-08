@@ -20,5 +20,5 @@ tdl-full-backup-*.json
 *.ics
 *.ical
 
-# Local browser acceptance artifacts
+# Local scratch and QA artifacts
 work/
