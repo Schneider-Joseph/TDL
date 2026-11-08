@@ -1,0 +1,59 @@
+/* Workspace navigation lives beside the app; the dashboard keeps its layout. */
+.wrap {max-width:1530px;padding:25px 30px 55px 266px}
+.tdlx-header {
+ position:fixed;left:max(20px,calc((100vw - 1530px)/2 + 20px));top:25px;bottom:25px;
+ width:216px;margin:0!important;padding:20px 13px!important;
+ display:flex!important;flex-direction:column;align-items:stretch!important;
+ justify-content:flex-start!important;gap:18px!important;flex-wrap:nowrap;
+ overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;
+ background:#121b27;border:1px solid var(--ui-edge-strong);border-radius:16px;
+}
+.tdlx-tabs {display:flex;flex-direction:column;align-items:stretch;flex-wrap:nowrap;gap:5px;overflow:visible}
+.tdlx-nav-label {display:block!important;margin:0;padding:3px 12px 15px;font-size:9px;letter-spacing:1.8px}
+.tdlx-header .btn {justify-content:flex-start;min-height:43px;padding:11px 12px;gap:12px;text-align:left;white-space:normal}
+.tdlx-header .tdlx-pill {margin-left:auto}
+.tdlx-header #tdlx-undo {margin-top:20px;padding-top:17px;border-top:1px solid var(--ui-edge);border-radius:0}
+.tdlx-header #tdlx-redo {padding-inline:12px}
+.tdlx-tools {margin-top:auto;width:100%}
+.tdlx-tools>summary {width:100%;justify-content:space-between}
+.tdlx-tools-menu {position:static;width:100%;min-width:0;margin-top:7px;box-shadow:none;padding:5px}
+.tdlx-header .tdlx-tools-menu .btn {font-size:11px;padding:10px;min-height:38px;gap:8px}
+.tdl-sidebar-toggle[hidden] {display:none!important}
+.tdl-sidebar-toggle svg {width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round}
+.tdl-sidebar-drawer {padding:0;color:var(--text);background:#121b27;border:0;border-right:1px solid var(--ui-edge-strong);max-width:none;max-height:none}
+.tdl-sidebar-drawer::backdrop {background:#050911a6;backdrop-filter:blur(3px)}
+.tdl-sidebar-drawer-head {display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 17px 8px}
+.tdl-sidebar-drawer-head h2 {font-size:19px;margin:0;letter-spacing:-.6px}
+@media(max-width:1050px) and (min-width:901px) {
+ .wrap {padding:22px 22px 45px 246px}
+ .tdlx-header {width:202px;left:20px;top:22px;bottom:22px}
+ .layout {grid-template-columns:175px minmax(0,1fr)}
+ .toolbar .tools {width:100%}.toolbar .search {flex:1;min-width:0}
+}
+@media(max-width:900px) {
+ .wrap {padding:22px 22px 45px}
+ .wrap>.tdlx-header {display:none!important}
+ .tdl-sidebar-drawer {position:fixed;inset:0 auto 0 0;margin:0;width:min(300px,86vw);height:100dvh}
+ .tdl-sidebar-drawer[open] {display:flex;flex-direction:column}
+ .tdl-sidebar-drawer .tdlx-header {
+  position:static;inset:auto;width:100%;min-height:0;flex:1;margin:0!important;
+  border:0;border-radius:0;box-shadow:none;padding:12px 15px 22px!important;gap:15px!important;
+ }
+ .tdl-sidebar-drawer .tdlx-tabs {overflow:visible;flex-direction:column;align-items:stretch;flex-wrap:nowrap;scrollbar-width:thin}
+ .tdl-sidebar-drawer .tdlx-nav-label {display:none!important}
+ .tdl-sidebar-drawer .tdlx-tabs .btn {flex:0 0 auto;min-height:44px;padding:12px;font-size:13px;white-space:normal}
+ .tdl-sidebar-drawer .tdlx-tools>summary {padding:12px;font-size:12px}
+}
+@media(max-width:550px) {
+ .wrap {padding:17px 13px 38px}
+ .header-actions {gap:6px}
+ .header-actions .btn {font-size:11px;padding-inline:10px}
+ #add {padding-inline:11px}
+ .header-actions .header-icon {display:none}
+}
+@media(max-width:375px) {
+ .header-actions {gap:4px}
+ .header-actions .btn,.header-utilities>summary {padding-inline:8px;font-size:10px}
+ .tdl-sidebar-toggle {gap:5px}
+ .tdl-sidebar-toggle svg {width:15px;height:15px}
+}
