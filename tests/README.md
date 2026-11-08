@@ -60,3 +60,7 @@ python3 -m http.server 8000
 Open `http://localhost:8000/app/`, then follow the [New Features User Guide](../docs/NEW_FEATURES_USER_GUIDE.md). Try all four tools, Full backup, and Full restore. **Do not clear the real TDL site data to troubleshoot a test.**
 
 See the [release safety checklist](../docs/plans/00_SAFETY_AND_RELEASE_CHECKLIST.md) for the full recovery procedure.
+
+## Appearance preference checks
+
+Run `node tests/appearance.mjs` from the repository root. This checks all four saved themes, invalid and unavailable storage fallback, cross-tab preference updates and offline shell inclusion. Real Chromium verification of responsive layouts and theme interactions is recorded in the Design System guide.

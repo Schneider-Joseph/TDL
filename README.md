@@ -32,6 +32,12 @@ You do not need to read everything at once.
 | Understand unfamiliar development terminology | [Plain-English Glossary](docs/GLOSSARY.md) |
 | Review future ideas and known bugs | [Roadmap, Decisions, and Known Limitations](docs/ROADMAP_AND_DECISIONS.md) |
 
+## Workspace themes — November 2026
+
+TDL now includes **Paper**, **Graphite**, **Forest**, and **Dusk** themes. Choose **Appearance** in the header to preview and apply one; the selection saves automatically on this device. The redesigned desktop layout has persistent workspace navigation, a task-first center and a separate focus column. On phones, the task list comes before the focus widgets. All existing workspace pages follow the selected palette, including offline use after the app shell is cached.
+
+Theme tokens and layout live in `app/tdl-appearance.css`; the picker and isolated appearance preference live in `app/tdl-appearance.js`. See [Design System](docs/DESIGN_SYSTEM.md#workspace-themes--november-2026) for customization and validation details.
+
 ## Visual refresh — October 31, 2026
 
 The Studio UI refresh gives TDL a graphite-and-mint design, refined task cards, more consistent spacing, cleaner tool menus, new navigation icons, and responsive desktop/mobile layouts. It is a **visual/navigation update only**: it does not rename or migrate any of your local task data. Use the [design guide](docs/DESIGN_SYSTEM.md) to customize it yourself.

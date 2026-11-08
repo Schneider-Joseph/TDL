@@ -140,3 +140,16 @@ This redesign does **not** add or modify Firebase, Blackboard, cloud synchroniza
 Only the appearance and grouping of existing controls changed. The TDL task data storage key is still `tdl.tasks.v1`.
 
 **Recommended first customization:** change one color token, one card radius, or the max page width. These small experiments will teach you exactly how the interface is built.
+
+## Workspace themes — November 2026
+
+Use **Appearance** in the header (or **Settings → Choose a theme**) to switch between **Paper**, **Graphite**, **Forest**, and **Dusk**. Paper is the default. Each card previews the actual workspace palette. Selection applies immediately and persists on this device; Escape or the close button closes the picker and returns focus. If browser storage is unavailable, the selection lasts for the current visit.
+
+The desktop workspace now has persistent left navigation, compact task filters, a central task list and a separate focus column. On phones, navigation scrolls horizontally and tasks come before the focus widgets. All six workspaces, editors, menus and dialogs use the selected palette.
+
+- `app/tdl-appearance.css` owns the four palettes and revised layout. It loads last. Edit its semantic variables to customize surfaces, text, accents and warning/danger colors.
+- `app/tdl-appearance.js` restores the palette before first paint and builds the accessible native theme dialog. Its only saved preference is `tdl.appearance.v1`; it does not read or modify task records. Other tabs update when the preference changes.
+- Existing styles now reference shared semantic tokens so Week, Planner, Inbox, Connections and Momentum follow the same palette.
+- `app/sw.js` caches the new files in shell v29. Appearance works offline after a successful online cache installation.
+
+Run `node tests/appearance.mjs` alongside the existing smoke, UI contract, Momentum and Connections suites. This release was also checked in Chromium: all four themes across six routes at 320, 390, 768 and 1440 pixels; theme persistence; dialog Escape/focus return; task create/edit/complete/undo; focus timer; and offline reload/theme switching. These checks use isolated local test data.
