@@ -12,11 +12,11 @@ function boot(saved,blocked=false){
 for(const name of ['paper','graphite','forest','dusk']){
  const {root,meta}=boot(name);assert.equal(root.dataset.theme,name);assert.match(meta.content,/^#[a-f0-9]{6}$/);
 }
-for(const invalid of [null,'','invalid','<script>'])assert.equal(boot(invalid).root.dataset.theme,'paper');
-assert.equal(boot(null,true).root.dataset.theme,'paper');
+for(const invalid of [null,'','invalid','<script>'])assert.equal(boot(invalid).root.dataset.theme,'graphite');
+assert.equal(boot(null,true).root.dataset.theme,'graphite');
 const tab=boot('paper');tab.events.storage({key:'tdl.appearance.v1',newValue:'dusk'});assert.equal(tab.root.dataset.theme,'dusk');
 tab.events.storage({key:'tdl.tasks.v1',newValue:'graphite'});assert.equal(tab.root.dataset.theme,'dusk');
-tab.events.storage({key:'tdl.appearance.v1',newValue:null});assert.equal(tab.root.dataset.theme,'paper');
+tab.events.storage({key:'tdl.appearance.v1',newValue:null});assert.equal(tab.root.dataset.theme,'graphite');
 const sw=fs.readFileSync('app/sw.js','utf8');
 for(const file of ['tdl-appearance.js','tdl-appearance.css'])assert.ok(sw.includes('"./'+file+'"'));
 console.log('PASS four palettes, invalid/blocked storage fallback, cross-tab updates, isolated preference key, and offline shell assets');

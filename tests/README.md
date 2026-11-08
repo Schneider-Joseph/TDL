@@ -64,3 +64,16 @@ See the [release safety checklist](../docs/plans/00_SAFETY_AND_RELEASE_CHECKLIST
 ## Appearance preference checks
 
 Run `node tests/appearance.mjs` from the repository root. This checks all four saved themes, invalid and unavailable storage fallback, cross-tab preference updates and offline shell inclusion. Real Chromium verification of responsive layouts and theme interactions is recorded in the Design System guide.
+
+## Kinetic Studio browser acceptance
+
+The production app still has no package installation or build step. The optional browser suite needs Playwright in your development checkout:
+
+```sh
+npm install --no-save --package-lock=false playwright
+python3 -m http.server 8000
+# In a second terminal:
+node tests/kinetic-browser.mjs
+```
+
+Use `CHROMIUM_PATH=/path/to/chromium` to select a system browser, or install Playwright Chromium with `npx playwright install chromium`. `TDL_TEST_URL` can point at another local server's `/app/` URL. The suite uses isolated browser contexts and synthetic tasks; screenshots go into ignored `work/kinetic-qa/`.
