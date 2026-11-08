@@ -19,3 +19,6 @@ tdl-backup-*.json
 tdl-full-backup-*.json
 *.ics
 *.ical
+
+# Local scratch and QA artifacts
+work/
