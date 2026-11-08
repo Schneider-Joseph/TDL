@@ -84,7 +84,7 @@ function updateNavigation(){
 }
 function syncRoute(focusHeading=false){
  const next=pathRoute();
- if(next===pageActive&&page.hidden===!next){updateNavigation();if(next)refresh();return}
+ if(next===pageActive&&page.hidden===!next){if(next)refresh();return}
  pageActive=next;
  if(active){active="";$("#tdlx-overlay").hidden=true;$("#tdlx-content").innerHTML=""}
  updateNavigation();

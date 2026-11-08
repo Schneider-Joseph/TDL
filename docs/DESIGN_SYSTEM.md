@@ -23,20 +23,20 @@ Open **app/tdl-theme.css** and find `:root`. These are editable CSS variables, a
 ~~~css
 :root {
   --bg: #090f18;           /* Page background */
-  --text: #f0f5f6;         /* Primary text */
+  --text: #f3f0f6;         /* Primary text */
   --muted: #9cabb9;        /* Secondary text */
-  --green: #b5ecc7;        /* Old app's accent variable */
+  --green: #d0b5ec;        /* Old app's accent variable */
   --ui-surface: #121b27;  /* Panel surfaces */
-  --ui-accent: #b5ecc7;   /* Main mint accent */
-  --ui-accent-strong: #84d9a9;
-  --ui-accent-ink: #122b21;
+  --ui-accent: #d0b5ec;   /* Main purple accent */
+  --ui-accent-strong: #ae84d9;
+  --ui-accent-ink: #1e122b;
   --ui-radius: 19px;       /* Main card roundness */
 }
 ~~~
 
-Change **one variable at a time** on a test branch, refresh, and check contrast. Some gradients deliberately have hard-coded colors; to recolor the entire theme, search for other mint and emerald hex codes.
+Change **one variable at a time** on a test branch, refresh, and check contrast. Some gradients deliberately have hard-coded colors; to recolor the entire theme, search for other lavender and violet hex codes.
 
-### Example: change mint to blue
+### Example: change purple to blue
 
 ~~~css
 --ui-accent: #a9d5ff;
@@ -141,31 +141,7 @@ Only the appearance and grouping of existing controls changed. The TDL task data
 
 **Recommended first customization:** change one color token, one card radius, or the max page width. These small experiments will teach you exactly how the interface is built.
 
-## Workspace themes — November 2026
 
-Use **Appearance** in the header (or **Settings → Choose a theme**) to switch between **Paper**, **Graphite**, **Forest**, and **Dusk**. Graphite is the default for new visits. Each card previews the actual workspace palette. Selection applies immediately and persists on this device; Escape or the close button closes the picker and returns focus. If browser storage is unavailable, the selection lasts for the current visit.
+## Purple accent restoration — November 2026
 
-The desktop workspace now has persistent left navigation, compact task filters, a central task list and a separate focus column. On phones, navigation scrolls horizontally and tasks come before the focus widgets. All six workspaces, editors, menus and dialogs use the selected palette.
-
-- `app/tdl-appearance.css` owns the four palettes and revised layout. It loads last. Edit its semantic variables to customize surfaces, text, accents and warning/danger colors.
-- `app/tdl-appearance.js` restores the palette before first paint and builds the accessible native theme dialog. Its only saved preference is `tdl.appearance.v1`; it does not read or modify task records. Other tabs update when the preference changes.
-- Existing styles now reference shared semantic tokens so Week, Planner, Inbox, Connections and Momentum follow the same palette.
-- `app/sw.js` caches the new files in shell v29. Appearance works offline after a successful online cache installation.
-
-Run `node tests/appearance.mjs` alongside the existing smoke, UI contract, Momentum and Connections suites. This release was also checked in Chromium: all four themes across six routes at 320, 390, 768 and 1440 pixels; theme persistence; dialog Escape/focus return; task create/edit/complete/undo; focus timer; and offline reload/theme switching. These checks use isolated local test data.
-
-## Kinetic Studio — November 2026
-
-The new shell takes visual direction from [OSPLY](https://www.osply.co/): oversized typography, strong contrast and a motion-led composition, adapted to TDL's task workflows. Graphite is now the default for new or invalid appearance preferences; previously saved palettes remain selected. Its black/chalk/acid palette and Paper's warmer monochrome palette are defined in `app/tdl-kinetic.css`. Forest and Dusk remain available.
-
-`app/tdl-kinetic.js` owns the decorative interactions:
-
-- A spring-following glass bubble tracks the mouse, stretches with velocity and expands with contextual labels over controls. Clicks produce a short ripple. The native pointer remains visible and the bubble never receives pointer events.
-- A locally rendered WebGL chrome sculpture responds to pointer position. No external images, fonts, animation libraries or network services are required. A CSS sculpture appears when WebGL is unavailable or lost.
-- The animation loop stops when the page is hidden and the sculpture stops rendering outside the viewport. The cursor stops scheduling frames when settled and the sculpture is offscreen. Canvas resolution is capped for rendering cost.
-- Touch/coarse pointers do not show the cursor effect. The operating system's reduced-motion preference disables the cursor/ripples and renders the sculpture once. **Settings → Interactive motion & cursor bubble** disables motion on this device and persists separately as `tdl.motion.v1`; other tabs follow changes.
-- **Get into it** scrolls to tasks and focuses search. The timer border reflects its actual running state. Existing task controls, tools, hashes, backups and theme preference keys stay intact.
-
-The app shell is v30 and includes both kinetic assets for offline use. Native theme dialogs stay above decoration. The new modules contain no task-storage writes.
-
-Chromium acceptance covered live WebGL rendering and the CSS fallback, cursor follow/hover/click-through, all four themes across six routes at 320/390/768/1024/1440px, task storage preservation, motion opt-out/reload, reduced motion, touch suppression, task CRUD/undo, timer state, jump-to-search, and offline shell/theme selection. Screenshots and the motion demo use synthetic tasks.
+The original Studio UI layout has been restored. Purple/lavender replaces the green/mint accents in the dashboard, navigation, timer, dialogs, Week, Planner, Momentum, Connections and app icon. Task behavior and browser data are unchanged. The experimental appearance picker, kinetic hero, cursor bubble and chrome sculpture have been removed. App-shell v31 refreshes the restored assets without clearing saved tasks.
