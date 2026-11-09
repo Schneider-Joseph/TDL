@@ -25,3 +25,11 @@ Browser references: [Web Audio best practices](https://developer.mozilla.org/en-
 Start/Resume arms a single alarm for the owning timer. Pause, Reset and ending a Momentum block cancel it. Generation checks prevent late audio-permission or notification promises from creating ghost alarms after Stop. If the audio clock was suspended past the wall-clock deadline, completion re-aligns the sound to now. Sound preferences use `tdl.alarm.v1`; task storage is unchanged.
 
 Run `node tests/alarm.mjs` alongside the existing suites. Chromium checks covered actual Web Audio sample output, repetition, pause/resume/reset, any-workspace completion, Stop/Escape, preview, preferences, Momentum completion, mobile layout, offline assets and native notification API behavior. Physical iPhone/installed-PWA speaker and lock-screen behavior have not been verified.
+
+## Duration and Work until modes
+
+In **Duration**, click the MIN or SEC field to edit that part. Values from 1 second to 24 hours are supported. **Type a duration** accepts minutes or MM:SS, including `0:30` for thirty seconds. Pause keeps the remaining countdown; Reset restores the duration you chose. Settings can save default minutes and seconds.
+
+In **Work until**, choose the local clock time you want to finish, such as 6:30 PM. The preview explicitly says Today or Tomorrow; an earlier clock time means its next occurrence tomorrow. Start runs the countdown to that deadline. Pause stops working time and sound, but Resume retains the deadline. If the deadline passed while paused, choose a new finish time or Reset before starting again. Reset recomputes the next occurrence of the displayed finish time.
+
+**Studying / working on** is available in both modes. Choose the task before starting; it stays attached to that session and the completion alarm. Reset unlocks the selector. Switching modes while paused closes the previous focus session. Both modes remain in-memory Dashboard timers and share the web-app alarm limitations above.

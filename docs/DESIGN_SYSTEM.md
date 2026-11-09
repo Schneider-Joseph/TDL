@@ -153,3 +153,9 @@ Dashboard, Inbox, Week, Planner, Connections and Momentum now sit in a persisten
 On screens 900px wide or narrower, **Menu** opens navigation in a drawer on the left. The drawer contains keyboard focus, closes with Escape or a navigation choice, and returns focus to Menu when dismissed. The same navigation elements move between the desktop sidebar and drawer, so IDs, unread counts and actions stay synchronized.
 
 `app/tdl-sidebar.css` controls positioning and responsive layout; `app/tdl-sidebar.js` handles the mobile drawer. Both are included in offline app-shell v32. Task data and storage keys are unchanged.
+
+## Timer and category input controls — November 2026
+
+`app/tdl-inputs.css` styles the segmented duration editor, Work until controls and editable category combobox. `app/tdl-input-utils.js` contains pure validation, local end-time calculation and category ordering. The inline timer logic keeps its existing focus-session/alarm integration. `app/tdl-categories.js` manages the keyboard/touch dropdown and stores learned usage separately as `tdl.categoryUsage.v1`; it does not migrate task records. App-shell v34 caches the new assets.
+
+Category suggestions use existing task counts and remembered save counts, deduplicate suggestion names without rewriting task categories, and retain up to 100 remembered names. New tasks or changed categories increment usage; editing unrelated task fields does not. Default suggestions include Project alongside the original categories. Previously saved tasks retain their exact category names.

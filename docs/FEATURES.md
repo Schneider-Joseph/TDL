@@ -23,7 +23,7 @@ Use the **Edit** button on an existing task to change those fields. The new **Un
 
 ### Categories are not fixed
 
-Enter `Homework`, `STEM Club`, `Python`, `Research`, or anything else that fits. The sidebar automatically adds custom categories found in your tasks. The four built-in categories are Homework, Chore, Event, and Personal.
+Choose a category from the dropdown or type your own, such as `STEM Club`, `Python`, or `Research`. Suggestions include Homework, Personal, Project, Chore and Event, plus categories found in existing tasks or remembered from previous saves. Frequent categories appear first. The task sidebar still adds custom categories found in your tasks.
 
 A category is a label on each task, not a separate database folder. Changing it moves that task into a different filter.
 
@@ -68,8 +68,9 @@ This is useful for recurring study sessions or bills. Be mindful that editing on
 
 - The clock reads the date/time configured on your device.
 - Upcoming tasks can appear in deadline countdowns.
-- Click the large timer numbers when the timer is stopped/paused to edit the duration: `45` means 45 minutes; `45:30` means 45 minutes 30 seconds.
-- Supported timer durations are 1–180 minutes.
+- Click the **MIN** or **SEC** number to edit that section independently. Type digits or use native arrow controls. **Type a duration** also accepts `45` (45 minutes) or `45:30` (45 minutes 30 seconds).
+- Supported durations are **1 second to 24 hours**. Default minutes and seconds can be saved in Settings.
+- **Work until** lets you choose a local finish time, such as 6:30 PM. The preview states Today or Tomorrow. Pausing keeps the original finish time; an expired target requires a new selection.
 - You can select an unfinished task or leave a session as **General focus session**.
 - Start, pause/resume, and reset are controlled in the timer card.
 - At completion, a repeating alarm and a persistent **Time’s up** dialog appear. Press **Stop alarm** (or Escape) to silence it. Both Dashboard and Momentum focus timers use the alarm.
