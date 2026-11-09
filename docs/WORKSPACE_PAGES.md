@@ -82,7 +82,7 @@ Use **Full backup** under More tools to safeguard boards. They remain local to y
 
 ## 5. Focus timer: questions removed
 
-The timer is now **quiet**. No random knowledge questions, timed quizzes, focus pop-ups or focus-check settings.
+Focus sessions have no random knowledge questions or quizzes. When the timer reaches zero, a repeating alarm and a persistent completion dialog notify you; press **Stop alarm** to dismiss them. Sound can be changed in Settings. See [Timer alarm](TIMER_ALARM.md).
 
 It still supports editable duration, start/pause/resume/reset, optional linked task, and locally stored focus-session history. Previously recorded sessions are preserved; historical question records are not erased.
 

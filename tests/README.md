@@ -60,3 +60,9 @@ python3 -m http.server 8000
 Open `http://localhost:8000/app/`, then follow the [New Features User Guide](../docs/NEW_FEATURES_USER_GUIDE.md). Try all four tools, Full backup, and Full restore. **Do not clear the real TDL site data to troubleshoot a test.**
 
 See the [release safety checklist](../docs/plans/00_SAFETY_AND_RELEASE_CHECKLIST.md) for the full recovery procedure.
+
+## Timer alarm lifecycle
+
+Run `node tests/alarm.mjs`. It checks audio scheduling/cancellation, ownership, asynchronous unlock/notification races, visual fallback when sound or notification permission is unavailable, repeat-until-dismiss behavior and isolated sound preferences. It never plays real audio or touches browser task data. See [Timer alarm](../docs/TIMER_ALARM.md) for the separate real-Chromium verification and iPhone limitations.
+
+For the optional real-browser alarm suite, install Playwright in your development checkout (`npm install --no-save --package-lock=false playwright`), serve the repository with `python3 -m http.server 8000`, then run `node tests/alarm-browser.mjs` in another terminal. It uses system Chromium when available; otherwise install Chromium with `npx playwright install chromium`. Set `CHROMIUM_PATH` or `TDL_TEST_URL` to use another executable or local `/app/` URL. The suite uses isolated contexts and fake time with real Web Audio processing; artifacts go into ignored `work/alarm-qa/`. It verifies audio samples programmatically, not physical speaker volume.

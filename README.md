@@ -32,6 +32,10 @@ You do not need to read everything at once.
 | Understand unfamiliar development terminology | [Plain-English Glossary](docs/GLOSSARY.md) |
 | Review future ideas and known bugs | [Roadmap, Decisions, and Known Limitations](docs/ROADMAP_AND_DECISIONS.md) |
 
+## Timer completion alarm — November 2026
+
+Dashboard and Momentum timers now play a repeating chime when finished and show an alert until you press **Stop alarm**. Adjust sound and volume or try **Preview alarm** in Settings. System notifications are requested when you have enabled them. Keep TDL open for dependable alerts; a closed or suspended web app cannot guarantee an iPhone-style system alarm. See [Timer alarm](docs/TIMER_ALARM.md).
+
 ## Original layout restored — November 2026
 
 TDL uses its original Studio UI layout again, with purple accents replacing green throughout the dashboard and workspace tools. The experimental layouts, theme picker and cursor effects have been removed. Saved tasks remain in the same browser storage.

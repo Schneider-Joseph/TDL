@@ -226,6 +226,7 @@ function focusClock(){
  if(remaining>0)return false;
  f.remainingMs=0;f.endsAt=0;f.running=false;
  recordFocus();save();
+ if(window.TDLAlarm)window.TDLAlarm.finish("momentum",taskById(f.taskId)?.title||"Momentum focus block");
  X.toast("Focus block complete. You can finish the task or start another session.");
  return true;
 }
@@ -237,17 +238,21 @@ function startFocus(taskId,minutes){
  if(blockedNotice(taskId))return false;
  const durationMs=minutes*60000;
  state.focus={taskId,durationMs,remainingMs:durationMs,endsAt:Date.now()+durationMs,running:true,startedAt:Date.now()};
- state.touches[taskId]=Date.now();save();return true;
+ state.touches[taskId]=Date.now();save();if(window.TDLAlarm)window.TDLAlarm.arm("momentum",durationMs,t.title);return true;
 }
 function resume(){
  const f=state.focus;if(!f.taskId||f.running||f.remainingMs<=0)return;
- f.endsAt=Date.now()+f.remainingMs;f.running=true;save()
+ if(bridge.isTimerRunning&&bridge.isTimerRunning()){X.toast("Pause your dashboard timer before resuming a Momentum focus block.");return}
+ f.endsAt=Date.now()+f.remainingMs;f.running=true;save();if(window.TDLAlarm)window.TDLAlarm.arm("momentum",f.remainingMs,taskById(f.taskId)?.title||"Momentum focus block")
 }
 function pause(){
  const f=state.focus;if(!f.running)return;
+ if(f.endsAt<=Date.now()){focusClock();return}
+ if(window.TDLAlarm)window.TDLAlarm.disarm("momentum");
  f.remainingMs=Math.max(0,f.endsAt-Date.now());f.endsAt=0;f.running=false;save()
 }
 function endFocus(){
+ if(window.TDLAlarm)window.TDLAlarm.disarm("momentum");
  state.focus={taskId:"",durationMs:0,remainingMs:0,endsAt:0,running:false,startedAt:0};
  save()
 }

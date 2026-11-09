@@ -1,0 +1,18 @@
+.tdl-alarm-dialog {width:min(420px,calc(100% - 32px));max-height:90dvh;overflow:auto;padding:35px 28px 28px;text-align:center;color:var(--text);background:#15202e;border:1px solid var(--ui-edge-strong);border-radius:24px;box-shadow:0 30px 100px #0008}
+.tdl-alarm-dialog::backdrop {background:#050911bd;backdrop-filter:blur(8px)}
+.tdl-alarm-dialog .eyebrow {margin:20px 0 8px;font-size:10px}
+.tdl-alarm-dialog h2 {font-size:36px;line-height:1.1;letter-spacing:-1.3px;margin:8px 0 10px}
+#tdl-alarm-detail {font-size:13px;color:var(--muted);overflow-wrap:anywhere;margin:0}
+.tdl-alarm-zero {font-size:70px;font-weight:650;letter-spacing:-3px;line-height:1.3;margin:12px 0;color:var(--ui-accent);font-variant-numeric:tabular-nums}
+.tdl-alarm-bell {display:grid;place-items:center;width:68px;height:68px;margin:auto;border-radius:22px;background:#30213f;color:var(--ui-accent);box-shadow:0 0 0 9px #be99e309;animation:tdl-alarm-pulse 1.2s ease-in-out infinite}
+.tdl-alarm-bell svg {width:32px;height:32px}
+#tdl-alarm-audio-status {font-size:11px;color:var(--muted);line-height:1.6;min-height:36px;margin:0 0 19px}
+#tdl-alarm-stop {width:100%;min-height:52px;font-size:16px;border-radius:15px}
+.alarm-hint {font-size:11px;line-height:1.5;color:var(--muted);margin:8px 0 0}
+.alarm-setting-toggle {display:flex;align-items:center;gap:9px}
+.alarm-setting-toggle input {accent-color:var(--ui-accent)}
+.alarm-volume {display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.alarm-volume input {width:160px;max-width:100%;accent-color:var(--ui-accent);padding:0}
+.alarm-volume output {font-size:12px;color:var(--muted);min-width:35px}
+@keyframes tdl-alarm-pulse {50%{box-shadow:0 0 0 15px #be99e305;transform:scale(1.035)}}
+@media(prefers-reduced-motion:reduce){.tdl-alarm-bell {animation:none}}
