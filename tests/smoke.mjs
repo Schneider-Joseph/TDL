@@ -14,6 +14,7 @@ const html = fs.readFileSync("app/index.html", "utf8");
 const inline = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
 assert.ok(inline, "TDL inline source was not found");
 const scripts = [
+  {name:"tdl-input-utils.js",source:fs.readFileSync("app/tdl-input-utils.js","utf8")},
   {name:"app/index.html (inline)", source:inline},
   ...["tdl-extras-core.js","tdl-inbox.js","tdl-calendar.js","tdl-planner.js","tdl-momentum.js","tdl-connections.js"]
     .map(name=>({name,source:fs.readFileSync("app/"+name,"utf8")}))

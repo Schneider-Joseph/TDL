@@ -129,7 +129,7 @@ Don't accidentally change another unrelated timer. Search for the specific `tagl
 
 ## 5. Change the default focus timer
 
-**Without editing code:** Open **TDL → Settings** and change **Default timer duration (minutes)**. The supported range is 1–180 minutes.
+**Without editing code:** Open **TDL → Settings** and change **Default minutes** and **Default seconds**. The supported range is 1 second to 24 hours. The timer card also offers a **Work until** mode for a chosen local finish time.
 
 **In code:** Search for `function readSettings()` and its fallback value `25`. It currently defaults to 25 minutes *only when no valid preference is stored*. If you change the fallback to 35, devices that have already saved a 25-minute preference may still display 25.
 
@@ -190,7 +190,7 @@ But that changes the purpose of the feature. Test before merging.
 
 ## 8. Add or change categories
 
-**No code edit needed:** Click **Add task**, type a category in the text box, and save. Categories with tasks automatically appear in the sidebar.
+**No code edit needed:** Click **Add task**, choose a category from the dropdown or type a new one, and save. Frequently used categories move up in the suggestions. Categories with tasks automatically appear in the task sidebar.
 
 The default category names are also in `renderCategoryNav()`. Changing those default display names does not automatically rename categories already saved on tasks. The category is stored as a text property on each task.
 

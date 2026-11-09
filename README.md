@@ -32,6 +32,10 @@ You do not need to read everything at once.
 | Understand unfamiliar development terminology | [Plain-English Glossary](docs/GLOSSARY.md) |
 | Review future ideas and known bugs | [Roadmap, Decisions, and Known Limitations](docs/ROADMAP_AND_DECISIONS.md) |
 
+## Timer controls and category suggestions — November 2026
+
+The timer now has separate clickable **MIN** and **SEC** fields, a typed-duration option, and a **Work until** mode for a chosen finish time. Both modes support the **Studying / working on** selector and the completion alarm. Durations range from 1 second to 24 hours. The Add task category field now offers a dropdown that remembers your categories and puts frequently used ones first.
+
 ## Timer completion alarm — November 2026
 
 Dashboard and Momentum timers now play a repeating chime when finished and show an alert until you press **Stop alarm**. Adjust sound and volume or try **Preview alarm** in Settings. System notifications are requested when you have enabled them. Keep TDL open for dependable alerts; a closed or suspended web app cannot guarantee an iPhone-style system alarm. See [Timer alarm](docs/TIMER_ALARM.md).

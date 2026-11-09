@@ -22,6 +22,7 @@
 <link rel="stylesheet" href="./tdl-connections.css">
 <link rel="stylesheet" href="./tdl-sidebar.css">
 <link rel="stylesheet" href="./tdl-alarm.css">
+<link rel="stylesheet" href="./tdl-inputs.css">
 </head>
 <body><div class="wrap">
 <header>
@@ -43,7 +44,10 @@
   </article>
   <article class="time-card timer-card">
     <div class="timer-heading"><div><div class="time-card-label">FOCUS TIMER</div><div class="timer-subtitle">A little time, used well.</div></div><span class="timer-icon">◷</span></div>
-    <input id="timerDisplay" class="timer-display timer-edit" type="text" inputmode="numeric" value="25:00" aria-label="Focus timer duration in minutes and seconds" title="Click to edit minutes and seconds before starting" spellcheck="false">
+    <div class="timer-modes" role="group" aria-label="Timer mode"><button id="timerDurationMode" class="btn" type="button" aria-pressed="true">Duration</button><button id="timerUntilMode" class="btn" type="button" aria-pressed="false">Work until</button></div>
+    <div class="timer-until" id="workUntilPanel" hidden><label for="timerUntil">Finish working at</label><input id="timerUntil" type="time" step="60" aria-describedby="timerUntilHint"><small id="timerUntilHint">Choose a finish time.</small></div>
+    <div class="timer-segments" role="group" aria-label="Timer minutes and seconds"><label class="timer-segment"><input id="timerMinutes" type="number" min="0" max="1440" step="1" inputmode="numeric" value="25" aria-label="Timer minutes"><span>MIN</span></label><span class="timer-colon" aria-hidden="true">:</span><label class="timer-segment"><input id="timerSeconds" type="number" min="0" max="59" step="1" inputmode="numeric" value="00" aria-label="Timer seconds"><span>SEC</span></label></div>
+    <details class="timer-text-entry" id="timerDurationEntry"><summary>Type a duration</summary><label for="timerDisplay">Minutes or minutes:seconds</label><input id="timerDisplay" class="timer-custom-input" type="text" inputmode="text" value="25:00" aria-label="Focus timer duration in minutes and seconds" spellcheck="false"><small>Examples: 25, 0:30, 45:15. From 1 second to 24 hours.</small></details>
     <div class="timer-controls">
       <button class="btn primary" id="timerStart" type="button">Start</button>
       <button class="btn" id="timerReset" type="button">Reset</button>
@@ -64,8 +68,7 @@
   <h3 id="settingsTitle">Settings</h3>
   <div class="settings-group"><strong>Focus timer</strong>
    <small>The timer rings when it finishes. Completed focus time is saved locally in your session history.</small>
-   <label for="settingTimerMinutes">Default timer duration (minutes)</label>
-   <input type="number" id="settingTimerMinutes" min="1" max="180" value="25">
+   <div class="timer-default-inputs"><label for="settingTimerMinutes">Default minutes<input type="number" id="settingTimerMinutes" min="0" max="1440" step="1" value="25"></label><label for="settingTimerSeconds">Default seconds<input type="number" id="settingTimerSeconds" min="0" max="59" step="1" value="0"></label></div><small>From 1 second to 24 hours.</small>
   </div>
   <div class="settings-group"><strong>Timer alarm</strong>
    <label class="alarm-setting-toggle"><input id="alarmSoundEnabled" type="checkbox" checked> Play a repeating alarm when a timer finishes</label>
@@ -87,8 +90,9 @@
 <div class="layout"><aside class="side"><label>VIEWS</label><button class="nav active" data-view="all">All tasks <span id="allCount">0</span></button><button class="nav" data-view="today">Due today <span id="navToday">0</span></button><button class="nav" data-view="upcoming">Upcoming <span id="navUpcoming">0</span></button><button class="nav" data-view="overdue">Overdue <span id="navOverdue">0</span></button><button class="nav" data-view="completed">Completed <span id="navDone">0</span></button><label>CATEGORIES</label><button class="nav" data-category="Homework">Homework</button><button class="nav" data-category="Chore">Chores</button><button class="nav" data-category="Event">Events</button><button class="nav" data-category="Personal">Personal</button><div id="customCategoryNav"></div><div class="hint">Tasks stay in this browser on this device. Export a backup before clearing browser data.</div></aside>
 <main class="main"><div class="toolbar"><div><h3 id="listTitle">All tasks</h3><p id="subtitle">Everything you need to keep track of.</p></div><div class="tools"><input id="search" class="search" type="search" placeholder="Search tasks…" aria-label="Search tasks"><select id="sort" aria-label="Sort tasks"><option value="due">Sort: due date</option><option value="priority">Sort: priority</option><option value="newest">Sort: newest</option></select></div></div><div id="taskList" class="tasklist"></div></main></div>
 <section class="activity-section" aria-labelledby="activitiesTitle"><div class="activity-head"><h3 id="activitiesTitle">Bored? Do This.</h3><span class="activity-status locked" id="activityStatus">Locked</span></div><p class="activity-muted" id="activityMessage">Finish today's and overdue tasks to unlock your activity bank.</p><div id="activitiesUnlocked" class="hidden"><form id="activityForm" class="activity-entry"><input id="activityInput" maxlength="140" placeholder="Something you'd like to do…" aria-label="Add optional activity" required><button class="btn primary" type="submit">Add</button></form><div id="activityItems" class="activity-items"></div><button class="btn" type="button" id="activityRandom">🎲 Pick for me</button><div id="activityPicked" class="activity-pick hidden" role="status"></div></div></section><div class="footer"><span>TDL v0.1 · Built for your day, not to distract you.</span><span>Local-first · No account required</span></div></div>
-<div id="backdrop" class="backdrop hidden"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modalhead"><h3 id="modalTitle">Add a task</h3><button class="btn" id="close" aria-label="Close">×</button></div><form id="form"><div class="fields"><div class="field full"><label for="title">Task name *</label><input id="title" maxlength="160" required placeholder="Finish Network Security lab"></div><div class="field"><label for="category">Category</label><input id="category" type="text" maxlength="50" placeholder="e.g. Homework, STEM Club, Projects" autocomplete="off" spellcheck="false"><small style="color:var(--muted)">Type any category name. New categories appear in the sidebar.</small></div><div class="field"><label for="priority">Priority</label><select id="priority"><option value="medium">Medium</option><option value="high">High</option><option value="low">Low</option></select></div><div class="field"><label for="due">Due date (optional)</label><input id="due" type="date"></div><div class="field"><label for="time">Time (optional)</label><input id="time" type="time"></div><div class="field"><label for="repeat">Repeat</label><select id="repeat"><option value="none">Does not repeat</option><option value="daily">Every day</option><option value="weekdays">Weekdays (Mon–Fri)</option><option value="weekly">Every week</option><option value="monthly">Every month</option><option value="yearly">Every year</option></select></div><div class="field"><label for="repeatEnd">Repeat until (optional)</label><input id="repeatEnd" type="date"></div><div class="field full"><label for="assignmentUrl">Assignment URL</label><input id="assignmentUrl" type="url" maxlength="2000" placeholder="https://..."></div><div class="field full"><label for="subtaskEntry">Subtasks</label><div class="subtask-entry"><input id="subtaskEntry" maxlength="160" placeholder="Add a step…"><button type="button" class="btn" id="subtaskAdd">Add step</button></div><div id="subtaskEditor" class="subtask-editor"></div><small>Break larger tasks into checkable steps.</small></div><div class="field full"><label for="notes">Notes (optional)</label><textarea id="notes" maxlength="2000" placeholder="Details or anything you need to remember…"></textarea></div></div><div class="formactions"><button type="button" class="btn" id="cancel">Cancel</button><button class="btn primary" type="submit">Save task</button></div></form></section></div>
+<div id="backdrop" class="backdrop hidden"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modalhead"><h3 id="modalTitle">Add a task</h3><button class="btn" id="close" aria-label="Close">×</button></div><form id="form"><div class="fields"><div class="field full"><label for="title">Task name *</label><input id="title" maxlength="160" required placeholder="Finish Network Security lab"></div><div class="field"><label for="category">Category</label><div class="category-combobox"><input id="category" type="text" maxlength="50" placeholder="Choose or type a category" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="categoryOptions" aria-haspopup="listbox"><button id="categoryToggle" type="button" tabindex="-1" aria-label="Show category suggestions"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 7 5 5 5-5"/></svg></button><ul id="categoryOptions" class="category-options" role="listbox" aria-label="Category suggestions" hidden></ul></div><small style="color:var(--muted)">Choose a category or type your own. Frequently used categories appear first.</small></div><div class="field"><label for="priority">Priority</label><select id="priority"><option value="medium">Medium</option><option value="high">High</option><option value="low">Low</option></select></div><div class="field"><label for="due">Due date (optional)</label><input id="due" type="date"></div><div class="field"><label for="time">Time (optional)</label><input id="time" type="time"></div><div class="field"><label for="repeat">Repeat</label><select id="repeat"><option value="none">Does not repeat</option><option value="daily">Every day</option><option value="weekdays">Weekdays (Mon–Fri)</option><option value="weekly">Every week</option><option value="monthly">Every month</option><option value="yearly">Every year</option></select></div><div class="field"><label for="repeatEnd">Repeat until (optional)</label><input id="repeatEnd" type="date"></div><div class="field full"><label for="assignmentUrl">Assignment URL</label><input id="assignmentUrl" type="url" maxlength="2000" placeholder="https://..."></div><div class="field full"><label for="subtaskEntry">Subtasks</label><div class="subtask-entry"><input id="subtaskEntry" maxlength="160" placeholder="Add a step…"><button type="button" class="btn" id="subtaskAdd">Add step</button></div><div id="subtaskEditor" class="subtask-editor"></div><small>Break larger tasks into checkable steps.</small></div><div class="field full"><label for="notes">Notes (optional)</label><textarea id="notes" maxlength="2000" placeholder="Details or anything you need to remember…"></textarea></div></div><div class="formactions"><button type="button" class="btn" id="cancel">Cancel</button><button class="btn primary" type="submit">Save task</button></div></form></section></div>
 <div id="quickModal" class="focus-modal hidden" role="dialog" aria-modal="true" aria-labelledby="quickTitle"><div class="focus-dialog"><h3 id="quickTitle">Paste homework details</h3><p>Paste an assignment link or copied text. Review before saving.</p><textarea id="quickText" rows="7" placeholder="Chapter 8 Quiz&#10;Due: 2026-10-19 11:59 PM&#10;https://example.edu/assignment"></textarea><p id="quickStatus" role="status"></p><div class="focus-dialog-actions"><button class="btn" id="quickCancel" type="button">Cancel</button><button class="btn primary" id="quickParse" type="button">Review task</button></div></div></div><input type="file" id="file" accept=".json,application/json" class="hidden"><div id="toast" class="toast hidden" role="status"></div>
+<script src="./tdl-input-utils.js"></script>
 <script src="./tdl-alarm.js"></script>
 <script>
 (function(){
@@ -143,7 +147,7 @@ function relationMeta(t){
 function render(){refreshFocusTaskOptions();stats();renderCategoryNav();renderActivityBank();all("[data-stat-view]").forEach(function(b){b.classList.toggle("active",!category&&b.dataset.statView===view);b.setAttribute("aria-pressed",String(!category&&b.dataset.statView===view))});$("#listTitle").textContent=title();$("#subtitle").textContent=view==="today"?"Handle today's priorities.":view==="upcoming"?"What's coming up next.":view==="overdue"?"Tasks that have passed their due date.":view==="completed"?"A record of what you've finished.":category?"Tasks in this category.":"Everything you need to keep track of.";all(".nav").forEach(function(b){b.classList.toggle("active",(!category&&b.dataset.view===view)||(!!category&&b.dataset.category===category))});var list=getTasks(),el=$("#taskList");if(!list.length){el.innerHTML='<div class="empty"><div style="font-size:28px">✳</div><h4>'+( $("#search").value.trim()?"No matching tasks":view==="completed"?"Nothing completed yet":"Nothing on this list")+'</h4><p>'+( $("#search").value.trim()?"Try a different search.":"Add a task to get it out of your head and onto your list.")+'</p><button class="btn primary" id="emptyAdd">＋ Add task</button></div>';$("#emptyAdd").addEventListener("click",function(){open()});return}el.innerHTML=list.map(function(t){var due=t.dueDate?'<span class="pill '+(overdue(t)?"overdue":dueToday(t)?"today":"")+'">'+(overdue(t)?"Overdue · ":dueToday(t)?"Today · ":"Due · ")+esc(dateLabel(t.dueDate))+(t.dueTime?" "+esc(t.dueTime):"")+"</span>":"";return '<article class="task '+(t.completed?"done":"")+'" data-id="'+esc(t.id)+'"><input class="check" type="checkbox" data-action="toggle" aria-label="Complete task" '+(t.completed?"checked":"")+'><div><div class="task-title">'+esc(t.title)+'</div>'+(t.notes?'<div class="notes">'+esc(t.notes)+"</div>":"")+(taskSubtasks(t).length?'<div class="subtask-progress">'+taskSubtasks(t).filter(function(x){return x.completed}).length+'/'+taskSubtasks(t).length+' steps completed</div><div class="subtasks">'+taskSubtasks(t).map(function(st){return '<label class="subtask-row '+(st.completed?"is-done":"")+'"><input type="checkbox" data-action="subtask-toggle" data-sub-id="'+esc(st.id)+'" '+(st.completed?"checked":"")+' '+(t.completed?"disabled":"")+'><span>'+esc(st.title)+'</span></label>'}).join("")+'</div>':"")+'<div class="meta"><span class="pill">'+esc(t.category||"Personal")+'</span><span class="pill '+esc(t.priority||"medium")+'">'+esc((t.priority||"medium").charAt(0).toUpperCase()+(t.priority||"medium").slice(1))+" priority</span>"+due+(safeAssignmentUrl(t.assignmentUrl)?'<a class="assignment-link" target="_blank" rel="noopener noreferrer" href="'+esc(safeAssignmentUrl(t.assignmentUrl))+'">↗ Open assignment</a>':"")+(t.repeat&&t.repeat!=="none"?'<span class="pill">↻ '+esc(({daily:"Daily",weekdays:"Weekdays",weekly:"Weekly",monthly:"Monthly",yearly:"Yearly"})[t.repeat]||t.repeat)+"</span>":"")+relationMeta(t)+"</div></div><div class=\"actions\"><button data-action=\"connections\" type=\"button\" aria-label=\"Open task connections\">↗ Links</button><button data-action=\"edit\" type=\"button\">Edit</button><button data-action=\"delete\" type=\"button\">Delete</button></div></article>" }).join("")}
 function open(t){editing=t?t.id:null;$("#form").reset();$("#category").value="Personal";draftSubtasks=t?taskSubtasks(t).map(function(x){return Object.assign({},x)}):[];renderSubtaskEditor();$("#modalTitle").textContent=t?"Edit task":"Add a task";if(t){$("#title").value=t.title;$("#category").value=t.category||"Personal";$("#priority").value=t.priority||"medium";$("#due").value=t.dueDate||"";$("#time").value=t.dueTime||"";$("#notes").value=t.notes||"";$("#assignmentUrl").value=t.assignmentUrl||"";$("#repeat").value=t.repeat||"none";$("#repeatEnd").value=t.repeatEnd||""}$("#backdrop").classList.remove("hidden");$("#title").focus()}
 function close(){ $("#backdrop").classList.add("hidden");editing=null}
-$("#form").addEventListener("submit",function(e){e.preventDefault();if($("#subtaskEntry").value.trim())addDraftSubtask();var name=$("#title").value.trim();if(!name)return;var old=tasks.find(function(t){return t.id===editing});var repeat=$("#repeat").value,repeatEnd=$("#repeatEnd").value;if(repeat!=="none"&&!$("#due").value){notify("Recurring tasks need a due date.");return}if(repeat!=="none"&&repeatEnd&&repeatEnd<$("#due").value){notify("Repeat end must be on or after the due date.");return}if($("#assignmentUrl").value.trim()&&!safeAssignmentUrl($("#assignmentUrl").value)){notify("Invalid assignment URL");return}var item={id:editing||(window.crypto&&crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random()),title:name,category:($("#category").value.trim()||"Personal"),priority:$("#priority").value,dueDate:$("#due").value,dueTime:$("#time").value,notes:$("#notes").value.trim(),subtasks:draftSubtasks.filter(function(x){return x.title.trim()}).map(function(x){return {id:x.id,title:x.title.trim(),completed:!!x.completed}}),assignmentUrl:safeAssignmentUrl($("#assignmentUrl").value),repeat:repeat,repeatEnd:repeat==="none"?"":repeatEnd,repeatAnchorDay:repeat==="none"?null:(old&&old.dueDate===$("#due").value&&old.repeatAnchorDay?old.repeatAnchorDay:Number($("#due").value.slice(-2))),seriesId:old?old.seriesId||old.id:null,completed:old?old.completed:false,createdAt:old?old.createdAt:Date.now(),updatedAt:Date.now()};if(old)tasks=tasks.map(function(t){return t.id===editing?item:t});else tasks.push(item);save();close();render();notify(old?"Task updated":"Task added")});
+$("#form").addEventListener("submit",function(e){e.preventDefault();if($("#subtaskEntry").value.trim())addDraftSubtask();var name=$("#title").value.trim();if(!name)return;var old=tasks.find(function(t){return t.id===editing});var repeat=$("#repeat").value,repeatEnd=$("#repeatEnd").value;if(repeat!=="none"&&!$("#due").value){notify("Recurring tasks need a due date.");return}if(repeat!=="none"&&repeatEnd&&repeatEnd<$("#due").value){notify("Repeat end must be on or after the due date.");return}if($("#assignmentUrl").value.trim()&&!safeAssignmentUrl($("#assignmentUrl").value)){notify("Invalid assignment URL");return}var item={id:editing||(window.crypto&&crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random()),title:name,category:($("#category").value.trim()||"Personal"),priority:$("#priority").value,dueDate:$("#due").value,dueTime:$("#time").value,notes:$("#notes").value.trim(),subtasks:draftSubtasks.filter(function(x){return x.title.trim()}).map(function(x){return {id:x.id,title:x.title.trim(),completed:!!x.completed}}),assignmentUrl:safeAssignmentUrl($("#assignmentUrl").value),repeat:repeat,repeatEnd:repeat==="none"?"":repeatEnd,repeatAnchorDay:repeat==="none"?null:(old&&old.dueDate===$("#due").value&&old.repeatAnchorDay?old.repeatAnchorDay:Number($("#due").value.slice(-2))),seriesId:old?old.seriesId||old.id:null,completed:old?old.completed:false,createdAt:old?old.createdAt:Date.now(),updatedAt:Date.now()};if(old)tasks=tasks.map(function(t){return t.id===editing?item:t});else tasks.push(item);save();if(window.TDLCategories&&(!old||old.category!==item.category))window.TDLCategories.record(item.category);close();render();notify(old?"Task updated":"Task added")});
 $("#quickAdd").addEventListener("click",function(){$("#quickModal").classList.remove("hidden");$("#quickText").focus()});
 $("#quickCancel").addEventListener("click",function(){$("#quickModal").classList.add("hidden")});
 $("#quickParse").addEventListener("click",function(){var raw=$("#quickText").value;if(!raw.trim()){$("#quickStatus").textContent="Paste a link or text first.";return}var d=parseAssignment(raw);$("#quickModal").classList.add("hidden");open();$("#category").value="Homework";$("#title").value=d.title;$("#assignmentUrl").value=d.url;$("#due").value=d.due;$("#time").value=d.time;$("#notes").value=d.notes;notify("Review details before saving")});
@@ -299,17 +303,25 @@ var SETTINGS_KEY="tdl.settings.v1";
 function readSettings(){
  try{
   var data=JSON.parse(localStorage.getItem(SETTINGS_KEY)||"{}");
-  return {timerMinutes:Number.isInteger(data.timerMinutes)&&data.timerMinutes>=1&&data.timerMinutes<=180?data.timerMinutes:25}
- }catch(e){return {timerMinutes:25}}
+  var m=Number.isInteger(data.timerMinutes)?data.timerMinutes:25,s=Number.isInteger(data.timerSeconds)?data.timerSeconds:0;
+  return window.TDLInputUtils.durationParts(m,s)!==null?{timerMinutes:m,timerSeconds:s}:{timerMinutes:25,timerSeconds:0};
+ }catch(e){return {timerMinutes:25,timerSeconds:0}}
 }
 var settings=readSettings();
 function persistSettings(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings));$("#settingsSaved").textContent="Saved on this device."}catch(e){$("#settingsSaved").textContent="Unable to save settings."}}
-function syncSettings(){$("#settingTimerMinutes").value=settings.timerMinutes}
+function syncSettings(){$("#settingTimerMinutes").value=settings.timerMinutes;$("#settingTimerSeconds").value=settings.timerSeconds}
 syncSettings();
-$("#settingsOpen").addEventListener("click",function(){$("#settingsModal").classList.remove("hidden");$("#settingsClose").focus()});
+$("#settingsOpen").addEventListener("click",function(){syncSettings();$("#settingsModal").classList.remove("hidden");$("#settingsClose").focus()});
 $("#settingsClose").addEventListener("click",function(){$("#settingsModal").classList.add("hidden");$("#settingsOpen").focus()});
 $("#settingsModal").addEventListener("click",function(e){if(e.target===this)$("#settingsClose").click()});
-$("#settingTimerMinutes").addEventListener("change",function(){var v=Number(this.value);if(!Number.isInteger(v)||v<1||v>180){this.value=settings.timerMinutes;return}settings.timerMinutes=v;persistSettings();syncSettings();if(!timerRunning&&!focusSession){remainingMs=v*60000;timerFinished=false;drawTimer()}});
+function updateDefaultDuration(){
+ var m=$("#settingTimerMinutes").value,s=$("#settingTimerSeconds").value,value=window.TDLInputUtils.durationParts(m,s);
+ if(value===null){$("#settingsSaved").textContent="Choose a default from 1 second to 24 hours (seconds 0–59).";return}
+ settings.timerMinutes=Number(m);settings.timerSeconds=Number(s);persistSettings();syncSettings();
+ if(!timerRunning&&!focusSession){configuredDuration=value;durationDirty=false;if(timerMode==="duration"){remainingMs=value;timerFinished=false;}drawTimer()}
+}
+$("#settingTimerMinutes").addEventListener("change",updateDefaultDuration);
+$("#settingTimerSeconds").addEventListener("change",updateDefaultDuration);
 $("#settingsExport").addEventListener("click",function(){$("#export").click()});
 // Focus sessions track active time only; randomized questions were removed.
 var FOCUS_KEY="tdl.focusSessions.v1",focusSession=null,focusLastTick=0;
@@ -320,29 +332,85 @@ function startFocusSession(){if(focusSession)return;var id=$("#focusTask").value
 function saveFocusSession(){if(!focusSession)return;var current=focusSession;focusSession=null;focusLastTick=0;if(current.activeMs<1000)return;current.endedAt=Date.now();var history=focusRecords();history.push(current);try{localStorage.setItem(FOCUS_KEY,JSON.stringify(history.slice(-300)))}catch(e){notify("Could not save focus history")}renderFocusHistory()}
 function focusAccrue(){if(!focusSession||!timerRunning)return;var now=Date.now();focusSession.activeMs+=Math.max(0,Math.min(now-focusLastTick,2000));focusLastTick=now}
 renderFocusHistory();
-// The large timer display is directly editable while stopped or paused.
-// Accepts minutes (e.g. 45) or MM:SS (e.g. 45:30), up to 180 minutes.
-var timerInterval=null,timerEnd=0,remainingMs=settings.timerMinutes*60000,timerRunning=false,timerFinished=false;
+// Duration and wall-clock finish modes share the same focus session and alarm.
+var timerInterval=null,timerEnd=0,configuredDuration=(settings.timerMinutes*60+settings.timerSeconds)*1000,remainingMs=configuredDuration,timerRunning=false,timerFinished=false,timerMode="duration",untilDeadline=null,durationDirty=false,durationEditSource="segments";
 function formatTimer(ms){var seconds=Math.max(0,Math.ceil(ms/1000));return String(Math.floor(seconds/60)).padStart(2,"0")+":"+String(seconds%60).padStart(2,"0")}
-function parseTimerInput(raw){var value=String(raw).trim(),match=value.match(/^(\d{1,3})(?::([0-5]\d))?$/);if(!match)return null;var seconds=Number(match[1])*60+(match[2]?Number(match[2]):0);return seconds>=60&&seconds<=180*60?seconds*1000:null}
+function parseTimerInput(raw){return window.TDLInputUtils.parseDuration(raw)}
 function stopTimerInterval(){if(timerInterval!==null){window.clearInterval(timerInterval);timerInterval=null}}
-function drawTimer(){var ms=timerRunning?Math.max(0,timerEnd-Date.now()):remainingMs,display=$("#timerDisplay");if(document.activeElement!==display||timerRunning)display.value=formatTimer(ms);display.disabled=timerRunning;$("#timerStart").textContent=timerRunning?"Pause":timerFinished?"Start again":remainingMs<settings.timerMinutes*60000?"Resume":"Start"}
-function applyTimerEdit(){if(timerRunning)return true;var value=parseTimerInput($("#timerDisplay").value);if(value===null){$("#timerStatus").textContent="Enter 1–180 minutes, optionally with seconds (e.g. 45:30).";$("#timerDisplay").value=formatTimer(remainingMs);return false}remainingMs=value;timerFinished=false;$("#timerStatus").textContent="Duration set. Ready when you are.";drawTimer();return true}
+function endTimeLabel(deadline){var target=new Date(deadline);return (target.toDateString()===new Date().toDateString()?"Today":"Tomorrow")+" at "+target.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"})}
+function drawTimer(){
+ var ms=timerRunning?Math.max(0,timerEnd-Date.now()):timerMode==="until"?(untilDeadline?Math.max(0,untilDeadline-Date.now()):0):remainingMs;
+ if(timerFinished)ms=0;
+ var seconds=Math.ceil(ms/1000),minutesInput=$("#timerMinutes"),secondsInput=$("#timerSeconds"),display=$("#timerDisplay");
+ if(document.activeElement!==minutesInput||timerRunning)minutesInput.value=String(Math.floor(seconds/60)).padStart(2,"0");
+ if(document.activeElement!==secondsInput||timerRunning)secondsInput.value=String(seconds%60).padStart(2,"0");
+ if(document.activeElement!==display||timerRunning)display.value=formatTimer(ms);
+ minutesInput.disabled=secondsInput.disabled=display.disabled=timerRunning||timerMode==="until";
+ $("#timerUntil").disabled=timerRunning;
+ $("#timerDurationMode").disabled=$("#timerUntilMode").disabled=timerRunning;
+ $("#focusTask").disabled=timerRunning||!!focusSession;
+ $("#timerDurationMode").setAttribute("aria-pressed",String(timerMode==="duration"));
+ $("#timerUntilMode").setAttribute("aria-pressed",String(timerMode==="until"));
+ $("#workUntilPanel").hidden=timerMode!=="until";$("#timerDurationEntry").hidden=timerMode!=="duration";
+ $("#timerUntilHint").textContent=untilDeadline?(untilDeadline>Date.now()?endTimeLabel(untilDeadline)+". Pausing keeps this finish time.":"This finish time has passed. Choose another time before starting."):"Choose a finish time. Earlier times are scheduled for tomorrow.";
+ $("#timerStart").textContent=timerRunning?"Pause":timerMode==="duration"&&timerFinished?"Start again":focusSession?"Resume":"Start";
+}
+function durationError(){ $("#timerStatus").textContent="Choose 1 second to 24 hours. Seconds must be between 0 and 59."; }
+function applyDuration(ms){
+ if(ms===null){durationError();return false}
+ configuredDuration=remainingMs=ms;timerFinished=false;durationDirty=false;$("#timerStatus").textContent="Duration set. Ready when you are.";drawTimer();return true;
+}
+function applyTimerEdit(){if(timerRunning||timerMode!=="duration"||!durationDirty)return true;return applyDuration(parseTimerInput($("#timerDisplay").value))}
+function applyTimerSegments(){if(timerRunning||timerMode!=="duration")return true;return applyDuration(window.TDLInputUtils.durationParts($("#timerMinutes").value,$("#timerSeconds").value))}
+["#timerMinutes","#timerSeconds"].forEach(function(selector){
+ var field=$(selector);field.addEventListener("input",function(){durationDirty=true;durationEditSource="segments"});field.addEventListener("focus",function(){this.select()});field.addEventListener("change",applyTimerSegments);
+ field.addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();if(durationDirty)applyTimerSegments();this.blur()}});
+});
+$("#timerDisplay").addEventListener("input",function(){durationDirty=true;durationEditSource="text"});
 $("#timerDisplay").addEventListener("blur",applyTimerEdit);
 $("#timerDisplay").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();this.blur()}});
-function tickTimer(){focusAccrue();remainingMs=Math.max(0,timerEnd-Date.now());if(remainingMs<=0){remainingMs=0;timerRunning=false;timerFinished=true;stopTimerInterval();var alarmTitle=focusSession?focusSession.taskTitle:"Focus timer";saveFocusSession();$("#timerStatus").textContent="Time is up.";drawTimer();if(window.TDLAlarm)window.TDLAlarm.finish("dashboard",alarmTitle);notify("Timer finished");return}drawTimer()}
-$("#timerStart").addEventListener("click",function(){
- // Do not run both TDL timers concurrently. The active focus room owns its task.
- if(!timerRunning&&window.TDLMomentum&&window.TDLMomentum.getState().focus.running){
-  notify("Finish or pause the Momentum focus block before using the dashboard timer.");return
+function setTimerMode(mode){
+ if(timerRunning||mode===timerMode)return;
+ if(window.TDLAlarm)window.TDLAlarm.disarm("dashboard");saveFocusSession();timerMode=mode;timerFinished=false;durationDirty=false;remainingMs=configuredDuration;
+ if(mode==="until"){
+  if(!$("#timerUntil").value){var target=new Date(Math.ceil((Date.now()+configuredDuration)/60000)*60000);$("#timerUntil").value=String(target.getHours()).padStart(2,"0")+":"+String(target.getMinutes()).padStart(2,"0")}
+  untilDeadline=window.TDLInputUtils.nextEndTime($("#timerUntil").value,Date.now());
  }
+ $("#timerStatus").textContent=mode==="until"?"Choose when you want to finish working.":"Ready when you are.";drawTimer();
+}
+$("#timerDurationMode").addEventListener("click",function(){setTimerMode("duration")});
+$("#timerUntilMode").addEventListener("click",function(){setTimerMode("until")});
+$("#timerUntil").addEventListener("change",function(){if(timerRunning)return;untilDeadline=window.TDLInputUtils.nextEndTime(this.value,Date.now());timerFinished=false;$("#timerStatus").textContent=untilDeadline?"Finish time set. Ready when you are.":"Choose a finish time.";drawTimer()});
+function tickTimer(){
+ focusAccrue();remainingMs=Math.max(0,timerEnd-Date.now());
+ if(remainingMs<=0){remainingMs=0;timerRunning=false;timerFinished=true;stopTimerInterval();var alarmTitle=focusSession?focusSession.taskTitle:"Focus timer";saveFocusSession();$("#timerStatus").textContent="Time is up.";drawTimer();if(window.TDLAlarm)window.TDLAlarm.finish("dashboard",alarmTitle);notify("Timer finished");return}
+ drawTimer();
+}
+$("#timerStart").addEventListener("click",function(){
+ if(!timerRunning&&window.TDLMomentum&&window.TDLMomentum.getState().focus.running){notify("Finish or pause the Momentum focus block before using the dashboard timer.");return}
  if(timerRunning&&timerEnd<=Date.now()){tickTimer();return}
- if(timerRunning){if(window.TDLAlarm)window.TDLAlarm.disarm("dashboard");focusAccrue();remainingMs=Math.max(0,timerEnd-Date.now());timerRunning=false;stopTimerInterval();$("#timerStatus").textContent="Paused. Pick it up when you're ready.";drawTimer();return}
- if(document.activeElement===$("#timerDisplay")){if(!applyTimerEdit())return;$("#timerDisplay").blur()}
- if(timerFinished||remainingMs<=0){remainingMs=settings.timerMinutes*60000;timerFinished=false}
- timerRunning=true;timerEnd=Date.now()+remainingMs;if(window.TDLAlarm)window.TDLAlarm.arm("dashboard",remainingMs,focusSession?focusSession.taskTitle:"Focus timer");if(!focusSession)startFocusSession();else{focusLastTick=Date.now()}$("#timerStatus").textContent="Timer running. Stay with one thing.";tickTimer();if(timerRunning)timerInterval=window.setInterval(tickTimer,200);
+ if(timerRunning){
+  if(window.TDLAlarm)window.TDLAlarm.disarm("dashboard");focusAccrue();remainingMs=Math.max(0,timerEnd-Date.now());timerRunning=false;stopTimerInterval();
+  $("#timerStatus").textContent=timerMode==="until"?"Paused. Resume still finishes "+endTimeLabel(untilDeadline).toLowerCase()+".":"Paused. Pick it up when you're ready.";drawTimer();return;
+ }
+ if(timerMode==="until"){
+  if(!untilDeadline||untilDeadline<=Date.now()){$("#timerStatus").textContent="Choose a future finish time before starting. Earlier clock times will show as tomorrow.";drawTimer();$("#timerUntil").focus();return}
+  remainingMs=untilDeadline-Date.now();
+ }else{
+  if(timerFinished){remainingMs=configuredDuration;timerFinished=false;}
+  else if(durationDirty&&!(durationEditSource==="text"?applyTimerEdit():applyTimerSegments()))return;
+ }
+ timerFinished=false;timerRunning=true;timerEnd=timerMode==="until"?untilDeadline:Date.now()+remainingMs;
+ if(!focusSession)startFocusSession();else focusLastTick=Date.now();
+ if(window.TDLAlarm)window.TDLAlarm.arm("dashboard",remainingMs,focusSession?focusSession.taskTitle:"Focus timer");
+ $("#timerStatus").textContent=timerMode==="until"?"Working until "+endTimeLabel(timerEnd).toLowerCase()+".":"Timer running. Stay with one thing.";
+ tickTimer();if(timerRunning)timerInterval=window.setInterval(tickTimer,200);
 });
-$("#timerReset").addEventListener("click",function(){if(window.TDLAlarm)window.TDLAlarm.disarm("dashboard");focusAccrue();saveFocusSession();stopTimerInterval();timerRunning=false;timerFinished=false;remainingMs=settings.timerMinutes*60000;$("#timerStatus").textContent="Timer reset. Ready when you are.";drawTimer()});
+$("#timerReset").addEventListener("click",function(){
+ if(window.TDLAlarm)window.TDLAlarm.disarm("dashboard");focusAccrue();saveFocusSession();stopTimerInterval();timerRunning=false;timerFinished=false;durationDirty=false;remainingMs=configuredDuration;
+ if(timerMode==="until")untilDeadline=window.TDLInputUtils.nextEndTime($("#timerUntil").value,Date.now());
+ $("#timerStatus").textContent="Timer reset. Ready when you are.";drawTimer();
+});
 drawTimer();
 document.addEventListener("visibilitychange",function(){if(!document.hidden&&timerRunning)tickTimer()});
 window.addEventListener("pageshow",function(){if(timerRunning)tickTimer()});
@@ -369,4 +437,5 @@ render();
 <script src="./tdl-momentum.js"></script>
 <script src="./tdl-connections.js"></script>
 <script src="./tdl-sidebar.js"></script>
+<script src="./tdl-categories.js"></script>
 </body></html>
