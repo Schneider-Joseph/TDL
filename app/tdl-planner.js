@@ -53,13 +53,13 @@ function draw(c){
  }).join("")+'</svg>';
  c.innerHTML='<div class="tdlx-planner-intro"><div><span class="tdlx-page-eyebrow">ACTIVE BOARD</span><h3>'+esc(b.title)+'</h3><p>Arrange your ideas freely. Nothing here automatically creates or deletes TDL tasks.</p></div><div class="tdlx-planner-metrics"><span><b>'+b.nodes.length+'</b> nodes</span><span><b>'+edges.length+'</b> connections</span><span><b>'+boards.length+'</b> boards</span></div></div>'+
  '<div class="tdlx-board-controls"><label class="tdlx-muted">Board <select id="tdlx-board-select">'+boards.map(q=>'<option value="'+esc(q.id)+'" '+(q.id===b.id?"selected":"")+'>'+esc(q.title)+'</option>').join("")+'</select></label><button class="btn" data-planner="createBoard">+ New board</button><button class="btn" data-planner="renameBoard">Rename</button><button class="btn" data-planner="removeBoard">Delete board</button></div>'+
- '<div class="tdlx-board-controls"><button class="btn primary" data-planner="addNode">+ Add node</button><button class="btn" data-planner="connect">'+(connectFrom?"Pick second node…":"→ Connect nodes")+'</button><button class="btn" data-planner="cancelConnect">Cancel connection</button><button class="btn" data-planner="zoomIn">Zoom +</button><button class="btn" data-planner="zoomOut">Zoom −</button><button class="btn" data-planner="resetView">Reset view</button><span class="tdlx-muted">'+Math.round(zoom*100)+'%</span></div>'+
+ '<div class="tdlx-board-controls"><button class="btn primary" data-planner="addNode">+ Add node</button><button class="btn" data-planner="connect">'+(connectFrom==="choose"?"Pick first node…":connectFrom?"Pick second node…":"→ Connect nodes")+'</button><button class="btn" data-planner="cancelConnect" '+(!connectFrom?"disabled":"")+'>Cancel connection</button><button class="btn" data-planner="zoomIn">Zoom +</button><button class="btn" data-planner="zoomOut">Zoom −</button><button class="btn" data-planner="resetView">Reset view</button><span class="tdlx-muted">'+Math.round(zoom*100)+'%</span></div>'+
  '<div class="tdlx-board-viewport" id="tdlx-board-viewport" aria-label="Visual project planning canvas"><div class="tdlx-board-world" id="tdlx-board-world" style="transform:translate('+panX+'px,'+panY+'px) scale('+zoom+')">'+svg+
  b.nodes.map(n=>{const linked=n.taskId?X.tasks().find(t=>t.id===n.taskId):null;
   return '<button type="button" class="tdlx-node '+(selectedNode===n.id?"active":"")+' '+(n.taskId?"tdlc-linked-planner-node":"")+'" data-node="'+esc(n.id)+'" style="left:'+clamp(Number(n.x)||0,0,2200)+'px;top:'+clamp(Number(n.y)||0,0,1300)+'px" title="Click to edit; drag to move; arrow keys to nudge" aria-label="'+esc(n.title)+'"><strong>'+esc(n.title)+'</strong><small>'+esc(n.notes||"")+'</small>'+
   (n.taskId?'<small class="tdlc-planner-node-tag '+(!linked?"is-missing":linked.completed?"is-done":"")+'">↗ '+esc(linked?linked.title:"Missing linked task")+'</small>':"")+'</button>'
  }).join("")+'</div></div>'+
- '<p class="tdlx-status" id="tdlx-board-status">'+(connectFrom?"Choose a second node to create an arrow.":"Click a node to edit it. Drag a box to move it. Drag empty space to pan. Press arrow keys on a selected node for precise movement.")+'</p>'+
+ '<p class="tdlx-status" id="tdlx-board-status">'+(connectFrom==="choose"?"Choose the first node for your arrow.":connectFrom?"Choose a second node to create an arrow.":"Click a node to edit it. Drag a box to move it. Drag empty space to pan. Press arrow keys on a selected node for precise movement.")+'</p>'+
  ((newNode||selectedNode)?nodeForm(b):"")+
  '<div class="tdlx-card"><strong>Connections ('+edges.length+')</strong><div class="tdlx-edge-list">'+(edges.length?edges.map(e=>'<div class="tdlx-edge"><span>'+esc(nodeMap.get(e.from).title)+' → '+esc(nodeMap.get(e.to).title)+' ('+esc(e.label||"unlabeled")+')</span><span><button class="btn" data-edge-act="rename" data-edge="'+esc(e.id)+'">Label</button> <button class="btn" data-edge-act="delete" data-edge="'+esc(e.id)+'">Remove</button></span></div>').join(""):'<p class="tdlx-muted">No arrows yet. Click Connect nodes, then choose two boxes.</p>')+'</div></div>'+
  '<p class="tdlx-help">Changes are saved locally as you edit. Use More tools → Full backup to preserve this board outside the browser.</p>';
@@ -160,9 +160,11 @@ window.addEventListener("pointerup",e=>{
   const b=board();if(!b)return;
   const dx=e.clientX-d.startX,dy=e.clientY-d.startY;
   const x=clamp(Math.round(d.x+dx/zoom),0,2200),y=clamp(Math.round(d.y+dy/zoom),0,1300);
-  if(saveBoard({...b,nodes:b.nodes.map(n=>n.id===d.id?{...n,x,y}:n),updatedAt:Date.now()}))X.refresh();
+  saveBoard({...b,nodes:b.nodes.map(n=>n.id===d.id?{...n,x,y}:n),updatedAt:Date.now()});X.refresh();
  }else X.refresh();
 });
-window.addEventListener("pointercancel",()=>{drag=null});
+function cancelDrag(){if(!drag)return;drag=null;if(X.getPage&&X.getPage()==="planner")X.refresh()}
+window.addEventListener("pointercancel",cancelDrag);
+window.addEventListener("blur",cancelDrag);
 X.register("planner","Visual Planner",draw);
 })();

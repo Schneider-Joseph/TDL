@@ -114,6 +114,7 @@ function open(name){
 function close(){
  if(active){
   active="";$("#tdlx-overlay").hidden=true;$("#tdlx-content").innerHTML="";
+  if(pageActive)refresh();
   if(lastFocus&&lastFocus.focus)lastFocus.focus();
   return;
  }
@@ -241,7 +242,7 @@ function validateBackup(b){
  const names=Object.keys(b.entries);
  if(!names.length||names.length>60)throw Error("Empty or oversized storage key list.");
  for(const k of names){if(!validKeys(k)||typeof b.entries[k]!=="string"||b.entries[k].length>8000000)throw Error("Invalid storage entry: "+k);
-  if(k!=="tdl.notificationPrompt.v1")JSON.parse(b.entries[k]);
+  if(!["tdl.notificationPrompt.v1","tdl.appearance.v1","tdl.motion.v1"].includes(k))JSON.parse(b.entries[k]);
  }
  if(b.entries["tdl.tasks.v1"]){const t=JSON.parse(b.entries["tdl.tasks.v1"]);if(!Array.isArray(t)||!t.every(x=>x&&typeof x.id==="string"&&typeof x.title==="string"))throw Error("Invalid task records.")}
  if(b.entries["tdl.activities.v1"]){const a=JSON.parse(b.entries["tdl.activities.v1"]);if(!Array.isArray(a))throw Error("Invalid activities.")}
@@ -269,7 +270,7 @@ async function restoreFile(file){
 }
 $("#tdlx-close").addEventListener("click",close);
 $("#tdlx-overlay").addEventListener("click",e=>{if(e.target.id==="tdlx-overlay")close()});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&active){close()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&active&&!document.querySelector("dialog[open]")){close()}});
 window.addEventListener("hashchange",()=>syncRoute(true));
 page.addEventListener("click",e=>{if(e.target.closest('[data-tdlx-route="home"]'))navigate("home")});
 bar.addEventListener("click",e=>{

@@ -32,6 +32,12 @@ You do not need to read everything at once.
 | Understand unfamiliar development terminology | [Plain-English Glossary](docs/GLOSSARY.md) |
 | Review future ideas and known bugs | [Roadmap, Decisions, and Known Limitations](docs/ROADMAP_AND_DECISIONS.md) |
 
+## Stability and alignment fixes — November 2026
+
+Task priority sorting now puts High before Medium, category filters match different capitalization, and the dashboard updates its date and overdue counts across midnight. Inbox reminders follow renamed tasks and return after undoing a completion. Calendar Agenda includes overnight work, and the timeline aligns correctly on daylight-saving transition days.
+
+Task save failures keep the editor draft open and restore the last saved task state. A stale tab cannot overwrite newer tasks from another tab; reload it before trying again. Full restore accepts retained appearance preferences from older versions. Timer fields, settings inputs and list controls have consistent alignment, modal keyboard handling is contained, and canceled Planner drags restore saved positions. See [stability verification](tests/README.md#stability-and-alignment) for regression coverage.
+
 ## Timer controls and category suggestions — November 2026
 
 The timer now has separate clickable **HRS**, **MIN** and **SEC** fields, and a **Work until** mode for a chosen finish time. Both modes support the **Studying / working on** selector and the completion alarm. Durations range from 1 second to 24 hours. The Add task category field now offers a dropdown that remembers your categories and puts frequently used ones first without showing usage counts.

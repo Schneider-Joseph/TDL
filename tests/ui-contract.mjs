@@ -13,7 +13,7 @@ const theme = read("app/tdl-theme.css");
 const sw = read("app/sw.js");
 const core = read("app/tdl-extras-core.js");
 const manifest = JSON.parse(read("app/manifest.webmanifest"));
-const paths = ["app/tdl-extras-core.js","app/tdl-inbox.js","app/tdl-calendar.js","app/tdl-planner.js","app/tdl-momentum.js","app/tdl-connections.js"];
+const paths = ["app/tdl-extras-core.js","app/tdl-inbox.js","app/tdl-calendar.js","app/tdl-planner.js","app/tdl-momentum.js","app/tdl-connections.js","app/tdl-ui.js"];
 
 function contains(source,needle,label){
  assert.ok(source.includes(needle),label+" is missing: "+needle);
@@ -41,6 +41,8 @@ for(const path of paths){
  contains(sw,'"./'+name+'"',"Offline-cached script");
 }
 contains(sw,'"./tdl-theme.css"',"Offline-cached theme");
+contains(html,'href="./tdl-polish.css"',"Alignment stylesheet");
+contains(sw,'"./tdl-polish.css"',"Offline-cached alignment stylesheet");
 contains(html,'href="./tdl-workspace.css"',"Full workspace stylesheet");
 contains(html,'href="./tdl-momentum.css"',"Momentum stylesheet");
 contains(sw,'"./tdl-momentum.css"',"Offline cached Momentum stylesheet");
