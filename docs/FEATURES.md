@@ -23,7 +23,7 @@ Use the **Edit** button on an existing task to change those fields. The new **Un
 
 ### Categories are not fixed
 
-Choose a category from the dropdown or type your own, such as `STEM Club`, `Python`, or `Research`. Suggestions include Homework, Personal, Project, Chore and Event, plus categories found in existing tasks or remembered from previous saves. Frequent categories appear first. The task sidebar still adds custom categories found in your tasks.
+Choose a category from the dropdown or type your own, such as `STEM Club`, `Python`, or `Research`. Suggestions include Homework, Personal, Project, Chore and Event, plus categories found in existing tasks or remembered from previous saves. Frequent categories appear first; usage counts stay internal and are not displayed. The task sidebar still adds custom categories found in your tasks.
 
 A category is a label on each task, not a separate database folder. Changing it moves that task into a different filter.
 
@@ -68,8 +68,8 @@ This is useful for recurring study sessions or bills. Be mindful that editing on
 
 - The clock reads the date/time configured on your device.
 - Upcoming tasks can appear in deadline countdowns.
-- Click the **MIN** or **SEC** number to edit that section independently. Type digits or use native arrow controls. **Type a duration** also accepts `45` (45 minutes) or `45:30` (45 minutes 30 seconds).
-- Supported durations are **1 second to 24 hours**. Default minutes and seconds can be saved in Settings.
+- Click **HRS**, **MIN** or **SEC** to edit that section independently. Type digits or use native arrow controls. The separate typed-duration option has been removed.
+- Supported durations are **1 second to 24 hours**. Default hours, minutes and seconds can be saved in Settings.
 - **Work until** lets you choose a local finish time, such as 6:30 PM. The preview states Today or Tomorrow. Pausing keeps the original finish time; an expired target requires a new selection.
 - You can select an unfinished task or leave a session as **General focus session**.
 - Start, pause/resume, and reset are controlled in the timer card.

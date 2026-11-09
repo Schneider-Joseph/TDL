@@ -2,14 +2,10 @@
 (function(root){
  'use strict';
  const MAX_SECONDS=24*60*60;
- function durationParts(minutes,seconds){
-  if(!/^\d{1,4}$/.test(String(minutes))||!/^\d{1,2}$/.test(String(seconds)))return null;
-  const m=Number(minutes),s=Number(seconds),total=m*60+s;
-  return s<=59&&total>=1&&total<=MAX_SECONDS?total*1000:null;
- }
- function parseDuration(raw){
-  const match=String(raw).trim().match(/^(\d{1,4})(?::([0-5]\d))?$/);
-  return match?durationParts(match[1],match[2]||'0'):null;
+ function durationParts(hours,minutes,seconds){
+  if(![hours,minutes,seconds].every(v=>/^\d{1,2}$/.test(String(v))))return null;
+  const h=Number(hours),m=Number(minutes),s=Number(seconds),total=h*3600+m*60+s;
+  return m<=59&&s<=59&&total>=1&&total<=MAX_SECONDS?total*1000:null;
  }
  function nextEndTime(value,now){
   if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(String(value)))return null;
@@ -36,5 +32,5 @@
    return b.uses-a.uses||rank(a.name)-rank(b.name)||a.name.localeCompare(b.name);
   });
  }
- root.TDLInputUtils={durationParts,parseDuration,nextEndTime,categoryOptions};
+ root.TDLInputUtils={durationParts,nextEndTime,categoryOptions};
 })(typeof window==='object'?window:globalThis);
