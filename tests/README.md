@@ -72,3 +72,19 @@ For the optional real-browser alarm suite, install Playwright in your developmen
 Run `node tests/input-utils.mjs` for duration boundaries, local finish-time/tomorrow calculation and category suggestion ordering. The optional real-browser suite is `node tests/inputs-browser.mjs`, using the same Playwright/server setup and `CHROMIUM_PATH` / `TDL_TEST_URL` options as the alarm suite. It covers hours/minutes/seconds editing and stepping, pause/resume/reset, hour/second defaults, Work until with linked tasks and fixed finish times, category dropdown/keyboard/learning/persistence, responsive sizing and offline assets. Browser artifacts stay in ignored `work/inputs-qa/`.
 
 Run `node tests/subtasks-browser.mjs` with the same Playwright setup for legacy duration defaults, hour rollover, hour-based settings and the subtask layout regression. It checks that pending and completed descriptions fit beside fixed-size checkboxes at desktop and phone widths, and that editing, completion and reloading preserve their content.
+
+## Stability and alignment
+
+Run `node tests/stability-browser.mjs` with the same Playwright/server setup and environment options above. It uses isolated browser contexts and synthetic tasks to verify:
+
+- High/Medium/Low sorting and category filters with different capitalization.
+- Inbox refresh after task renaming, completion and Undo.
+- Global search, modal focus containment, Escape handling and unobstructed dialog controls.
+- Visible task validation, failed-save rollback with draft retention, and protection against stale-tab overwrites.
+- Overnight Agenda entries and local-hour alignment on a daylight-saving transition day.
+- Planner connection prompts and canceled drag restoration.
+- Aligned timer fields and no page overflow at widths from 320 to 1440 pixels.
+- Automatic midnight date, greeting and task-count refresh.
+- Full restore with legacy raw appearance/motion preferences.
+
+The alarm browser suite also checks that delayed background timer ticks count elapsed focus time up to the timer deadline. Desktop and mobile browser checks do not establish behavior on a physical iPhone or while an installed app is closed.

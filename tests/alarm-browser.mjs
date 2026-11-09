@@ -20,6 +20,7 @@ fs.mkdirSync('work/alarm-qa',{recursive:true});
  await p.locator('.tdlx-header [data-tdlx-open=calendar]').click();await p.clock.fastForward(61000);await p.locator('#tdl-alarm-dialog[open]').waitFor();
  for(const id of ['timerHours','timerMinutes','timerSeconds'])assert.equal(Number(await p.locator('#'+id).inputValue()),0);await p.waitForFunction(()=>__alarmSources.at(-1).ctx.state==='running'&&__alarmSources.at(-1).at<=__alarmSources.at(-1).ctx.currentTime);
  await p.waitForFunction(()=>{const samples=new Float32Array(2048);__alarmAnalyser.getFloatTimeDomainData(samples);return samples.some(x=>Math.abs(x)>.001)});
+ const focused=await p.evaluate(()=>JSON.parse(localStorage.getItem('tdl.focusSessions.v1')).at(-1).activeMs);assert.ok(focused>=59000&&focused<=60000,'Background-delayed completion must count the full running minute, not time beyond the deadline');
  assert.equal(await p.evaluate(()=>__alarmSources.at(-1).source.loop),true);await p.clock.fastForward(10000);assert.equal(await p.locator('#tdl-alarm-dialog').evaluate(e=>e.open),true);
  await p.screenshot({path:'work/alarm-qa/desktop.png'});await p.locator('#tdl-alarm-stop').click();assert.equal(await p.evaluate(()=>__alarmSources.at(-1).stopped),true);assert.equal(await p.title(),'TDL — Your workspace');
  console.log('PASS real scheduled Web Audio, audible sample output, repeated alarm, any-workspace alert, persistent Stop dialog and title restore');

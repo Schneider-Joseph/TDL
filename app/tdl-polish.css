@@ -1,0 +1,28 @@
+/* Shared alignment and long-content fixes, preserving the purple Studio layout. */
+html {scrollbar-gutter:stable}
+body.tdl-modal-open {overflow:hidden}
+.timer-segment input {height:64px}
+.timer-colon {display:grid;place-items:center;height:64px;line-height:1}
+.timer-default-inputs {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.timer-default-inputs label {display:grid;grid-template-rows:minmax(30px,auto) 42px;align-items:end;gap:5px;font-size:11px}
+.settings-group .timer-default-inputs input {width:100%;min-width:0;height:42px;padding:8px}
+.toolbar .search,.toolbar #sort {height:42px;box-sizing:border-box}
+.toolbar .tools {align-items:center;min-width:0}
+.toolbar h3,.toolbar p {overflow-wrap:anywhere}
+.field>input:not([type="checkbox"]),.field>select,.category-combobox #category {height:42px;box-sizing:border-box;min-width:0}
+.fields>.field {min-width:0}
+.side .nav {overflow-wrap:anywhere}
+.task>.check {margin-top:3px;align-self:start}
+.task .actions {align-self:start;align-items:center;min-height:26px}
+.task .pill {max-width:100%;overflow-wrap:anywhere}
+.focus-history-row {gap:12px;align-items:baseline}
+.focus-history-row span:last-child {flex-shrink:0;white-space:nowrap}
+.tdlx-calendar-top-actions {align-items:center}
+.tdlx-board-controls .btn {white-space:nowrap}
+.tdlx-undo-toast {align-items:center}
+.tdlx-undo-toast>span {min-width:0;overflow-wrap:anywhere}
+.tdlx-undo-toast .btn {flex-shrink:0}
+body.tdl-modal-open .tdlx-undo-toast {visibility:hidden;pointer-events:none}
+.task-save-error {color:var(--red);font-size:12px;line-height:1.6;padding:10px 12px;background:#39232e;border:1px solid #754451;border-radius:10px;overflow-wrap:anywhere}
+.task-save-error[hidden] {display:none}
+@media(max-width:550px){.timer-segment input,.timer-colon {height:58px}.timer-colon {font-size:29px}.toolbar .tools {display:flex;flex-wrap:wrap}.toolbar .search {flex:1;min-width:110px}.toolbar #sort {min-width:0;max-width:155px}}

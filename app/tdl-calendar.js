@@ -39,7 +39,7 @@ function daySegments(d){
   const a=at(block.start),b=at(block.end);
   if(!a||!b||b<=a||b<=dayStart||a>=dayEnd)continue;
   const segStart=a>dayStart?a:dayStart,segEnd=b<dayEnd?b:dayEnd;
-  result.push({block,start:segStart,end:segEnd,top:(segStart-dayStart)/60000*HOUR_HEIGHT/60,height:Math.max(22,(segEnd-segStart)/60000*HOUR_HEIGHT/60),begin:segStart.valueOf(),finish:segEnd.valueOf(),continuation:a<dayStart,continues:b>dayEnd});
+  result.push({block,start:segStart,end:segEnd,top:minutes(segStart)*HOUR_HEIGHT/60,height:Math.max(22,((segEnd.valueOf()===dayEnd.valueOf()?1440:minutes(segEnd))-minutes(segStart))*HOUR_HEIGHT/60),begin:segStart.valueOf(),finish:segEnd.valueOf(),continuation:a<dayStart,continues:b>dayEnd});
  }
  result.sort((a,b)=>a.begin-b.begin||b.finish-a.finish);
  // Give overlapping work blocks separate horizontal lanes, with no hidden data.
@@ -116,10 +116,10 @@ function weeklyTimeline(days){
 }
 function agenda(days){
  return '<div class="tdlx-calendar-agenda">'+days.map(d=>{
-  const due=dayDue(d),work=daySegments(d).filter(e=>!e.continuation);
+  const due=dayDue(d),work=daySegments(d);
   return '<section class="tdlx-calendar-agenda-day"><div class="tdlx-calendar-agenda-date"><span>'+esc(d.toLocaleDateString(undefined,{weekday:"long"}))+'</span><strong>'+esc(d.toLocaleDateString(undefined,{month:"short",day:"numeric"}))+'</strong></div><div class="tdlx-calendar-agenda-items">'+
   (due.map(t=>'<div class="tdlx-agenda-row"><span class="tdlx-agenda-type is-due">DEADLINE</span>'+dueChip(t)+'</div>').join(""))+
-  (work.map(e=>'<div class="tdlx-agenda-row"><span class="tdlx-agenda-type is-work">'+esc(timeLabel(at(e.block.start)))+'</span><button class="tdlx-agenda-work" type="button" data-cal="edit" data-block="'+esc(e.block.id)+'"><strong>'+esc(e.block.title)+'</strong><small>'+esc(blockLabel(e))+'</small></button></div>').join(""))+
+  (work.map(e=>'<div class="tdlx-agenda-row"><span class="tdlx-agenda-type is-work">'+esc(e.continuation?'Continues':timeLabel(e.start))+'</span><button class="tdlx-agenda-work" type="button" data-cal="edit" data-block="'+esc(e.block.id)+'"><strong>'+esc(e.block.title)+'</strong><small>'+esc(blockLabel(e))+'</small></button></div>').join(""))+
   (!due.length&&!work.length?'<p class="tdlx-muted">Nothing scheduled. Use + Schedule work to make a plan.</p>':"")+'</div></section>';
  }).join("")+'</div>';
 }
@@ -139,7 +139,7 @@ function render(c){
  '<button class="btn primary" type="button" data-cal="new">＋ Schedule work</button></div></div>'+
  (calendarForm?blockForm(blocks.find(b=>b.id===editing)):"")+
  '<div class="tdlx-calendar-surface">'+(view==="week"?weeklyTimeline(days):agenda(days))+'</div>'+
- '<div class="tdlx-calendar-footnote"><strong>Two kinds of time, one calendar.</strong> Deadlines come directly from tasks and never move when you drag or edit a green scheduled work block. All changes remain on this device.</div>';
+ '<div class="tdlx-calendar-footnote"><strong>Two kinds of time, one calendar.</strong> Deadlines come directly from tasks and never move when you drag or edit a purple scheduled work block. All changes remain on this device.</div>';
  const scroller=$(".tdlx-calendar-scroll",c);
  if(scroller){const track=$(".tdlx-calendar-day-track",c);const trackTop=track&&Number.isFinite(track.offsetTop)?track.offsetTop:132;scroller.scrollTop=previousScroll===null?trackTop+6*HOUR_HEIGHT:previousScroll;scroller.scrollLeft=previousHorizontal===null?0:previousHorizontal}
  const form=$("#tdlx-block-form",c);

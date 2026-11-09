@@ -8,7 +8,7 @@ const $=(s,root=document)=>root.querySelector(s),esc=X.escape;
 const dateKey=d=>{const x=new Date(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")};
 const today=()=>dateKey(Date.now());
 const asDate=t=>{if(!t.dueDate)return null;const d=new Date(t.dueDate+"T"+(t.dueTime||"23:59")+":00");return Number.isNaN(d.valueOf())?null:d};
-let inbox=null,filter="unread";
+let inbox=read(),filter="unread",viewSignature="";
 function read(){const x=X.store(key,{version:1,items:[]});return x&&Array.isArray(x.items)?x:{version:1,items:[]}}
 function saved(){inbox.items.sort((a,b)=>b.at-a.at);if(inbox.items.length>max){
  const active=inbox.items.filter(x=>!x.dismissedAt&&!x.resolvedAt);
@@ -18,10 +18,17 @@ function saved(){inbox.items.sort((a,b)=>b.at-a.at);if(inbox.items.length>max){
 function eligible(t,type,d){const due=d.valueOf(),now=Date.now();if(type==="overdue")return due<now; if(type==="due_today")return t.dueDate===today();return due>=now&&due-now<=120*60000}
 function status(item){if(item.resolvedAt)return "resolved";if(item.dismissedAt)return "dismissed";if(item.snoozedUntil&&item.snoozedUntil>Date.now())return "snoozed";return item.readAt?"read":"unread"}
 function unread(){return inbox.items.filter(x=>status(x)==="unread").length}
-function scan(){
+function scan(refreshView=true){
  if(!inbox)return;const now=Date.now(),actual=new Map(X.tasks().filter(t=>t&&typeof t.id==="string").map(t=>[t.id,t]));let changed=false;
- for(const item of inbox.items){if(item.resolvedAt)continue;const task=actual.get(item.taskId),d=task&&asDate(task);
-  if(!task||task.completed||!d||!eligible(task,item.type,d)){item.resolvedAt=now;changed=true;}
+ for(const item of inbox.items){
+  const task=actual.get(item.taskId),d=task&&asDate(task);
+  const sameEvent=task&&item.eventKey===item.type+":"+task.id+":"+task.dueDate+":"+(task.dueTime||"end");
+  const current=!!(sameEvent&&task&&!task.completed&&d&&eligible(task,item.type,d));
+  if(current){
+   if(item.resolvedAt){item.resolvedAt=null;changed=true;}
+   const deadline=task.dueDate+" "+(task.dueTime||"end of day");
+   if(item.title!==task.title||item.deadline!==deadline){item.title=task.title;item.deadline=deadline;changed=true;}
+  }else if(!item.resolvedAt){item.resolvedAt=now;changed=true;}
  }
  for(const t of X.tasks()){
   if(!t||t.completed||!t.id)continue;const d=asDate(t);if(!d)continue;
@@ -37,6 +44,9 @@ function scan(){
   }
  }
  if(changed)saved();X.updateBadge(unread());
+ const signature=JSON.stringify(inbox.items.map(item=>[item.id,status(item),item.title,item.deadline]));
+ const refresh=signature!==viewSignature;viewSignature=signature;
+ if(refreshView&&refresh&&X.getPage&&X.getPage()==="inbox")X.refresh();
 }
 function act(id,action){
  let item=inbox.items.find(x=>x.id===id);if(!item)return;
@@ -47,7 +57,7 @@ function act(id,action){
   item.snoozedUntil=action==="snoozeTomorrow"?tomorrow.valueOf():Date.now()+(action==="snooze15"?15:60)*60000;
   item.readAt=null;
  }
- saved();scan();X.refresh();
+ saved();scan(false);X.refresh();
 }
 function openTask(item){
  if(!item)return;
@@ -57,7 +67,7 @@ function openTask(item){
  X.close();window.TDLAppBridge.openTask(t);
 }
 X.register("inbox","Notification Center",function(c){
- scan();
+ scan(false);
  const all=inbox.items.slice().sort((a,b)=>b.at-a.at);
  const stateCounts={unread:0,archived:0,all:all.length};
  for(const item of all){const s=status(item);if(s==="unread")stateCounts.unread++;if(s==="dismissed"||s==="resolved")stateCounts.archived++}
@@ -82,7 +92,7 @@ X.register("inbox","Notification Center",function(c){
  '<div class="tdlx-inbox-feed"><div class="tdlx-inbox-feed-head"><h3>'+(filter==="unread"?"Unread reminders":filter==="all"?"All reminders":"Archived reminders")+'</h3><span>'+visible.length+' items</span></div>'+
  (entries||'<div class="tdlx-inbox-empty"><div aria-hidden="true">✓</div><h3>All clear</h3><p>'+(filter==="unread"?"No unread reminders right now.":"Nothing in this category yet.")+'</p></div>')+'</div></div>';
  const mark=$("#tdlx-inbox-markall",c);
- if(mark)mark.addEventListener("click",()=>{inbox.items.forEach(item=>{if(status(item)==="unread")item.readAt=Date.now()});saved();scan();X.refresh()});
+ if(mark)mark.addEventListener("click",()=>{inbox.items.forEach(item=>{if(status(item)==="unread")item.readAt=Date.now()});saved();scan(false);X.refresh()});
  c.onclick=e=>{
   const tab=e.target.closest("[data-filter]");
   if(tab){filter=tab.dataset.filter;X.refresh();return}
@@ -91,7 +101,7 @@ X.register("inbox","Notification Center",function(c){
   if(b.dataset.inbox==="open")openTask(item);else act(b.dataset.id,b.dataset.inbox)
  };
 });
-inbox=read();scan();
+scan();
 document.addEventListener("tdlx:tasks-changed",()=>{scan()});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)scan()});
 window.setInterval(scan,60000);
