@@ -18,7 +18,6 @@
   visible.forEach((item,index)=>{
    const option=document.createElement('li');option.id='category-option-'+index;option.setAttribute('role','option');option.setAttribute('aria-selected','false');
    const name=document.createElement('span');name.textContent=item.name;option.appendChild(name);
-   if(item.uses>0){const hint=document.createElement('small');hint.textContent='Used '+item.uses+'×';option.appendChild(hint);}
    option.addEventListener('pointerdown',e=>e.preventDefault());option.addEventListener('click',()=>choose(index));list.appendChild(option);
   });
   if(!visible.length){const empty=document.createElement('li');empty.className='category-no-match';empty.textContent='New category — save the task to remember it.';empty.setAttribute('role','presentation');list.appendChild(empty);}

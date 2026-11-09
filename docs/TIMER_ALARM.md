@@ -28,7 +28,7 @@ Run `node tests/alarm.mjs` alongside the existing suites. Chromium checks covere
 
 ## Duration and Work until modes
 
-In **Duration**, click the MIN or SEC field to edit that part. Values from 1 second to 24 hours are supported. **Type a duration** accepts minutes or MM:SS, including `0:30` for thirty seconds. Pause keeps the remaining countdown; Reset restores the duration you chose. Settings can save default minutes and seconds.
+In **Duration**, click the HRS, MIN or SEC field to edit that part directly. Values from 1 second to 24 hours are supported, with minutes and seconds each from 0 to 59. There is no separate typed-duration input. Pause keeps the remaining countdown; Reset restores the duration you chose. Settings can save default hours, minutes and seconds. Older defaults stored as total minutes are interpreted correctly without rewriting them on load.
 
 In **Work until**, choose the local clock time you want to finish, such as 6:30 PM. The preview explicitly says Today or Tomorrow; an earlier clock time means its next occurrence tomorrow. Start runs the countdown to that deadline. Pause stops working time and sound, but Resume retains the deadline. If the deadline passed while paused, choose a new finish time or Reset before starting again. Reset recomputes the next occurrence of the displayed finish time.
 

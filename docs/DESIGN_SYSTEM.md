@@ -159,3 +159,10 @@ On screens 900px wide or narrower, **Menu** opens navigation in a drawer on the 
 `app/tdl-inputs.css` styles the segmented duration editor, Work until controls and editable category combobox. `app/tdl-input-utils.js` contains pure validation, local end-time calculation and category ordering. The inline timer logic keeps its existing focus-session/alarm integration. `app/tdl-categories.js` manages the keyboard/touch dropdown and stores learned usage separately as `tdl.categoryUsage.v1`; it does not migrate task records. App-shell v34 caches the new assets.
 
 Category suggestions use existing task counts and remembered save counts, deduplicate suggestion names without rewriting task categories, and retain up to 100 remembered names. New tasks or changed categories increment usage; editing unrelated task fields does not. Default suggestions include Project alongside the original categories. Previously saved tasks retain their exact category names.
+
+
+## Hours and readable subtasks — November 2026
+
+The timer has HRS / MIN / SEC inputs in both Duration and Work until displays. Default duration settings include hours; legacy total-minute defaults are normalized in memory without rewriting saved settings. The separate typed-duration disclosure has been removed. Category frequency remains local for ordering suggestions and is no longer shown beside category names.
+
+Subtask editor checkboxes have a fixed 18px grid column, preventing the form's full-width input rule from collapsing the description. Descriptions use small, wrapping textareas that grow to fit their text (up to 180px, then scroll). Saved task subtask labels also wrap beside fixed-size checkboxes, including completed steps. Subtask IDs, text and completion storage are unchanged. App-shell v35 includes the update.
