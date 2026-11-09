@@ -21,6 +21,7 @@
 <link rel="stylesheet" href="./tdl-momentum.css">
 <link rel="stylesheet" href="./tdl-connections.css">
 <link rel="stylesheet" href="./tdl-sidebar.css">
+<link rel="stylesheet" href="./tdl-alarm.css">
 </head>
 <body><div class="wrap">
 <header>
@@ -48,6 +49,7 @@
       <button class="btn" id="timerReset" type="button">Reset</button>
     </div>
     <p id="timerStatus" class="timer-status">Ready when you are.</p>
+    <p id="alarmHint" class="alarm-hint" role="status">Alarm sound on. Keep TDL open and your device volume up.</p>
     <div class="focus-options">
       <label for="focusTask">Studying / working on</label>
       <select id="focusTask"><option value="">General focus session</option></select>
@@ -61,9 +63,15 @@
   <div class="time-card-label">TDL PREFERENCES</div>
   <h3 id="settingsTitle">Settings</h3>
   <div class="settings-group"><strong>Focus timer</strong>
-   <small>Run your timer without interruptions. Completed focus time is saved locally in your session history.</small>
+   <small>The timer rings when it finishes. Completed focus time is saved locally in your session history.</small>
    <label for="settingTimerMinutes">Default timer duration (minutes)</label>
    <input type="number" id="settingTimerMinutes" min="1" max="180" value="25">
+  </div>
+  <div class="settings-group"><strong>Timer alarm</strong>
+   <label class="alarm-setting-toggle"><input id="alarmSoundEnabled" type="checkbox" checked> Play a repeating alarm when a timer finishes</label>
+   <div class="alarm-volume"><label for="alarmVolume">Alarm volume</label><input id="alarmVolume" type="range" min="10" max="100" step="5" value="75"><output id="alarmVolumeValue" for="alarmVolume">75%</output></div>
+   <button class="btn" id="alarmPreview" type="button">Preview alarm</button>
+   <small>Keep TDL open for timer alerts. Sound depends on device volume and browser settings. Closed or suspended web apps cannot guarantee an alarm. Enable notifications below for system alerts where supported.</small>
   </div>
   <div class="settings-group"><strong>Notifications</strong><p id="notificationStatus" class="settings-note" role="status">Checking browser permission…</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="enableNotifications">Enable notifications</button><button class="btn" type="button" id="testNotifications" disabled>Send test notification</button></div><p id="notificationTestResult" class="settings-note" role="status"></p><small>TDL checks reminders only while the app is running. Closed-app alerts are not currently supported. If a test is accepted but nothing appears on your Mac, check macOS System Settings → Notifications for TDL or Google Chrome, and check Focus/Do Not Disturb.</small></div>
   <div class="settings-group"><strong>Data & privacy</strong>
@@ -81,6 +89,7 @@
 <section class="activity-section" aria-labelledby="activitiesTitle"><div class="activity-head"><h3 id="activitiesTitle">Bored? Do This.</h3><span class="activity-status locked" id="activityStatus">Locked</span></div><p class="activity-muted" id="activityMessage">Finish today's and overdue tasks to unlock your activity bank.</p><div id="activitiesUnlocked" class="hidden"><form id="activityForm" class="activity-entry"><input id="activityInput" maxlength="140" placeholder="Something you'd like to do…" aria-label="Add optional activity" required><button class="btn primary" type="submit">Add</button></form><div id="activityItems" class="activity-items"></div><button class="btn" type="button" id="activityRandom">🎲 Pick for me</button><div id="activityPicked" class="activity-pick hidden" role="status"></div></div></section><div class="footer"><span>TDL v0.1 · Built for your day, not to distract you.</span><span>Local-first · No account required</span></div></div>
 <div id="backdrop" class="backdrop hidden"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modalhead"><h3 id="modalTitle">Add a task</h3><button class="btn" id="close" aria-label="Close">×</button></div><form id="form"><div class="fields"><div class="field full"><label for="title">Task name *</label><input id="title" maxlength="160" required placeholder="Finish Network Security lab"></div><div class="field"><label for="category">Category</label><input id="category" type="text" maxlength="50" placeholder="e.g. Homework, STEM Club, Projects" autocomplete="off" spellcheck="false"><small style="color:var(--muted)">Type any category name. New categories appear in the sidebar.</small></div><div class="field"><label for="priority">Priority</label><select id="priority"><option value="medium">Medium</option><option value="high">High</option><option value="low">Low</option></select></div><div class="field"><label for="due">Due date (optional)</label><input id="due" type="date"></div><div class="field"><label for="time">Time (optional)</label><input id="time" type="time"></div><div class="field"><label for="repeat">Repeat</label><select id="repeat"><option value="none">Does not repeat</option><option value="daily">Every day</option><option value="weekdays">Weekdays (Mon–Fri)</option><option value="weekly">Every week</option><option value="monthly">Every month</option><option value="yearly">Every year</option></select></div><div class="field"><label for="repeatEnd">Repeat until (optional)</label><input id="repeatEnd" type="date"></div><div class="field full"><label for="assignmentUrl">Assignment URL</label><input id="assignmentUrl" type="url" maxlength="2000" placeholder="https://..."></div><div class="field full"><label for="subtaskEntry">Subtasks</label><div class="subtask-entry"><input id="subtaskEntry" maxlength="160" placeholder="Add a step…"><button type="button" class="btn" id="subtaskAdd">Add step</button></div><div id="subtaskEditor" class="subtask-editor"></div><small>Break larger tasks into checkable steps.</small></div><div class="field full"><label for="notes">Notes (optional)</label><textarea id="notes" maxlength="2000" placeholder="Details or anything you need to remember…"></textarea></div></div><div class="formactions"><button type="button" class="btn" id="cancel">Cancel</button><button class="btn primary" type="submit">Save task</button></div></form></section></div>
 <div id="quickModal" class="focus-modal hidden" role="dialog" aria-modal="true" aria-labelledby="quickTitle"><div class="focus-dialog"><h3 id="quickTitle">Paste homework details</h3><p>Paste an assignment link or copied text. Review before saving.</p><textarea id="quickText" rows="7" placeholder="Chapter 8 Quiz&#10;Due: 2026-10-19 11:59 PM&#10;https://example.edu/assignment"></textarea><p id="quickStatus" role="status"></p><div class="focus-dialog-actions"><button class="btn" id="quickCancel" type="button">Cancel</button><button class="btn primary" id="quickParse" type="button">Review task</button></div></div></div><input type="file" id="file" accept=".json,application/json" class="hidden"><div id="toast" class="toast hidden" role="status"></div>
+<script src="./tdl-alarm.js"></script>
 <script>
 (function(){
 "use strict";
@@ -321,19 +330,22 @@ function drawTimer(){var ms=timerRunning?Math.max(0,timerEnd-Date.now()):remaini
 function applyTimerEdit(){if(timerRunning)return true;var value=parseTimerInput($("#timerDisplay").value);if(value===null){$("#timerStatus").textContent="Enter 1–180 minutes, optionally with seconds (e.g. 45:30).";$("#timerDisplay").value=formatTimer(remainingMs);return false}remainingMs=value;timerFinished=false;$("#timerStatus").textContent="Duration set. Ready when you are.";drawTimer();return true}
 $("#timerDisplay").addEventListener("blur",applyTimerEdit);
 $("#timerDisplay").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();this.blur()}});
-function tickTimer(){focusAccrue();remainingMs=Math.max(0,timerEnd-Date.now());if(remainingMs<=0){remainingMs=0;timerRunning=false;timerFinished=true;stopTimerInterval();saveFocusSession();$("#timerStatus").textContent="Time is up.";drawTimer();notify("Timer finished");return}drawTimer()}
+function tickTimer(){focusAccrue();remainingMs=Math.max(0,timerEnd-Date.now());if(remainingMs<=0){remainingMs=0;timerRunning=false;timerFinished=true;stopTimerInterval();var alarmTitle=focusSession?focusSession.taskTitle:"Focus timer";saveFocusSession();$("#timerStatus").textContent="Time is up.";drawTimer();if(window.TDLAlarm)window.TDLAlarm.finish("dashboard",alarmTitle);notify("Timer finished");return}drawTimer()}
 $("#timerStart").addEventListener("click",function(){
  // Do not run both TDL timers concurrently. The active focus room owns its task.
  if(!timerRunning&&window.TDLMomentum&&window.TDLMomentum.getState().focus.running){
   notify("Finish or pause the Momentum focus block before using the dashboard timer.");return
  }
- if(timerRunning){focusAccrue();remainingMs=Math.max(0,timerEnd-Date.now());timerRunning=false;stopTimerInterval();$("#timerStatus").textContent="Paused. Pick it up when you're ready.";drawTimer();return}
+ if(timerRunning&&timerEnd<=Date.now()){tickTimer();return}
+ if(timerRunning){if(window.TDLAlarm)window.TDLAlarm.disarm("dashboard");focusAccrue();remainingMs=Math.max(0,timerEnd-Date.now());timerRunning=false;stopTimerInterval();$("#timerStatus").textContent="Paused. Pick it up when you're ready.";drawTimer();return}
  if(document.activeElement===$("#timerDisplay")){if(!applyTimerEdit())return;$("#timerDisplay").blur()}
  if(timerFinished||remainingMs<=0){remainingMs=settings.timerMinutes*60000;timerFinished=false}
- timerRunning=true;timerEnd=Date.now()+remainingMs;if(!focusSession)startFocusSession();else{focusLastTick=Date.now()}$("#timerStatus").textContent="Timer running. Stay with one thing.";tickTimer();if(timerRunning)timerInterval=window.setInterval(tickTimer,200);
+ timerRunning=true;timerEnd=Date.now()+remainingMs;if(window.TDLAlarm)window.TDLAlarm.arm("dashboard",remainingMs,focusSession?focusSession.taskTitle:"Focus timer");if(!focusSession)startFocusSession();else{focusLastTick=Date.now()}$("#timerStatus").textContent="Timer running. Stay with one thing.";tickTimer();if(timerRunning)timerInterval=window.setInterval(tickTimer,200);
 });
-$("#timerReset").addEventListener("click",function(){focusAccrue();saveFocusSession();stopTimerInterval();timerRunning=false;timerFinished=false;remainingMs=settings.timerMinutes*60000;$("#timerStatus").textContent="Timer reset. Ready when you are.";drawTimer()});
+$("#timerReset").addEventListener("click",function(){if(window.TDLAlarm)window.TDLAlarm.disarm("dashboard");focusAccrue();saveFocusSession();stopTimerInterval();timerRunning=false;timerFinished=false;remainingMs=settings.timerMinutes*60000;$("#timerStatus").textContent="Timer reset. Ready when you are.";drawTimer()});
 drawTimer();
+document.addEventListener("visibilitychange",function(){if(!document.hidden&&timerRunning)tickTimer()});
+window.addEventListener("pageshow",function(){if(timerRunning)tickTimer()});
 
 if("serviceWorker" in navigator && /^https?:$/.test(location.protocol)){window.addEventListener("load",function(){navigator.serviceWorker.register("./sw.js").catch(function(){/* TDL remains usable without service-worker support. */});});}
 var d=new Date();$("#todayLabel").textContent=d.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"});$("#greeting").textContent=d.getHours()<12?"Good morning.":d.getHours()<18?"Good afternoon.":"Good evening.";

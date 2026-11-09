@@ -72,6 +72,9 @@ This is useful for recurring study sessions or bills. Be mindful that editing on
 - Supported timer durations are 1–180 minutes.
 - You can select an unfinished task or leave a session as **General focus session**.
 - Start, pause/resume, and reset are controlled in the timer card.
+- At completion, a repeating alarm and a persistent **Time’s up** dialog appear. Press **Stop alarm** (or Escape) to silence it. Both Dashboard and Momentum focus timers use the alarm.
+- **Settings → Timer alarm** includes sound on/off, volume, and **Preview alarm**. Preview is unavailable while a timer is active.
+- With notification permission, a system notification is also requested. Keep TDL open; device volume, browser policies, and operating-system suspension can prevent sound or delay alerts. See [Timer alarm](TIMER_ALARM.md).
 
 ### Quiet focus sessions (November 1, 2026)
 
@@ -124,7 +127,7 @@ There is **no Blackboard connection, live school integration, or automatic impor
 
 ## 10. Settings, backups, installation
 
-**Settings** currently includes focus-check preference, default timer duration, notification controls, and task-backup export.
+**Settings** includes default timer duration, timer-alarm sound/volume/preview, notification controls, and task-backup export.
 
 The **original Export** downloads JSON containing **tasks and activities**. **Import** replaces existing tasks after confirmation; if the backup includes an activities array, it also replaces the activity bank. The ordinary export does **not** include focus history, local reminder history, or settings. The new **Full backup** button captures current TDL browser storage collections for a fuller recovery route. See [New Features User Guide](NEW_FEATURES_USER_GUIDE.md).
 
