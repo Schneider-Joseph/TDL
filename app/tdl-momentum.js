@@ -63,6 +63,10 @@ function tidy(){
  const carry=state.carryover.filter(x=>unfinished.has(x.id));
  if(JSON.stringify(commitments)!==JSON.stringify(state.committed)){state.committed=commitments;changed=true}
  if(JSON.stringify(carry)!==JSON.stringify(state.carryover)){state.carryover=carry;changed=true}
+ if(state.focus.taskId){
+  const focused=taskById(state.focus.taskId);
+  if(!focused||focused.completed){endFocus();changed=true}
+ }
  if(changed)save();
  return changed;
 }
@@ -107,10 +111,10 @@ function activityChanges(){
 }
 function mutate(next){
  const previous=X.copy(taskList());
- bridge.setTasks(next);bridge.save();
- const actual=JSON.stringify(taskList());
- // save() may fail while leaving memory changed. Verify persisted data before claiming success.
- if(localStorage.getItem("tdl.tasks.v1")!==actual){bridge.setTasks(previous);X.toast("Could not save task changes. No task was intentionally deleted.");return false}
+ const expected=JSON.stringify(next);
+ bridge.setTasks(next);const saved=bridge.save();
+ // A failed save can roll memory back. Compare against the requested change, too.
+ if(saved===false||localStorage.getItem("tdl.tasks.v1")!==expected||JSON.stringify(taskList())!==expected){bridge.setTasks(previous);X.toast("Could not save task changes. Your previous tasks are still here.");return false}
  bridge.render();return true;
 }
 function shrink(taskId,forRollover=false){
@@ -175,6 +179,8 @@ function shrinkAndRecommit(taskId){
 }
 function doNow(taskId){
  const t=taskById(taskId);if(!t||t.completed)return;
+ if(bridge.isTimerRunning&&bridge.isTimerRunning()){X.toast("Pause your dashboard timer before starting a Momentum focus block.");return}
+ if(state.focus.running){X.toast("One task at a time. Finish, pause, or end the current block.");return}
  if(blockedNotice(taskId))return;
  if(!state.committed.includes(taskId)&&state.committed.length>=state.cap){
   X.toast("Today's slots are full. Uncommit a task first.");return

@@ -32,6 +32,12 @@ You do not need to read everything at once.
 | Understand unfamiliar development terminology | [Plain-English Glossary](docs/GLOSSARY.md) |
 | Review future ideas and known bugs | [Roadmap, Decisions, and Known Limitations](docs/ROADMAP_AND_DECISIONS.md) |
 
+## Deadline and focus fixes — November 27, 2026
+
+Today now respects the selected priority/newest sort, and due-date sorting includes the actual deadline time. Dashboard, Inbox and Calendar share the same deadline rules, so date-only tasks remain on time through the final minute of the day. Invalid imported dates do not produce reminders, and an overdue reminder replaces its stale Due today entry. Momentum no longer reports a failed task edit as successful or resets its age; deleting its focused task stops the block, and trying to start a second timer leaves commitments unchanged.
+
+Cross-device sync is still a planned feature. The [Firebase sync design](docs/FIREBASE_SYNC_DESIGN.md) now describes a no-cost Spark setup and its limits; these bug fixes do not connect the app to Firebase.
+
 ## Stability and alignment fixes — November 2026
 
 Task priority sorting now puts High before Medium, category filters match different capitalization, and the dashboard updates its date and overdue counts across midnight. Inbox reminders follow renamed tasks and return after undoing a completion. Calendar Agenda includes overnight work, and the timeline aligns correctly on daylight-saving transition days.

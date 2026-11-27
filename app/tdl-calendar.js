@@ -86,7 +86,7 @@ function blockForm(block){
 }
 function dueChip(t){
  const complete=!!t.completed;
- const overdue=!complete&&at(t.dueDate+"T"+(t.dueTime||"23:59"))<new Date();
+ const deadline=window.TDLInputUtils.taskDeadline(t),overdue=!complete&&deadline&&deadline<new Date();
  return '<button type="button" class="tdlx-calendar-due '+(complete?"is-complete":overdue?"is-overdue":"")+'" data-cal="task" data-id="'+esc(t.id)+'" title="Open task: '+esc(t.title)+'">'+
  '<span class="tdlx-calendar-due-dot"></span><span class="tdlx-calendar-due-label">'+esc(t.title)+'</span>'+
  '<small>'+esc(t.dueTime||"End of day")+'</small></button>';

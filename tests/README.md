@@ -88,3 +88,5 @@ Run `node tests/stability-browser.mjs` with the same Playwright/server setup and
 - Full restore with legacy raw appearance/motion preferences.
 
 The alarm browser suite also checks that delayed background timer ticks count elapsed focus time up to the timer deadline. Desktop and mobile browser checks do not establish behavior on a physical iPhone or while an installed app is closed.
+
+Run `node tests/deadlines-focus-browser.mjs` with the same Playwright/server setup for the November 27 regressions: Today sorting by priority/newest, chronological same-day deadlines, consistent date-only/second-level deadlines, invalid imported dates, failed Momentum saves preserving task age and state, deletion of the focused task, and rejected focus starts leaving commitments unchanged. These cases use isolated contexts with service workers blocked; the existing alarm, input and subtask browser suites cover offline assets separately.

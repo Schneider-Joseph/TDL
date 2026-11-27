@@ -14,6 +14,13 @@ end=new Date(U.nextEndTime('16:00',now));assert.equal(end.getDate(),10);assert.e
 end=new Date(U.nextEndTime('00:00',new Date(2026,10,30,23,55).getTime()));assert.equal(end.getMonth(),11);assert.equal(end.getDate(),1);
 for(const input of ['','6:30pm','24:00','12:60','-1:00','8:30'])assert.equal(U.nextEndTime(input,now),null);
 console.log('PASS local work-until times, tomorrow, month rollover, and invalid times');
+let deadline=U.taskDeadline({dueDate:'2026-11-27'});
+assert.equal(deadline.getDate(),27);assert.equal(deadline.getHours(),23);assert.equal(deadline.getMinutes(),59);assert.equal(deadline.getSeconds(),59);assert.equal(deadline.getMilliseconds(),999);
+deadline=U.taskDeadline({dueDate:'2026-11-27',dueTime:'12:30:45'});
+assert.equal(deadline.getHours(),12);assert.equal(deadline.getMinutes(),30);assert.equal(deadline.getSeconds(),45);
+assert.equal(U.taskDeadline({dueDate:'2028-02-29',dueTime:'00:00'}).getDate(),29);
+for(const task of [null,{}, {dueDate:'2026-02-30'},{dueDate:'2026-02-29'},{dueDate:'2026-13-01'},{dueDate:'2026-11-27',dueTime:'24:00'},{dueDate:'2026-11-27',dueTime:'12:60'},{dueDate:'2026-11-27',dueTime:'12:00:60'}])assert.equal(U.taskDeadline(task),null);
+console.log('PASS shared task deadlines, exact end-of-day/seconds, leap days and invalid date/time rejection');
 let options=U.categoryOptions([{category:'STEM Club'},{category:'STEM Club'},{category:'Homework'}],[]);
 assert.equal(options[0].name,'STEM Club');assert.equal(options[0].uses,2);assert.ok(options.some(o=>o.name==='Project'));assert.ok(options.some(o=>o.name==='Personal'));
 options=U.categoryOptions([{category:'Lab'}],[{name:'Lab',uses:12},{name:'__proto__',uses:3},{name:'<img src=x>',uses:2}]);

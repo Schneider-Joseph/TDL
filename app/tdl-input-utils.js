@@ -14,6 +14,19 @@
   if(date.getTime()<=now){date.setDate(date.getDate()+1);date.setHours(hours,minutes,0,0);}
   return date.getTime();
  }
+ function taskDeadline(task){
+  if(!task||!/^\d{4}-\d{2}-\d{2}$/.test(String(task.dueDate||'')))return null;
+  const [year,month,day]=task.dueDate.split('-').map(Number),date=new Date(0);
+  date.setFullYear(year,month-1,day);date.setHours(0,0,0,0);
+  if(date.getFullYear()!==year||date.getMonth()!==month-1||date.getDate()!==day)return null;
+  if(task.dueTime){
+   if(!/^([01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/.test(String(task.dueTime)))return null;
+   const [hours,minutes,seconds=0]=task.dueTime.split(':').map(Number);
+   date.setHours(hours,minutes,seconds,0);
+   if(date.getHours()!==hours||date.getMinutes()!==minutes)return null;
+  }else date.setHours(23,59,59,999);
+  return date;
+ }
  const defaults=['Homework','Personal','Project','Chore','Event'];
  function categoryOptions(tasks,usage){
   const options=new Map();
@@ -32,5 +45,5 @@
    return b.uses-a.uses||rank(a.name)-rank(b.name)||a.name.localeCompare(b.name);
   });
  }
- root.TDLInputUtils={durationParts,nextEndTime,categoryOptions};
+ root.TDLInputUtils={durationParts,nextEndTime,taskDeadline,categoryOptions};
 })(typeof window==='object'?window:globalThis);
