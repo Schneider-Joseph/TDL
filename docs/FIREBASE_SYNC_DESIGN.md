@@ -4,6 +4,10 @@
 
 **Goal:** A task changed on the MacBook appears on your PC and phone, while the app stays usable offline. **Safety requirement:** A first sign-in must never silently replace existing tasks.
 
+**Free setup recommendation — checked November 27, 2026:** Keep the app on GitHub Pages and use Firebase's no-cost **Spark** plan with Google sign-in and Cloud Firestore. Do not link a Cloud Billing account if the goal is to avoid usage charges. Firestore's free allowance is one database per project, 1 GiB stored, 50,000 document reads/day, 20,000 writes/day, 20,000 deletes/day and 10 GiB outbound transfer/month. These are project-wide quotas, not per-user allowances. Requests can stop at quota limits, so local edits must remain available and queued for retry. See [Firebase plans](https://firebase.google.com/docs/projects/billing/firebase-pricing-plans) and [Firestore quotas](https://firebase.google.com/docs/firestore/quotas).
+
+This still needs implementation and a Firebase project owned by the app owner: enable Google sign-in, authorize the app's domain, create Firestore with per-account access rules, and connect its web app configuration. The first release should sync task records with deletion markers and conflict handling, keep reminder permissions and running timers local, and preview existing-data merges before enabling continuous sync. No Firebase project or sign-in connection has been created by these bug fixes.
+
 If you're new to TDL, read [Start Here](START_HERE.md), [How TDL Works](HOW_TDL_WORKS.md), and [Data and Backups](DATA_AND_BACKUPS.md) before this document.
 
 ---

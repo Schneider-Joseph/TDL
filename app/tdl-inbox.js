@@ -7,7 +7,7 @@ const key="tdl.inbox.v1",max=250;
 const $=(s,root=document)=>root.querySelector(s),esc=X.escape;
 const dateKey=d=>{const x=new Date(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")};
 const today=()=>dateKey(Date.now());
-const asDate=t=>{if(!t.dueDate)return null;const d=new Date(t.dueDate+"T"+(t.dueTime||"23:59")+":00");return Number.isNaN(d.valueOf())?null:d};
+const asDate=t=>window.TDLInputUtils.taskDeadline(t);
 let inbox=read(),filter="unread",viewSignature="";
 function read(){const x=X.store(key,{version:1,items:[]});return x&&Array.isArray(x.items)?x:{version:1,items:[]}}
 function saved(){inbox.items.sort((a,b)=>b.at-a.at);if(inbox.items.length>max){
@@ -15,7 +15,7 @@ function saved(){inbox.items.sort((a,b)=>b.at-a.at);if(inbox.items.length>max){
  const old=inbox.items.filter(x=>x.dismissedAt||x.resolvedAt).slice(0,Math.max(0,max-active.length));
  inbox.items=active.concat(old).sort((a,b)=>b.at-a.at);
  }return X.put(key,inbox)}
-function eligible(t,type,d){const due=d.valueOf(),now=Date.now();if(type==="overdue")return due<now; if(type==="due_today")return t.dueDate===today();return due>=now&&due-now<=120*60000}
+function eligible(t,type,d){const due=d.valueOf(),now=Date.now();if(type==="overdue")return due<now; if(type==="due_today")return t.dueDate===today()&&due>=now;return due>=now&&due-now<=120*60000}
 function status(item){if(item.resolvedAt)return "resolved";if(item.dismissedAt)return "dismissed";if(item.snoozedUntil&&item.snoozedUntil>Date.now())return "snoozed";return item.readAt?"read":"unread"}
 function unread(){return inbox.items.filter(x=>status(x)==="unread").length}
 function scan(refreshView=true){
